@@ -1,0 +1,6 @@
+Der Dieb ist äußerst geschickt aber im Kampf sehr schwach.
+
+Kampf			schlecht
+Türen öfnnen		gut
+Fallen überwinden		gut
+Heilen			schlecht

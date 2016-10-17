@@ -153,9 +153,13 @@ class Hauptprogramm:
         if self.auswahl.get()=='1':
             self.held = Superman('Bitte Name eingeben')
         elif self.auswahl.get()=='2':
-            self.held = Dieb('Bitte Name eingeben')
+            self.held = Spiderman('Bitte Name eingeben')
         elif self.auswahl.get()=='3':
-            self.held = Heiler('Bitte Name eingeben')
+            self.held = Ironman('Bitte Name eingeben')
+        elif self.auswahl.get()=='4':
+            self.held = Green_Lantern('Bitte Name eingeben')
+        elif self.auswahl.get()=='3':
+            self.held = Flash('Bitte Name eingeben')
         else:
             self.held = Held('Bitte Name eingeben')
         self.heldenwahl_fenster.destroy()

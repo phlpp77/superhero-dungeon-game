@@ -1,6 +1,6 @@
-Superman ist besonders guter Kämpfer.
+Superman ist besonders guter KÃ¤mpfer.
 
 Kampf                   gut
-Türen öffnen            mittel
-Fallen überwinden       schlecht
+TÃ¼ren Ã¶ffnen            mittel
+Fallen Ã¼berwinden       schlecht
 Heilen                  mittet

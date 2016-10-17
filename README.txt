@@ -16,7 +16,7 @@ Ein Dungeoncrawler mit Superhelden!
 --Overlaydaten:
 0 - kein Overlay
 41 - kleiner Stein unten links
-61 - Sch�del unten links
+61 - SchÃ€del unten links
 
 
 --Itemdaten:

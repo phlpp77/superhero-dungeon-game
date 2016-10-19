@@ -291,6 +291,10 @@ class Hauptprogramm:
         self.spielfeld_fenster.bind('<KeyPress-Right>',self.rechts)
         self.spielfeld_fenster.bind('<KeyPress-Up>',self.hoch)
         self.spielfeld_fenster.bind('<KeyPress-Down>',self.runter)
+        self.spielfeld_fenster.bind('<KeyPress-a>', self.links)
+        self.spielfeld_fenster.bind('<KeyPress-d>', self.rechts)
+        self.spielfeld_fenster.bind('<KeyPress-w>', self.hoch)
+        self.spielfeld_fenster.bind('<KeyPress-s>', self.runter)
         self.spielfeld_fenster.focus_set()
         self.spielfeld_fenster.mainloop()
 

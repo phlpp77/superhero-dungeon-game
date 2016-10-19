@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 class Item:
 
     def __init__(self,typ,name,begehbar,aufnehmbar,bild,werte):

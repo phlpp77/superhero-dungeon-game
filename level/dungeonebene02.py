@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 from level.dungeonebene import *
 
 class Dungeonebene02(Dungeonebene):

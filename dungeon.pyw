@@ -444,6 +444,18 @@ class Hauptprogramm:
         self.labelle.config(text='LE: '+str(self.held.getkampfwerte()[2])+'/'+str(self.held.getmaxle()))
         self.labelrs.config(text='RS: '+str(self.held.getruestung().getrs()))
 
+    def endScreen(self):
+
+        self.end_fenster = Toplevel()
+        self.end_fenster.focus_force()
+        self.end_fenster.title('Dungeon Game - Du hast gewonnen!')
+        self.end_fenster.minsize(1088, 567)
+        self.end_fenster.maxsize(1088, 567)
+        self.end_fenster.config(bg='darkgray')
+        bg = PhotoImage(file="gfx/dummy.gif")
+        bl = Label(self.fenster, image=bg)
+        bl.place(x=0, y=0, relwidth=1, relheight=1)
+        self.end_fenster.mainloop()
 
     def links(self,event):
         if (self.held.getx()>0):
@@ -489,6 +501,7 @@ class Hauptprogramm:
                 self.spielfeldzeigen(self.d.getlevelnr()+1)
             if self.d.getspielende():
                 self.spielfeld_fenster.destroy()
+                self.endScreen()
 # Spielendschirm aufrufen
                     
     def hoch(self,event):

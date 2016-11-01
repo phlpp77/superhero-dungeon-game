@@ -1,4 +1,3 @@
-from items import *
 from falle import *
 
 class Nofalle(Falle):

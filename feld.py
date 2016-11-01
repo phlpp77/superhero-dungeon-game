@@ -41,7 +41,7 @@ class Feld:
             self._item = Treppe1(self.level)
         elif itemtyp==10101:    # Ork1
             self._item = Ork1()
-        elif itemtyp==20101:    # Ork1
+        elif itemtyp==20101:    # Falle
             self._item = Steinschlagfalle()
 
         if schaltertyp[0]==0:

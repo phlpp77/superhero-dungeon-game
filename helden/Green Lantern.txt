@@ -1,6 +1,6 @@
-Der Heiler ist ein schwacher KÃ¤mpfer, kann aber schnell regenerieren.
+Der Heiler ist ein schwacher Kämpfer, kann aber schnell regenerieren.
 
 Kampf			schlecht
-TÃ¼ren Ã¶fnnen		mittel
-Fallen Ã¼berwinden	mittel
+Türen öfnnen		mittel
+Fallen überwinden	mittel
 Heilen			gut

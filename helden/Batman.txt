@@ -1,6 +1,6 @@
 Der Abenteurer ist nirgends besonders gut und nirgends besonders schlecht.
 
 Kampf			mittel
-TÃ¼ren Ã¶fnnen		mittel
-Fallen Ã¼berwinden	mittel
+Türen öfnnen		mittel
+Fallen überwinden	mittel
 Heilen			mittet

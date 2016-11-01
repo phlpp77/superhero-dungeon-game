@@ -12,6 +12,8 @@ from level.dungeonebene01 import *
 from level.dungeonebene02 import *
 from level.dungeonebene03 import *
 
+#Flackern
+
 class Flackern(threading.Thread):
     def __init__(self, fenster):
         self.fenster = fenster

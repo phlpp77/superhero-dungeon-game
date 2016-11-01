@@ -214,7 +214,10 @@ class Hauptprogramm:
         self.heldenwahl()
         
     def heldbenennen_beenden(self):
-        self.held.setheldenname(self.eingabefeld.get())
+        if self.eingabefeld.get() == "Bitte Name eingeben":
+            self.held.setheldenname("Namenloser")
+        else:
+            self.held.setheldenname(self.eingabefeld.get())
         self.held.setgeschlecht(self.auswahlgeschlecht.get())
         self.heldbenennen_fenster.destroy()
         self.heldenzeigen()

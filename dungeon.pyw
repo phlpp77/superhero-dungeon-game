@@ -1,5 +1,6 @@
 import time
 import threading
+from threading import Thread
 from tkinter import *
 from helden.held import *               #Batman
 from helden.superman import *           #Superman
@@ -113,7 +114,7 @@ class Hauptprogramm:
                                               text='Green Lantern',
                                               font=('Comic Sans MS',10),
                                               bg='darkgray',
-                                              value='Green Lantern', variable=self.auswahl,
+                                              value='Green_Lantern', variable=self.auswahl,
                                               command=self.aktualisiere_beschreibung)
         self.flash_radiobutton = Radiobutton(master=self.radiogroup,
                                               text='Flash',
@@ -151,15 +152,15 @@ class Hauptprogramm:
         self.beschreibung.insert(1.0,textdaten)        
 
     def heldenwahl_beenden(self):
-        if self.auswahl.get()=='1':
+        if self.auswahl.get()=='Superman':
             self.held = Superman('Bitte Name eingeben')
-        elif self.auswahl.get()=='2':
+        elif self.auswahl.get()=='Spiderman':
             self.held = Spiderman('Bitte Name eingeben')
-        elif self.auswahl.get()=='3':
+        elif self.auswahl.get()=='Ironman':
             self.held = Ironman('Bitte Name eingeben')
-        elif self.auswahl.get()=='4':
+        elif self.auswahl.get()=='Green_Lantern':
             self.held = Green_Lantern('Bitte Name eingeben')
-        elif self.auswahl.get()=='3':
+        elif self.auswahl.get()=='Flash':
             self.held = Flash('Bitte Name eingeben')
         else:
             self.held = Held('Bitte Name eingeben')
@@ -272,12 +273,12 @@ class Hauptprogramm:
             self.d = Dungeonebene02(levelnr,self.held)
         if levelnr==3:
             self.d = Dungeonebene03(levelnr,self.held)
-        if levelnr==4:
-            self.d = Dungeonebene04(levelnr,self.held)
-        if levelnr==5:
-            self.d = Dungeonebene05(levelnr,self.held)
-        if levelnr==6:
-            self.d = Dungeonebene06(levelnr,self.held)
+        #if levelnr==4:
+            #self.d = Dungeonebene04(levelnr,self.held)
+        #if levelnr==5:
+           #self.d = Dungeonebene05(levelnr,self.held)
+        #if levelnr==6:
+            #self.d = Dungeonebene06(levelnr,self.held)
 
         
         self.feldbild = list(range(self.d.getmaxx()))     # Anlegen eines Feldes, in dem alle Bilder des Dungeons (Wand, Boden) gespeichert sind
@@ -452,10 +453,31 @@ class Hauptprogramm:
         self.end_fenster.minsize(1088, 567)
         self.end_fenster.maxsize(1088, 567)
         self.end_fenster.config(bg='darkgray')
-        bg = PhotoImage(file="gfx/dummy.gif")
-        bl = Label(self.fenster, image=bg)
+        bg = PhotoImage(file="gfx/endScreen.gif")
+        bl = Label(self.end_fenster, image=bg)
         bl.place(x=0, y=0, relwidth=1, relheight=1)
         self.end_fenster.mainloop()
+
+    def loadingScreen(self):
+
+        self.loading_fenster = Toplevel()
+        self.loading_fenster.focus_force()
+        self.loading_fenster.title('Dungeon Game - loading...')
+        self.loading_fenster.minsize(1088, 567)
+        self.loading_fenster.maxsize(1088, 567)
+        self.loading_fenster.config(bg='darkgray')
+        bg = PhotoImage(file="gfx/loadingScreen.gif")
+        bl = Label(self.loading_fenster, image=bg)
+        bl.place(x=0, y=0, relwidth=1, relheight=1)
+        self.w_button = Button(master=self.loading_fenster, text='weiter', command=self.loading_beenden, bg='white')
+        self.w_button.pack(side=BOTTOM, anchor=E, padx=30, pady=30)
+        self.loading_fenster.mainloop()
+
+    def loading_beenden(self):
+
+        time.sleep(10)
+        self.loading_fenster.destroy()
+        self.spielfeldzeigen(self.d.getlevelnr() + 1)
 
     def links(self,event):
         if (self.held.getx()>0):
@@ -498,7 +520,7 @@ class Hauptprogramm:
 # Heldtotschirm aufrufen              
             if self.d.getlevelende():
                 self.spielfeld_fenster.destroy()
-                self.spielfeldzeigen(self.d.getlevelnr()+1)
+                self.loadingScreen()
             if self.d.getspielende():
                 self.spielfeld_fenster.destroy()
                 self.endScreen()
@@ -549,6 +571,6 @@ class Hauptprogramm:
             if self.d.getspielende():
                 self.spielfeld_fenster.destroy()
 # Spielendschirm aufrufen
-            
+
 # Spiel
 spiel = Hauptprogramm()

@@ -259,7 +259,7 @@ class Hauptprogramm:
         y = (hs / 2) - (h / 2)
         self.held_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.held_fenster.config(bg='darkgray')
-        bg_image = PhotoImage(file=self.held.getbild())
+        bg_image = PhotoImage(file=self.held.getanzeigeBild())
         bg_label = Label(self.held_fenster, image=bg_image)
         bg_label.place(x=0, y=0, relwidth=1, relheight=1)
         self.weiter_button = Button(master=self.held_fenster,text='weiter',

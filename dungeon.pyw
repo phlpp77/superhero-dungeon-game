@@ -1,6 +1,5 @@
 import time
 import threading
-from threading import Thread
 from tkinter import *
 from helden.held import *               #Batman
 from helden.superman import *           #Superman
@@ -39,6 +38,13 @@ class Hauptprogramm:
         self.fenster.title('Dungeon Game')
         self.fenster.minsize(600,220)
         self.fenster.maxsize(600,220)
+        w = 600
+        h = 220
+        ws = self.fenster.winfo_screenwidth()
+        hs = self.fenster.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))     # Fenster mittig anordnen
         background_image = PhotoImage(file="gfx/bg.gif")
         background_label = Label(self.fenster, image=background_image)
         background_label.place(x=0, y=0, relwidth=1, relheight=1)
@@ -74,6 +80,13 @@ class Hauptprogramm:
         self.heldenwahl_fenster.title('Dungeon Game')
         self.heldenwahl_fenster.minsize(600,320)
         self.heldenwahl_fenster.maxsize(600,320)
+        w = 600
+        h = 320
+        ws = self.heldenwahl_fenster.winfo_screenwidth()
+        hs = self.heldenwahl_fenster.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.heldenwahl_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.heldenwahl_fenster.config(bg='darkgray')
     
         self.label = Label(master=self.heldenwahl_fenster,
@@ -174,6 +187,13 @@ class Hauptprogramm:
         self.heldbenennen_fenster.title('Dungeon Game')
         self.heldbenennen_fenster.minsize(220,220)
         self.heldbenennen_fenster.maxsize(220,220)
+        w = 220
+        h = 220
+        ws = self.heldbenennen_fenster.winfo_screenwidth()
+        hs = self.heldbenennen_fenster.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.heldbenennen_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.heldbenennen_fenster.config(bg='darkgray')
     
         self.label = Label(master=self.heldbenennen_fenster,
@@ -231,6 +251,13 @@ class Hauptprogramm:
         self.held_fenster.title('Dungeon Game')
         self.held_fenster.minsize(220,220)
         self.held_fenster.maxsize(220,220)
+        w = 220
+        h = 220
+        ws = self.held_fenster.winfo_screenwidth()
+        hs = self.held_fenster.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.held_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.held_fenster.config(bg='darkgray')
         bg_image = PhotoImage(file=self.held.getbild())
         bg_label = Label(self.held_fenster, image=bg_image)
@@ -261,6 +288,13 @@ class Hauptprogramm:
         self.spielfeld_fenster.title('Dungeon Game')
         self.spielfeld_fenster.minsize(1088,684)
         self.spielfeld_fenster.maxsize(1088,684)
+        w = 1088
+        h = 684
+        ws = self.spielfeld_fenster.winfo_screenwidth()
+        hs = self.spielfeld_fenster.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.spielfeld_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.spielfeld_fenster.config(bg='darkgray')
 
         self.canvas = Canvas(master=self.spielfeld_fenster, width=1088,
@@ -452,6 +486,13 @@ class Hauptprogramm:
         self.end_fenster.title('Dungeon Game - Du hast gewonnen!')
         self.end_fenster.minsize(1088, 567)
         self.end_fenster.maxsize(1088, 567)
+        w = 1088
+        h = 567
+        ws = self.end_fenster.winfo_screenwidth()
+        hs = self.end_fenster.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.end_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.end_fenster.config(bg='darkgray')
         bg = PhotoImage(file="gfx/endScreen.gif")
         bl = Label(self.end_fenster, image=bg)
@@ -465,6 +506,13 @@ class Hauptprogramm:
         self.loading_fenster.title('Dungeon Game - loading...')
         self.loading_fenster.minsize(1088, 567)
         self.loading_fenster.maxsize(1088, 567)
+        w = 1088
+        h = 567
+        ws = self.loading_fenster.winfo_screenwidth()
+        hs = self.loading_fenster.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.loading_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.loading_fenster.config(bg='darkgray')
         bg = PhotoImage(file="gfx/loadingScreen.gif")
         bl = Label(self.loading_fenster, image=bg)

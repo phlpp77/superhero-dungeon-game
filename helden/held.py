@@ -12,6 +12,7 @@ class Held:
         self._kampfwerte = [11,11,8000]                         # AT PA LeP
         self._maxle=self._kampfwerte[2]                         # LeP-Maximum
         self._bild = 'gfxhelden/Batman.gif'
+        self._anzeigeBild = 'gfxhelden/Batman0.gif'
         self._x=0
         self._y=0
         self._lichtradius = 1.0
@@ -76,6 +77,9 @@ class Held:
 
     def getbild(self):
         return self._bild
+
+    def getanzeigeBild(self):
+        return self._anzeigeBild
 
     def getx(self):
         return self._x

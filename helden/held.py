@@ -24,7 +24,7 @@ class Held:
     def getheldenname(self):
         return self._heldenname
 
-    def setheldenname(self,name):
+    def setheldenname(self, name):
         self._heldenname = str(name)
 
     def getgeschlecht(self):
@@ -72,14 +72,14 @@ class Held:
     def getruestung(self):
         return self._ruestung
 
-    def setruestung(self,ruestung):
+    def setruestung(self, ruestung):
         self._ruestung = ruestung
 
     def getbild(self):
         return self._bild
 
     def setbild(self, bild):
-        self._bild = str(bild)
+        self._bild = bild
 
     def getanzeigeBild(self):
         return self._anzeigeBild

@@ -333,10 +333,10 @@ class Hauptprogramm:
         self.lightmap_aktualisieren()
         self.heldenstats_zeichnen()
         
-        self.spielfeld_fenster.bind('<KeyPress-Left>',self.links)
-        self.spielfeld_fenster.bind('<KeyPress-Right>',self.rechts)
-        self.spielfeld_fenster.bind('<KeyPress-Up>',self.hoch)
-        self.spielfeld_fenster.bind('<KeyPress-Down>',self.runter)
+        self.spielfeld_fenster.bind('<KeyPress-Left>', self.links)
+        self.spielfeld_fenster.bind('<KeyPress-Right>', self.rechts)
+        self.spielfeld_fenster.bind('<KeyPress-Up>', self.hoch)
+        self.spielfeld_fenster.bind('<KeyPress-Down>', self.runter)
         self.spielfeld_fenster.bind('<KeyPress-a>', self.links)
         self.spielfeld_fenster.bind('<KeyPress-d>', self.rechts)
         self.spielfeld_fenster.bind('<KeyPress-w>', self.hoch)
@@ -528,14 +528,15 @@ class Hauptprogramm:
         self.spielfeldzeigen(self.d.getlevelnr() + 1)
 
     def bildrichtung_aktualisieren(self, direction):
-        if self.direction==1:
-            self.held.setbild("gfxhelden/"+str(self.held.gettypname)+"W")
-        elif self.direction==2:
-            self.held.setbild("gfxhelden/"+str(self.held.gettypname)+"D")
-        elif self.direction==3:
-            self.held.setbild("gfxhelden/"+str(self.held.gettypname)+"A")
+        if direction == 1:
+            self.held.setbild(os.path.join("gfxhelden", self.held.gettypname()+"W.gif"))
+        elif direction == 2:
+            self.held.setbild(os.path.join("gfxhelden", self.held.gettypname()+"D.gif"))
+        elif direction == 3:
+            self.held.setbild(os.path.join("gfxhelden", self.held.gettypname()+"A.gif"))
+        self.heldenbild.config(file=self.held.getbild())
 
-    def links(self,event):
+    def links(self, event):
         self.bildrichtung_aktualisieren(3)
         if (self.held.getx()>0):
             self.d = self.d.getschalter(self.held.getx()-1,self.held.gety()).ausloesen(self.d)

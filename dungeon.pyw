@@ -159,7 +159,7 @@ class Hauptprogramm:
     def aktualisiere_beschreibung(self):
         self.beschreibung.delete(1.0,END)
         dateiname = os.path.join("helden", self.auswahl.get()+'.txt')
-        daten=open(dateiname,'r')
+        daten=open(dateiname, "r", encoding="iso-8859-15")
         textdaten=daten.read()
         daten.close
         self.beschreibung.insert(1.0,textdaten)        

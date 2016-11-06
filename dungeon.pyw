@@ -303,15 +303,15 @@ class Hauptprogramm:
 
         if levelnr==1:                                  # laden des Levels nach Nummer
             self.d = Dungeonebene01(levelnr,self.held)
-        if levelnr==2:
+        elif levelnr==2:
             self.d = Dungeonebene02(levelnr,self.held)
-        if levelnr==3:
+        elif levelnr==3:
             self.d = Dungeonebene03(levelnr,self.held)
-        #if levelnr==4:
+        #elif levelnr==4:
             #self.d = Dungeonebene04(levelnr,self.held)
-        #if levelnr==5:
+        #elif levelnr==5:
            #self.d = Dungeonebene05(levelnr,self.held)
-        #if levelnr==6:
+        #elif levelnr==6:
             #self.d = Dungeonebene06(levelnr,self.held)
 
         
@@ -534,6 +534,8 @@ class Hauptprogramm:
             self.held.setbild(os.path.join("gfxhelden", self.held.gettypname()+"D.gif"))
         elif direction == 3:
             self.held.setbild(os.path.join("gfxhelden", self.held.gettypname()+"A.gif"))
+        elif direction == 4:
+            self.held.setbild(os.path.join("gfxhelden", self.held.gettypname()+".gif"))
         self.heldenbild.config(file=self.held.getbild())
 
     def links(self, event):
@@ -612,6 +614,7 @@ class Hauptprogramm:
 # Spielendschirm aufrufen                    
             
     def runter(self,event):
+        self.bildrichtung_aktualisieren(4)
         if (self.held.gety()<self.d.getmaxy()):
             self.d = self.d.getschalter(self.held.getx(),self.held.gety()+1).ausloesen(self.d)            
             if self.d.getschalter(self.held.getx(),self.held.gety()+1).getschaltertyp()!=0:

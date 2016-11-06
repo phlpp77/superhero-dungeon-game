@@ -1,6 +1,7 @@
 import time
 import threading
 from tkinter import *
+import tkinter.ttk
 from helden.held import *               #Batman
 from helden.superman import *           #Superman
 from helden.spiderman import *          #Spiderman
@@ -12,24 +13,49 @@ from level.dungeonebene01 import *
 from level.dungeonebene02 import *
 from level.dungeonebene03 import *
 
-#Flackern
 
-class Flackern(threading.Thread):
+# Flackern
+
+class GUIThread(threading.Thread):
     def __init__(self, fenster):
         self.fenster = fenster
         self._stop = False
         threading.Thread.__init__ (self)
 
     def run(self):
-         while not self._stop:
+        pass
+
+    def stop(self):
+        self._stop = True
+
+
+class Flackern(GUIThread):
+    def run(self):
+          while not self._stop:
             time.sleep(0.2)
             self.fenster.wm_attributes('-alpha', 0.25)
             time.sleep(0.2)
             #print("Flacker!" + str(threading.get_ident()))
             self.fenster.wm_attributes('-alpha', 1)
 
-    def stop(self):
-        self._stop = True
+
+class LoadingBalken(threading.Thread):
+    def __init__(self, progressbar, button):
+        self.progressbar = progressbar
+        self.button = button
+        threading.Thread.__init__ (self)
+
+    def run(self):
+        for i in range(0, 90):
+            self.progressbar.step()
+            time.sleep(0.05)
+
+        for i in range(0, 9):
+            self.progressbar.step()
+            time.sleep(0.5)
+
+        self.button.pack(side=BOTTOM, anchor=E, padx=30, pady=30)
+
 
 class Hauptprogramm:
     
@@ -517,13 +543,20 @@ class Hauptprogramm:
         bg = PhotoImage(file="gfx/loadingScreen.gif")
         bl = Label(self.loading_fenster, image=bg)
         bl.place(x=0, y=0, relwidth=1, relheight=1)
-        self.w_button = Button(master=self.loading_fenster, text='weiter', command=self.loading_beenden, bg='white')
-        self.w_button.pack(side=BOTTOM, anchor=E, padx=30, pady=30)
+        #test = Label(master=self.loading_fenster, text="test text" )
+        #test.pack()
+        progressbar = tkinter.ttk.Progressbar(master=self.loading_fenster, orient=HORIZONTAL, length=200, mode='determinate')
+        progressbar.pack(side="bottom")
+
+        w_button = Button(master=self.loading_fenster, text='weiter', command=self.loading_beenden, bg='white')
+
+        balken = LoadingBalken(progressbar, w_button)
+        balken.setDaemon(True)
+        balken.start()
+
         self.loading_fenster.mainloop()
 
     def loading_beenden(self):
-
-        time.sleep(10)
         self.loading_fenster.destroy()
         self.spielfeldzeigen(self.d.getlevelnr() + 1)
 

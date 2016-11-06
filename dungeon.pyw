@@ -527,7 +527,16 @@ class Hauptprogramm:
         self.loading_fenster.destroy()
         self.spielfeldzeigen(self.d.getlevelnr() + 1)
 
+    def bildrichtung_aktualisieren(self, direction):
+        if self.direction==1:
+            self.held.setbild("gfxhelden/"+str(self.held.gettypname)+"W")
+        elif self.direction==2:
+            self.held.setbild("gfxhelden/"+str(self.held.gettypname)+"D")
+        elif self.direction==3:
+            self.held.setbild("gfxhelden/"+str(self.held.gettypname)+"A")
+
     def links(self,event):
+        self.bildrichtung_aktualisieren(3)
         if (self.held.getx()>0):
             self.d = self.d.getschalter(self.held.getx()-1,self.held.gety()).ausloesen(self.d)
             if self.d.getschalter(self.held.getx()-1,self.held.gety()).getschaltertyp()!=0:
@@ -545,12 +554,14 @@ class Hauptprogramm:
 # Heldtotschirm aufrufen              
             if self.d.getlevelende():
                 self.spielfeld_fenster.destroy()
-                self.spielfeldzeigen(self.d.getlevelnr()+1)
+                self.loadingScreen()
             if self.d.getspielende():
-                 self.spielfeld_fenster.destroy()
+                self.spielfeld_fenster.destroy()
+                self.endScreen()
 # Spielendschirm aufrufen                    
             
     def rechts(self,event):
+        self.bildrichtung_aktualisieren(2)
         if (self.held.getx()<self.d.getmaxx()):
             self.d = self.d.getschalter(self.held.getx()+1,self.held.gety()).ausloesen(self.d)
             if self.d.getschalter(self.held.getx()+1,self.held.gety()).getschaltertyp()!=0:
@@ -575,6 +586,7 @@ class Hauptprogramm:
 # Spielendschirm aufrufen
                     
     def hoch(self,event):
+        self.bildrichtung_aktualisieren(1)
         if (self.held.gety()>0):
             self.d = self.d.getschalter(self.held.getx(),self.held.gety()-1).ausloesen(self.d)
             if self.d.getschalter(self.held.getx(),self.held.gety()-1).getschaltertyp()!=0:
@@ -592,9 +604,10 @@ class Hauptprogramm:
 # Heldtotschirm aufrufen              
             if self.d.getlevelende():
                 self.spielfeld_fenster.destroy()
-                self.spielfeldzeigen(self.d.getlevelnr()+1)                
+                self.loadingScreen()
             if self.d.getspielende():
                 self.spielfeld_fenster.destroy()
+                self.endScreen()
 # Spielendschirm aufrufen                    
             
     def runter(self,event):
@@ -615,9 +628,10 @@ class Hauptprogramm:
 # Heldtotschirm aufrufen              
             if self.d.getlevelende():
                 self.spielfeld_fenster.destroy()
-                self.spielfeldzeigen(self.d.getlevelnr()+1)
+                self.loadingScreen()
             if self.d.getspielende():
                 self.spielfeld_fenster.destroy()
+                self.endScreen()
 # Spielendschirm aufrufen
 
 # Spiel

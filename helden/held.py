@@ -78,6 +78,9 @@ class Held:
     def getbild(self):
         return self._bild
 
+    def setbild(self, bild):
+        self._bild = str(bild)
+
     def getanzeigeBild(self):
         return self._anzeigeBild
 

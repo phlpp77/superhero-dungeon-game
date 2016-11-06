@@ -1,5 +1,6 @@
 from math import *
 from items import *
+import time
 
 class Held:
 
@@ -140,3 +141,7 @@ class Held:
         self._kampfwerte[2] = self._kampfwerte[2]+ int( sp*(self._eigenschaften[4]+self._eigenschaften[6])/40 )
         if self._kampfwerte[2]>self._maxle:
             self._kampfwerte[2]=self.maxle
+
+    def rennen(self, heldentyp):
+        if heldentyp != 5:
+            time.sleep(0.1)

@@ -539,6 +539,7 @@ class Hauptprogramm:
         self.heldenbild.config(file=self.held.getbild())
 
     def links(self, event):
+        self.held.rennen(self.held.getheldentyp())
         self.bildrichtung_aktualisieren(3)
         if (self.held.getx()>0):
             self.d = self.d.getschalter(self.held.getx()-1,self.held.gety()).ausloesen(self.d)
@@ -564,6 +565,7 @@ class Hauptprogramm:
 # Spielendschirm aufrufen                    
             
     def rechts(self,event):
+        self.held.rennen(self.held.getheldentyp())
         self.bildrichtung_aktualisieren(2)
         if (self.held.getx()<self.d.getmaxx()):
             self.d = self.d.getschalter(self.held.getx()+1,self.held.gety()).ausloesen(self.d)
@@ -589,6 +591,7 @@ class Hauptprogramm:
 # Spielendschirm aufrufen
                     
     def hoch(self,event):
+        self.held.rennen(self.held.getheldentyp())
         self.bildrichtung_aktualisieren(1)
         if (self.held.gety()>0):
             self.d = self.d.getschalter(self.held.getx(),self.held.gety()-1).ausloesen(self.d)
@@ -614,14 +617,15 @@ class Hauptprogramm:
 # Spielendschirm aufrufen                    
             
     def runter(self,event):
+        self.held.rennen(self.held.getheldentyp())
         self.bildrichtung_aktualisieren(4)
-        if (self.held.gety()<self.d.getmaxy()):
+        if self.held.gety()<self.d.getmaxy():
             self.d = self.d.getschalter(self.held.getx(),self.held.gety()+1).ausloesen(self.d)            
             if self.d.getschalter(self.held.getx(),self.held.gety()+1).getschaltertyp()!=0:
                 self.canvas_aktualisieren(self.held.getx(),self.held.gety()+1)
             self.held = self.d.getfeld(self.held.getx(),self.held.gety()+1).betreten(self.held)
             self.itembild[self.held.getx()][self.held.gety()+1].config(file=self.d.getfeld(self.held.getx(),self.held.gety()+1).getitembild())
-            if (self.d.getbegehbar(self.held.getx(),self.held.gety()+1)):
+            if self.d.getbegehbar(self.held.getx() ,self.held.gety()+1):
                 self.canvas.move(self.heldid,0,64)
                 self.held.sety(self.held.gety()+1)
             self.lightmap_aktualisieren()

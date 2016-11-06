@@ -36,8 +36,8 @@ class Hauptprogramm:
     def __init__(self):
         self.fenster = Tk()
         self.fenster.title('Dungeon Game')
-        self.fenster.minsize(600,220)
-        self.fenster.maxsize(600,220)
+        self.fenster.minsize(600, 220)
+        self.fenster.maxsize(600, 220)
         w = 600
         h = 220
         ws = self.fenster.winfo_screenwidth()
@@ -282,12 +282,12 @@ class Hauptprogramm:
         
 # Spielfeld anzeigen
 
-    def spielfeldzeigen(self,levelnr):
+    def spielfeldzeigen(self, levelnr):
         self.spielfeld_fenster = Toplevel()
         self.spielfeld_fenster.focus_force()
         self.spielfeld_fenster.title('Dungeon Game')
-        self.spielfeld_fenster.minsize(1088,684)
-        self.spielfeld_fenster.maxsize(1088,684)
+        self.spielfeld_fenster.minsize(1088, 684)
+        self.spielfeld_fenster.maxsize(1088, 684)
         w = 1088
         h = 684
         ws = self.spielfeld_fenster.winfo_screenwidth()
@@ -375,7 +375,7 @@ class Hauptprogramm:
                     self.fogbild[x][y].config(file='gfx/blank.gif')
         self.heldenbild.config(file=self.held.getbild())  #Held zeichnen
 
-    def canvas_aktualisieren(self,x,y):
+    def canvas_aktualisieren(self, x, y):
         for i in self.d.getschalter(x,y).getfelderliste():
                 self.feldbild[i[0]][i[1]].config(file=self.d.getbild(i[0],i[1]))
                 self.overlaybild[i[0]][i[1]].config(file=self.d.getoverlaybild(i[0],i[1]))
@@ -528,19 +528,19 @@ class Hauptprogramm:
         self.spielfeldzeigen(self.d.getlevelnr() + 1)
 
     def bildrichtung_aktualisieren(self, direction):
-        if self.direction==1:
+        if direction==1:
             self.held.setbild("gfxhelden/"+str(self.held.gettypname)+"W")
-        elif self.direction==2:
+        elif direction==2:
             self.held.setbild("gfxhelden/"+str(self.held.gettypname)+"D")
-        elif self.direction==3:
+        elif direction==3:
             self.held.setbild("gfxhelden/"+str(self.held.gettypname)+"A")
 
-    def links(self,event):
+    def links(self, event):
         self.bildrichtung_aktualisieren(3)
         if (self.held.getx()>0):
             self.d = self.d.getschalter(self.held.getx()-1,self.held.gety()).ausloesen(self.d)
             if self.d.getschalter(self.held.getx()-1,self.held.gety()).getschaltertyp()!=0:
-                self.canvas_aktualisieren(self.held.getx()-1,self.held.gety())
+                self.canvas_aktualisieren(self.held.getx()-1, self.held.gety())
             self.held = self.d.getfeld(self.held.getx()-1,self.held.gety()).betreten(self.held)
             self.itembild[self.held.getx()-1][self.held.gety()].config(file=self.d.getfeld(self.held.getx()-1,self.held.gety()).getitembild())
             if (self.d.getbegehbar(self.held.getx()-1,self.held.gety())):
@@ -565,7 +565,7 @@ class Hauptprogramm:
         if (self.held.getx()<self.d.getmaxx()):
             self.d = self.d.getschalter(self.held.getx()+1,self.held.gety()).ausloesen(self.d)
             if self.d.getschalter(self.held.getx()+1,self.held.gety()).getschaltertyp()!=0:
-                self.canvas_aktualisieren(self.held.getx()+1,self.held.gety())
+                self.canvas_aktualisieren(self.held.getx()+1, self.held.gety())
             self.held = self.d.getfeld(self.held.getx()+1,self.held.gety()).betreten(self.held)
             self.itembild[self.held.getx()+1][self.held.gety()].config(file=self.d.getfeld(self.held.getx()+1,self.held.gety()).getitembild())
             if (self.d.getbegehbar(self.held.getx()+1,self.held.gety())):

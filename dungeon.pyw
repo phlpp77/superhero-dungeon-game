@@ -2,6 +2,8 @@ import time
 import threading
 from tkinter import *
 import tkinter.ttk
+import platform
+import winsound
 from helden.held import *               #Batman
 from helden.superman import *           #Superman
 from helden.spiderman import *          #Spiderman
@@ -35,8 +37,14 @@ class Flackern(GUIThread):
             time.sleep(0.2)
             self.fenster.wm_attributes('-alpha', 0.25)
             time.sleep(0.2)
-            #print("Flacker!" + str(threading.get_ident()))
+            # print("Flacker!" + str(threading.get_ident()))
             self.fenster.wm_attributes('-alpha', 1)
+
+
+class Musik(GUIThread):
+    def run(self):
+        while not self._stop:
+            winsound.PlaySound('music/sound.wav', winsound.SND_FILENAME)
 
 
 class LoadingBalken(threading.Thread):
@@ -95,6 +103,7 @@ class Hauptprogramm:
         
     def einspieler(self):
         self.heldenwahl()
+        print(platform.system())
 
         
         
@@ -322,6 +331,10 @@ class Hauptprogramm:
         y = (hs / 2) - (h / 2)
         self.spielfeld_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.spielfeld_fenster.config(bg='darkgray')
+
+        self.music = Musik(self.fenster)
+        self.music.setDaemon(True)
+        self.music.start()
 
         self.canvas = Canvas(master=self.spielfeld_fenster, width=1088,
                              height=576)
@@ -553,6 +566,8 @@ class Hauptprogramm:
         balken = LoadingBalken(progressbar, w_button)
         balken.setDaemon(True)
         balken.start()
+
+        
 
         self.loading_fenster.mainloop()
 

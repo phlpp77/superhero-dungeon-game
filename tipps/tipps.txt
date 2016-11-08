@@ -4,5 +4,8 @@ Kaufe die Vollversion, um noch mehr Level zu bekommen
 In der Vollversion sind mehr Helden enthalten
 Es gibt Fallen, die dich töten können
 Du kannst die Pfeiltasten und sowohl "wasd" zum spielen nutzen
-Flash ist schneller als die anderen Helden
+Flash ist schneller, als die anderen Helden
 Spiderman hat eine höhere Chance an Fallen vorbeizukommen
+Green Lantern kann sich selber heilen
+Ironman hat die höchste Sichtweite im Spiel
+Im Ladescreen findest du hilfreiche Tipps

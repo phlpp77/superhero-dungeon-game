@@ -1,6 +1,6 @@
-Der Abenteurer ist nirgends besonders gut und nirgends besonders schlecht.
+Spider man ist geschickt darin Fallen zu überwinden.
 
 Kampf			mittel
 Türen öfnnen		mittel
-Fallen überwinden	mittel
-Heilen			mittet
+Fallen überwinden	gut
+Heilen			mittel

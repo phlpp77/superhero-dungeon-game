@@ -35,14 +35,22 @@ class Feld:
             self._item = Noitem()
         elif itemtyp==101:  # Dolch
             self._item = Dolch()
+        elif itemtyp==104:  # Langschwert
+            self._item = Langschwert()
+        elif itemtyp==203:  # Rüsstung
+            self._item = Kettenhemd()
         elif itemtyp==902:  # Teleport aus anderem Level -> zu Klasse wandeln
             self._item = Teleport2(self.level)
         elif itemtyp==911:  # Treppe nach unten ins naechste Level
             self._item = Treppe1(self.level)
         elif itemtyp==10101:    # Ork1
             self._item = Ork1()
+        elif itemtyp==10102:    # Joker
+            self._item = Joker()
         elif itemtyp==20101:    # Falle
             self._item = Steinschlagfalle()
+        elif itemtyp==30101:
+            self._item = Todesfalle()
 
         if schaltertyp[0]==0:
             self._schalter = Noschalter(schaltertyp[1])

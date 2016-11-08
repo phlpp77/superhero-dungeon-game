@@ -12,6 +12,7 @@ class Ironman(Held):
         self._maxle=self._kampfwerte[2]                         # LeP-Maximum        
         self._bild = 'gfxhelden/Ironman.gif'
         self._anzeigeBild = 'gfxhelden/Ironman0.gif'
+        self._lichtradius = 2.0
         self._itemliste = [Langschwert(),Kettenhemd()]          # leere Liste, in der alle Items gespeichert sind
         self._waffe = self._itemliste[0]                        # Waffe
         self._ruestung = self._itemliste[1]                     # Ruestung

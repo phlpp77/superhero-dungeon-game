@@ -13,6 +13,9 @@ from level.dungeonebene import *
 from level.dungeonebene01 import *
 from level.dungeonebene02 import *
 from level.dungeonebene03 import *
+from level.dungeonebene04 import *
+from level.dungeonebene05 import *
+from level.dungeonebene06 import *
 
 try:
     import winsound
@@ -61,11 +64,11 @@ class LoadingBalken(threading.Thread):
         threading.Thread.__init__ (self)
 
     def run(self):
-        for i in range(0, 90):
+        for i in range(0, 9):  # ACHTUNG ÄNDERN! auf 90 statt 9
             self.progressbar.step()
             time.sleep(0.05)
 
-        for i in range(0, 9):
+        for i in range(0, 1):  # ACHTUNG ÄNDERN AUF 9 statt 1
             self.progressbar.step()
             time.sleep(0.5)
 
@@ -326,7 +329,7 @@ class Hauptprogramm:
     def spielfeldzeigen(self, levelnr):
         self.spielfeld_fenster = Toplevel()
         self.spielfeld_fenster.focus_force()
-        self.spielfeld_fenster.title('Dungeon Game')
+        self.spielfeld_fenster.title('Dungeon Game - Level '+ str(levelnr))
         self.spielfeld_fenster.minsize(1088, 684)
         self.spielfeld_fenster.maxsize(1088, 684)
         w = 1088
@@ -352,12 +355,12 @@ class Hauptprogramm:
             self.d = Dungeonebene02(levelnr,self.held)
         elif levelnr==3:
             self.d = Dungeonebene03(levelnr,self.held)
-        #elif levelnr==4:
-            #self.d = Dungeonebene04(levelnr,self.held)
-        #elif levelnr==5:
-           #self.d = Dungeonebene05(levelnr,self.held)
-        #elif levelnr==6:
-            #self.d = Dungeonebene06(levelnr,self.held)
+        elif levelnr==4:
+            self.d = Dungeonebene04(levelnr,self.held)
+        elif levelnr==5:
+            self.d = Dungeonebene05(levelnr,self.held)
+        elif levelnr==6:
+            self.d = Dungeonebene06(levelnr,self.held)
 
         
         self.feldbild = list(range(self.d.getmaxx()))     # Anlegen eines Feldes, in dem alle Bilder des Dungeons (Wand, Boden) gespeichert sind
@@ -524,6 +527,26 @@ class Hauptprogramm:
         self.labelle.config(text='LE: '+str(self.held.getkampfwerte()[2])+'/'+str(self.held.getmaxle()))
         self.labelrs.config(text='RS: '+str(self.held.getruestung().getrs()))
 
+    def deathScreen(self):
+
+        self.death_fenster = Toplevel()
+        self.death_fenster.focus_force()
+        self.death_fenster.title('Dungeon Game - Du bist gestorben!')
+        self.death_fenster.minsize(1088, 567)
+        self.death_fenster.maxsize(1088, 567)
+        w = 1088
+        h = 567
+        ws = self.death_fenster.winfo_screenwidth()
+        hs = self.death_fenster.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.death_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        self.death_fenster.config(bg='darkgray')
+        bg = PhotoImage(file="gfx/deathScreen.gif")
+        bl = Label(self.death_fenster, image=bg)
+        bl.place(x=0, y=0, relwidth=1, relheight=1)
+        self.death_fenster.mainloop()
+
     def endScreen(self):
 
         self.end_fenster = Toplevel()
@@ -562,8 +585,7 @@ class Hauptprogramm:
         bg = PhotoImage(file="gfx/loadingScreen.gif")
         bl = Label(self.loading_fenster, image=bg)
         bl.place(x=0, y=0, relwidth=1, relheight=1)
-        #test = Label(master=self.loading_fenster, text="test text" )
-        #test.pack()
+
         progressbar = tkinter.ttk.Progressbar(master=self.loading_fenster, orient=HORIZONTAL, length=200, mode='determinate')
         progressbar.pack(side="bottom")
 
@@ -618,6 +640,7 @@ class Hauptprogramm:
 # wenn held.le > 0, dann held tot mit fenster
             if self.held.getle()<=0:
                 self.spielfeld_fenster.destroy()
+                self.deathScreen()
 # Heldtotschirm aufrufen              
             if self.d.getlevelende():
                 self.spielfeld_fenster.destroy()
@@ -644,6 +667,7 @@ class Hauptprogramm:
 # wenn held.le > 0, dann held tot mit fenster
             if self.held.getle()<=0:
                 self.spielfeld_fenster.destroy()
+                self.deathScreen()
 # Heldtotschirm aufrufen              
             if self.d.getlevelende():
                 self.spielfeld_fenster.destroy()
@@ -670,6 +694,7 @@ class Hauptprogramm:
 # wenn held.le > 0, dann held tot mit fenster
             if self.held.getle()<=0:
                 self.spielfeld_fenster.destroy()
+                self.deathScreen()
 # Heldtotschirm aufrufen              
             if self.d.getlevelende():
                 self.spielfeld_fenster.destroy()
@@ -696,6 +721,7 @@ class Hauptprogramm:
 # wenn held.le > 0, dann held tot mit fenster
             if self.held.getle()<=0:
                 self.spielfeld_fenster.destroy()
+                self.deathScreen()
 # Heldtotschirm aufrufen              
             if self.d.getlevelende():
                 self.spielfeld_fenster.destroy()

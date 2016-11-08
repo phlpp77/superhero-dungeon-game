@@ -1,2 +1,8 @@
-drücke w um vorwärts zu kommen
-du kannst gegen Monster auch sterben
+Drücke "w" um vorwärts zu kommen
+Du kannst gegen Monster auch sterben
+Kaufe die Vollversion, um noch mehr Level zu bekommen
+In der Vollversion sind mehr Helden enthalten
+Es gibt Fallen, die dich töten können
+Du kannst die Pfeiltasten und sowohl "wasd" zum spielen nutzen
+Flash ist schneller als die anderen Helden
+Spiderman hat eine höhere Chance an Fallen vorbeizukommen

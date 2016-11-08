@@ -16,6 +16,7 @@ __Dokumentation-Mapcreation__
 --Overlaydaten:
 0 - kein Overlay
 41 - kleiner Stein unten links
+51 - Fackel mittig
 61 - Schädel unten links
 
 

@@ -2,7 +2,6 @@ import time
 import threading
 from tkinter import *
 import tkinter.ttk
-import winsound
 from random import randint
 from helden.held import *               #Batman
 from helden.superman import *           #Superman
@@ -14,6 +13,11 @@ from level.dungeonebene import *
 from level.dungeonebene01 import *
 from level.dungeonebene02 import *
 from level.dungeonebene03 import *
+
+try:
+    import winsound
+except ImportError:
+    winsound = None
 
 
 # Flackern
@@ -44,7 +48,10 @@ class Flackern(GUIThread):
 class Musik(GUIThread):
     def run(self):
         while not self._stop:
-            winsound.PlaySound('music/sound.wav', winsound.SND_FILENAME)
+            if winsound:
+                winsound.PlaySound('music/sound.wav', winsound.SND_FILENAME)
+            else:
+                self.stop()
 
 
 class LoadingBalken(threading.Thread):
@@ -567,7 +574,7 @@ class Hauptprogramm:
         balken.start()
 
         tippslist = []
-        tippstxt = open("tipps/tipps.txt")
+        tippstxt = open("tipps/tipps.txt", "r", encoding="iso-8859-15")
         for line in tippstxt:
             tippslist.append(line)
         tippstxt.close()

@@ -11,5 +11,5 @@ class Ork1(Monster): #Handlanger
 
 class Joker(Monster): #Endboss
     def __init__(self):
-        Monster.__init__(self,10102, 'Joker',False,False,'gfxmnstr/joker.gif',(0,11,11,40,1,4,0,0,2,20,Noitem()))
+        Monster.__init__(self,10102, 'Joker',False,False,'gfxmnstr/joker.gif',(0,11,7,10,1,4,0,0,2,20,Noitem()))
 

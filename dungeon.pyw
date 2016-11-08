@@ -520,6 +520,26 @@ class Hauptprogramm:
         self.labelle.config(text='LE: '+str(self.held.getkampfwerte()[2])+'/'+str(self.held.getmaxle()))
         self.labelrs.config(text='RS: '+str(self.held.getruestung().getrs()))
 
+    def deathScreen(self):
+
+        self.death_fenster = Toplevel()
+        self.death_fenster.focus_force()
+        self.death_fenster.title('Dungeon Game - Du bist gestorben!')
+        self.death_fenster.minsize(1088, 567)
+        self.death_fenster.maxsize(1088, 567)
+        w = 1088
+        h = 567
+        ws = self.death_fenster.winfo_screenwidth()
+        hs = self.death_fenster.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.death_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        self.death_fenster.config(bg='darkgray')
+        bg = PhotoImage(file="gfx/deathScreen.gif")
+        bl = Label(self.death_fenster, image=bg)
+        bl.place(x=0, y=0, relwidth=1, relheight=1)
+        self.death_fenster.mainloop()
+
     def endScreen(self):
 
         self.end_fenster = Toplevel()
@@ -613,6 +633,7 @@ class Hauptprogramm:
 # wenn held.le > 0, dann held tot mit fenster
             if self.held.getle()<=0:
                 self.spielfeld_fenster.destroy()
+                self.deathScreen()
 # Heldtotschirm aufrufen              
             if self.d.getlevelende():
                 self.spielfeld_fenster.destroy()
@@ -639,6 +660,7 @@ class Hauptprogramm:
 # wenn held.le > 0, dann held tot mit fenster
             if self.held.getle()<=0:
                 self.spielfeld_fenster.destroy()
+                self.deathScreen()
 # Heldtotschirm aufrufen              
             if self.d.getlevelende():
                 self.spielfeld_fenster.destroy()
@@ -665,6 +687,7 @@ class Hauptprogramm:
 # wenn held.le > 0, dann held tot mit fenster
             if self.held.getle()<=0:
                 self.spielfeld_fenster.destroy()
+                self.deathScreen()
 # Heldtotschirm aufrufen              
             if self.d.getlevelende():
                 self.spielfeld_fenster.destroy()
@@ -691,6 +714,7 @@ class Hauptprogramm:
 # wenn held.le > 0, dann held tot mit fenster
             if self.held.getle()<=0:
                 self.spielfeld_fenster.destroy()
+                self.deathScreen()
 # Heldtotschirm aufrufen              
             if self.d.getlevelende():
                 self.spielfeld_fenster.destroy()

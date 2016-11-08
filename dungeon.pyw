@@ -2,8 +2,8 @@ import time
 import threading
 from tkinter import *
 import tkinter.ttk
-import platform
 import winsound
+from random import randint
 from helden.held import *               #Batman
 from helden.superman import *           #Superman
 from helden.spiderman import *          #Spiderman
@@ -103,7 +103,6 @@ class Hauptprogramm:
         
     def einspieler(self):
         self.heldenwahl()
-        print(platform.system())
 
         
         
@@ -567,7 +566,16 @@ class Hauptprogramm:
         balken.setDaemon(True)
         balken.start()
 
-        
+        tippslist = []
+        tippstxt = open("tipps/tipps.txt")
+        for line in tippstxt:
+            tippslist.append(line)
+        tippstxt.close()
+        tipps = Label(master=self.loading_fenster, text=tippslist[randint(0,len(tippslist)-1)],
+                                         padx=30, pady=10,
+                                         font=('Comic Sans MS',14),
+                                         fg='black', bg='white')
+        tipps.pack()
 
         self.loading_fenster.mainloop()
 

@@ -33,7 +33,7 @@ class Lichtschalter(Schalter):
 
     def ausloesen(self,dungeonebene):
         for i in self._felderliste:
-            dungeonebene.setlightmap(i[0],i[1],0.999)
+            dungeonebene.setlightmap(i[0],i[1],0.999)   #Felderkoordinaten die ausgeleuchtet werden. Bei 0 beginnend!!
         return dungeonebene
 
 

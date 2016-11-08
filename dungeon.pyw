@@ -1,7 +1,9 @@
 import time
 import threading
-from threading import Thread
 from tkinter import *
+import tkinter.ttk
+import winsound
+from random import randint
 from helden.held import *               #Batman
 from helden.superman import *           #Superman
 from helden.spiderman import *          #Spiderman
@@ -13,32 +15,70 @@ from level.dungeonebene01 import *
 from level.dungeonebene02 import *
 from level.dungeonebene03 import *
 
-#Flackern
 
-class Flackern(threading.Thread):
+# Flackern
+
+class GUIThread(threading.Thread):
     def __init__(self, fenster):
         self.fenster = fenster
         self._stop = False
         threading.Thread.__init__ (self)
 
     def run(self):
-         while not self._stop:
-            time.sleep(0.2)
-            self.fenster.wm_attributes('-alpha', 0.25)
-            time.sleep(0.2)
-            #print("Flacker!" + str(threading.get_ident()))
-            self.fenster.wm_attributes('-alpha', 1)
+        pass
 
     def stop(self):
         self._stop = True
+
+
+class Flackern(GUIThread):
+    def run(self):
+          while not self._stop:
+            time.sleep(0.2)
+            self.fenster.wm_attributes('-alpha', 0.25)
+            time.sleep(0.2)
+            # print("Flacker!" + str(threading.get_ident()))
+            self.fenster.wm_attributes('-alpha', 1)
+
+
+class Musik(GUIThread):
+    def run(self):
+        while not self._stop:
+            winsound.PlaySound('music/sound.wav', winsound.SND_FILENAME)
+
+
+class LoadingBalken(threading.Thread):
+    def __init__(self, progressbar, button):
+        self.progressbar = progressbar
+        self.button = button
+        threading.Thread.__init__ (self)
+
+    def run(self):
+        for i in range(0, 90):
+            self.progressbar.step()
+            time.sleep(0.05)
+
+        for i in range(0, 9):
+            self.progressbar.step()
+            time.sleep(0.5)
+
+        self.button.pack(side=BOTTOM, anchor=E, padx=30, pady=30)
+
 
 class Hauptprogramm:
     
     def __init__(self):
         self.fenster = Tk()
         self.fenster.title('Dungeon Game')
-        self.fenster.minsize(600,220)
-        self.fenster.maxsize(600,220)
+        self.fenster.minsize(600, 220)
+        self.fenster.maxsize(600, 220)
+        w = 600
+        h = 220
+        ws = self.fenster.winfo_screenwidth()
+        hs = self.fenster.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))     # Fenster mittig anordnen
         background_image = PhotoImage(file="gfx/bg.gif")
         background_label = Label(self.fenster, image=background_image)
         background_label.place(x=0, y=0, relwidth=1, relheight=1)
@@ -74,6 +114,13 @@ class Hauptprogramm:
         self.heldenwahl_fenster.title('Dungeon Game')
         self.heldenwahl_fenster.minsize(600,320)
         self.heldenwahl_fenster.maxsize(600,320)
+        w = 600
+        h = 320
+        ws = self.heldenwahl_fenster.winfo_screenwidth()
+        hs = self.heldenwahl_fenster.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.heldenwahl_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.heldenwahl_fenster.config(bg='darkgray')
     
         self.label = Label(master=self.heldenwahl_fenster,
@@ -146,7 +193,7 @@ class Hauptprogramm:
     def aktualisiere_beschreibung(self):
         self.beschreibung.delete(1.0,END)
         dateiname = os.path.join("helden", self.auswahl.get()+'.txt')
-        daten=open(dateiname,'r')
+        daten=open(dateiname, "r", encoding="iso-8859-15")
         textdaten=daten.read()
         daten.close
         self.beschreibung.insert(1.0,textdaten)        
@@ -174,6 +221,13 @@ class Hauptprogramm:
         self.heldbenennen_fenster.title('Dungeon Game')
         self.heldbenennen_fenster.minsize(220,220)
         self.heldbenennen_fenster.maxsize(220,220)
+        w = 220
+        h = 220
+        ws = self.heldbenennen_fenster.winfo_screenwidth()
+        hs = self.heldbenennen_fenster.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.heldbenennen_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.heldbenennen_fenster.config(bg='darkgray')
     
         self.label = Label(master=self.heldbenennen_fenster,
@@ -231,6 +285,13 @@ class Hauptprogramm:
         self.held_fenster.title('Dungeon Game')
         self.held_fenster.minsize(220,220)
         self.held_fenster.maxsize(220,220)
+        w = 220
+        h = 220
+        ws = self.held_fenster.winfo_screenwidth()
+        hs = self.held_fenster.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.held_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.held_fenster.config(bg='darkgray')
         bg_image = PhotoImage(file=self.held.getbild())
         bg_label = Label(self.held_fenster, image=bg_image)
@@ -255,13 +316,24 @@ class Hauptprogramm:
         
 # Spielfeld anzeigen
 
-    def spielfeldzeigen(self,levelnr):
+    def spielfeldzeigen(self, levelnr):
         self.spielfeld_fenster = Toplevel()
         self.spielfeld_fenster.focus_force()
         self.spielfeld_fenster.title('Dungeon Game')
-        self.spielfeld_fenster.minsize(1088,684)
-        self.spielfeld_fenster.maxsize(1088,684)
+        self.spielfeld_fenster.minsize(1088, 684)
+        self.spielfeld_fenster.maxsize(1088, 684)
+        w = 1088
+        h = 684
+        ws = self.spielfeld_fenster.winfo_screenwidth()
+        hs = self.spielfeld_fenster.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.spielfeld_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.spielfeld_fenster.config(bg='darkgray')
+
+        self.music = Musik(self.fenster)
+        self.music.setDaemon(True)
+        self.music.start()
 
         self.canvas = Canvas(master=self.spielfeld_fenster, width=1088,
                              height=576)
@@ -269,15 +341,15 @@ class Hauptprogramm:
 
         if levelnr==1:                                  # laden des Levels nach Nummer
             self.d = Dungeonebene01(levelnr,self.held)
-        if levelnr==2:
+        elif levelnr==2:
             self.d = Dungeonebene02(levelnr,self.held)
-        if levelnr==3:
+        elif levelnr==3:
             self.d = Dungeonebene03(levelnr,self.held)
-        #if levelnr==4:
+        #elif levelnr==4:
             #self.d = Dungeonebene04(levelnr,self.held)
-        #if levelnr==5:
+        #elif levelnr==5:
            #self.d = Dungeonebene05(levelnr,self.held)
-        #if levelnr==6:
+        #elif levelnr==6:
             #self.d = Dungeonebene06(levelnr,self.held)
 
         
@@ -299,10 +371,10 @@ class Hauptprogramm:
         self.lightmap_aktualisieren()
         self.heldenstats_zeichnen()
         
-        self.spielfeld_fenster.bind('<KeyPress-Left>',self.links)
-        self.spielfeld_fenster.bind('<KeyPress-Right>',self.rechts)
-        self.spielfeld_fenster.bind('<KeyPress-Up>',self.hoch)
-        self.spielfeld_fenster.bind('<KeyPress-Down>',self.runter)
+        self.spielfeld_fenster.bind('<KeyPress-Left>', self.links)
+        self.spielfeld_fenster.bind('<KeyPress-Right>', self.rechts)
+        self.spielfeld_fenster.bind('<KeyPress-Up>', self.hoch)
+        self.spielfeld_fenster.bind('<KeyPress-Down>', self.runter)
         self.spielfeld_fenster.bind('<KeyPress-a>', self.links)
         self.spielfeld_fenster.bind('<KeyPress-d>', self.rechts)
         self.spielfeld_fenster.bind('<KeyPress-w>', self.hoch)
@@ -341,7 +413,7 @@ class Hauptprogramm:
                     self.fogbild[x][y].config(file='gfx/blank.gif')
         self.heldenbild.config(file=self.held.getbild())  #Held zeichnen
 
-    def canvas_aktualisieren(self,x,y):
+    def canvas_aktualisieren(self, x, y):
         for i in self.d.getschalter(x,y).getfelderliste():
                 self.feldbild[i[0]][i[1]].config(file=self.d.getbild(i[0],i[1]))
                 self.overlaybild[i[0]][i[1]].config(file=self.d.getoverlaybild(i[0],i[1]))
@@ -452,6 +524,13 @@ class Hauptprogramm:
         self.end_fenster.title('Dungeon Game - Du hast gewonnen!')
         self.end_fenster.minsize(1088, 567)
         self.end_fenster.maxsize(1088, 567)
+        w = 1088
+        h = 567
+        ws = self.end_fenster.winfo_screenwidth()
+        hs = self.end_fenster.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.end_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.end_fenster.config(bg='darkgray')
         bg = PhotoImage(file="gfx/endScreen.gif")
         bl = Label(self.end_fenster, image=bg)
@@ -465,25 +544,63 @@ class Hauptprogramm:
         self.loading_fenster.title('Dungeon Game - loading...')
         self.loading_fenster.minsize(1088, 567)
         self.loading_fenster.maxsize(1088, 567)
+        w = 1088
+        h = 567
+        ws = self.loading_fenster.winfo_screenwidth()
+        hs = self.loading_fenster.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.loading_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.loading_fenster.config(bg='darkgray')
         bg = PhotoImage(file="gfx/loadingScreen.gif")
         bl = Label(self.loading_fenster, image=bg)
         bl.place(x=0, y=0, relwidth=1, relheight=1)
-        self.w_button = Button(master=self.loading_fenster, text='weiter', command=self.loading_beenden, bg='white')
-        self.w_button.pack(side=BOTTOM, anchor=E, padx=30, pady=30)
+        #test = Label(master=self.loading_fenster, text="test text" )
+        #test.pack()
+        progressbar = tkinter.ttk.Progressbar(master=self.loading_fenster, orient=HORIZONTAL, length=200, mode='determinate')
+        progressbar.pack(side="bottom")
+
+        w_button = Button(master=self.loading_fenster, text='weiter', command=self.loading_beenden, bg='white')
+
+        balken = LoadingBalken(progressbar, w_button)
+        balken.setDaemon(True)
+        balken.start()
+
+        tippslist = []
+        tippstxt = open("tipps/tipps.txt")
+        for line in tippstxt:
+            tippslist.append(line)
+        tippstxt.close()
+        tipps = Label(master=self.loading_fenster, text=tippslist[randint(0,len(tippslist)-1)],
+                                         padx=30, pady=10,
+                                         font=('Comic Sans MS',14),
+                                         fg='black', bg='white')
+        tipps.pack()
+
         self.loading_fenster.mainloop()
 
     def loading_beenden(self):
-
-        time.sleep(10)
         self.loading_fenster.destroy()
         self.spielfeldzeigen(self.d.getlevelnr() + 1)
 
-    def links(self,event):
+    def bildrichtung_aktualisieren(self, direction):
+        if direction == 1:
+            self.held.setbild(os.path.join("gfxhelden", self.held.gettypname()+"W.gif"))
+        elif direction == 2:
+            self.held.setbild(os.path.join("gfxhelden", self.held.gettypname()+"D.gif"))
+        elif direction == 3:
+            self.held.setbild(os.path.join("gfxhelden", self.held.gettypname()+"A.gif"))
+        elif direction == 4:
+            self.held.setbild(os.path.join("gfxhelden", self.held.gettypname()+".gif"))
+        self.heldenbild.config(file=self.held.getbild())
+
+    def links(self, event):
+        self.held.rennen(self.held.getheldentyp())
+        self.bildrichtung_aktualisieren(3)
         if (self.held.getx()>0):
             self.d = self.d.getschalter(self.held.getx()-1,self.held.gety()).ausloesen(self.d)
             if self.d.getschalter(self.held.getx()-1,self.held.gety()).getschaltertyp()!=0:
-                self.canvas_aktualisieren(self.held.getx()-1,self.held.gety())
+                self.canvas_aktualisieren(self.held.getx()-1, self.held.gety())
             self.held = self.d.getfeld(self.held.getx()-1,self.held.gety()).betreten(self.held)
             self.itembild[self.held.getx()-1][self.held.gety()].config(file=self.d.getfeld(self.held.getx()-1,self.held.gety()).getitembild())
             if (self.d.getbegehbar(self.held.getx()-1,self.held.gety())):
@@ -497,16 +614,19 @@ class Hauptprogramm:
 # Heldtotschirm aufrufen              
             if self.d.getlevelende():
                 self.spielfeld_fenster.destroy()
-                self.spielfeldzeigen(self.d.getlevelnr()+1)
+                self.loadingScreen()
             if self.d.getspielende():
-                 self.spielfeld_fenster.destroy()
+                self.spielfeld_fenster.destroy()
+                self.endScreen()
 # Spielendschirm aufrufen                    
             
     def rechts(self,event):
+        self.held.rennen(self.held.getheldentyp())
+        self.bildrichtung_aktualisieren(2)
         if (self.held.getx()<self.d.getmaxx()):
             self.d = self.d.getschalter(self.held.getx()+1,self.held.gety()).ausloesen(self.d)
             if self.d.getschalter(self.held.getx()+1,self.held.gety()).getschaltertyp()!=0:
-                self.canvas_aktualisieren(self.held.getx()+1,self.held.gety())
+                self.canvas_aktualisieren(self.held.getx()+1, self.held.gety())
             self.held = self.d.getfeld(self.held.getx()+1,self.held.gety()).betreten(self.held)
             self.itembild[self.held.getx()+1][self.held.gety()].config(file=self.d.getfeld(self.held.getx()+1,self.held.gety()).getitembild())
             if (self.d.getbegehbar(self.held.getx()+1,self.held.gety())):
@@ -527,6 +647,8 @@ class Hauptprogramm:
 # Spielendschirm aufrufen
                     
     def hoch(self,event):
+        self.held.rennen(self.held.getheldentyp())
+        self.bildrichtung_aktualisieren(1)
         if (self.held.gety()>0):
             self.d = self.d.getschalter(self.held.getx(),self.held.gety()-1).ausloesen(self.d)
             if self.d.getschalter(self.held.getx(),self.held.gety()-1).getschaltertyp()!=0:
@@ -544,19 +666,22 @@ class Hauptprogramm:
 # Heldtotschirm aufrufen              
             if self.d.getlevelende():
                 self.spielfeld_fenster.destroy()
-                self.spielfeldzeigen(self.d.getlevelnr()+1)                
+                self.loadingScreen()
             if self.d.getspielende():
                 self.spielfeld_fenster.destroy()
+                self.endScreen()
 # Spielendschirm aufrufen                    
             
     def runter(self,event):
-        if (self.held.gety()<self.d.getmaxy()):
+        self.held.rennen(self.held.getheldentyp())
+        self.bildrichtung_aktualisieren(4)
+        if self.held.gety()<self.d.getmaxy():
             self.d = self.d.getschalter(self.held.getx(),self.held.gety()+1).ausloesen(self.d)            
             if self.d.getschalter(self.held.getx(),self.held.gety()+1).getschaltertyp()!=0:
                 self.canvas_aktualisieren(self.held.getx(),self.held.gety()+1)
             self.held = self.d.getfeld(self.held.getx(),self.held.gety()+1).betreten(self.held)
             self.itembild[self.held.getx()][self.held.gety()+1].config(file=self.d.getfeld(self.held.getx(),self.held.gety()+1).getitembild())
-            if (self.d.getbegehbar(self.held.getx(),self.held.gety()+1)):
+            if self.d.getbegehbar(self.held.getx() ,self.held.gety()+1):
                 self.canvas.move(self.heldid,0,64)
                 self.held.sety(self.held.gety()+1)
             self.lightmap_aktualisieren()
@@ -567,9 +692,10 @@ class Hauptprogramm:
 # Heldtotschirm aufrufen              
             if self.d.getlevelende():
                 self.spielfeld_fenster.destroy()
-                self.spielfeldzeigen(self.d.getlevelnr()+1)
+                self.loadingScreen()
             if self.d.getspielende():
                 self.spielfeld_fenster.destroy()
+                self.endScreen()
 # Spielendschirm aufrufen
 
 # Spiel

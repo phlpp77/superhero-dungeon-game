@@ -11,6 +11,7 @@ class Spiderman(Held):
         self._kampfwerte = [8,12,25]                                   # AT PA LeP
         self._maxle=self._kampfwerte[2]                                # LeP-Maximum
         self._bild = 'gfxhelden/Spiderman.gif'
+        self._anzeigeBild = 'gfxhelden/Spiderman0.gif'
         self._lichtradius = 2.0
         self._itemliste = [Kurzschwert(),Wattierterwaffenrock()]       # leere Liste, in der alle Items gespeichert sind
         self._waffe = self._itemliste[0]                               # Waffe

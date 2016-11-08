@@ -1,5 +1,6 @@
 from math import *
 from items import *
+import time
 
 class Held:
 
@@ -12,6 +13,7 @@ class Held:
         self._kampfwerte = [11,11,8000]                         # AT PA LeP
         self._maxle=self._kampfwerte[2]                         # LeP-Maximum
         self._bild = 'gfxhelden/Batman.gif'
+        self._anzeigeBild = 'gfxhelden/Batman0.gif'
         self._x=0
         self._y=0
         self._lichtradius = 1.0
@@ -23,7 +25,7 @@ class Held:
     def getheldenname(self):
         return self._heldenname
 
-    def setheldenname(self,name):
+    def setheldenname(self, name):
         self._heldenname = str(name)
 
     def getgeschlecht(self):
@@ -71,11 +73,17 @@ class Held:
     def getruestung(self):
         return self._ruestung
 
-    def setruestung(self,ruestung):
+    def setruestung(self, ruestung):
         self._ruestung = ruestung
 
     def getbild(self):
         return self._bild
+
+    def setbild(self, bild):
+        self._bild = bild
+
+    def getanzeigeBild(self):
+        return self._anzeigeBild
 
     def getx(self):
         return self._x
@@ -133,3 +141,7 @@ class Held:
         self._kampfwerte[2] = self._kampfwerte[2]+ int( sp*(self._eigenschaften[4]+self._eigenschaften[6])/40 )
         if self._kampfwerte[2]>self._maxle:
             self._kampfwerte[2]=self.maxle
+
+    def rennen(self, heldentyp):
+        if heldentyp != 5:
+            time.sleep(0.1)

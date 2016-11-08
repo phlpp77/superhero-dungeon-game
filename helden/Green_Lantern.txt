@@ -1,6 +1,6 @@
 Green Lantern kann sich selber heilen.
 
 Kampf			schlecht
-Türen öfnnen		mittel
-Fallen überwinden	mittel
+Türen öffnen			mittel
+Fallen überwinden			mittel
 Heilen			gut

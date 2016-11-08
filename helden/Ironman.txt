@@ -1,6 +1,6 @@
 Ironman hat eine sehr hohe Sichtweite.
 
 Kampf			mittel
-Türen öfnnen		gut
-Fallen überwinden	mittel
+Türen öffnen			gut
+Fallen überwinden			mittel
 Heilen			schlecht

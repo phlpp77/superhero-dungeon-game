@@ -1,6 +1,6 @@
 Batman ist in allem durchschnittlich
 
 Kampf			mittel
-Türen öfnnen		mittel
-Fallen überwinden	mittel
+Türen öffnen			mittel
+Fallen überwinden                    mittel
 Heilen			mittet

@@ -322,7 +322,7 @@ class Hauptprogramm:
     def spielfeldzeigen(self, levelnr):
         self.spielfeld_fenster = Toplevel()
         self.spielfeld_fenster.focus_force()
-        self.spielfeld_fenster.title('Dungeon Game')
+        self.spielfeld_fenster.title('Dungeon Game - Level '+ str(levelnr))
         self.spielfeld_fenster.minsize(1088, 684)
         self.spielfeld_fenster.maxsize(1088, 684)
         w = 1088

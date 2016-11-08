@@ -10,7 +10,7 @@ class Held:
         self._geschlecht = 0                                    # 0 maennlich; 1 weiblich
         self._typname = 'Batman'                                # Typ des Helden
         self._eigenschaften = [11,11,10,11,10,11,10,10]         # MU KL CH IN FF GE KO KK
-        self._kampfwerte = [11,11,8000]                         # AT PA LeP
+        self._kampfwerte = [11,11,165]                         # AT PA LeP
         self._maxle=self._kampfwerte[2]                         # LeP-Maximum
         self._bild = 'gfxhelden/Batman.gif'
         self._anzeigeBild = 'gfxhelden/Batman0.gif'

@@ -95,19 +95,11 @@ class Hauptprogramm:
         self.parallel = Flackern(self.fenster)
         self.parallel.setDaemon(True)
         self.parallel.start()
-    
-        self.label = Label(master=self.fenster,
-                                         text='Dungeon Game',
-                                         padx=30, pady=10,
-                                         font=('Comic Sans MS',14),
-                                         fg='red', bg='white')
+
         self.fenster.wm_attributes('-alpha', 0.5)
-#        self.fenster.wm_attributes('-transparentcolor', 'white')
-        self.neuesspiel_button = Button(master=self.fenster,text='Neues Spiel',
-                                        command=self.einspieler,bg='white')
-        
-        self.label.pack()
-        self.neuesspiel_button.pack()
+        self.neuesspiel_button = Button(master=self.fenster,text='START',
+                                        command=self.einspieler,fg='white', bg='RED')
+        self.neuesspiel_button.pack(side=BOTTOM, anchor=E,pady=54, padx=250)
         self.fenster.mainloop()
 
         

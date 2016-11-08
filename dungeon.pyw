@@ -14,6 +14,9 @@ from level.dungeonebene import *
 from level.dungeonebene01 import *
 from level.dungeonebene02 import *
 from level.dungeonebene03 import *
+from level.dungeonebene04 import *
+from level.dungeonebene05 import *
+from level.dungeonebene06 import *
 
 
 # Flackern
@@ -54,11 +57,11 @@ class LoadingBalken(threading.Thread):
         threading.Thread.__init__ (self)
 
     def run(self):
-        for i in range(0, 90):
+        for i in range(0, 9):  # ACHTUNG ÄNDERN! auf 90 statt 9
             self.progressbar.step()
             time.sleep(0.05)
 
-        for i in range(0, 9):
+        for i in range(0, 1):  # ACHTUNG ÄNDERN AUF 9 statt 1
             self.progressbar.step()
             time.sleep(0.5)
 
@@ -555,8 +558,7 @@ class Hauptprogramm:
         bg = PhotoImage(file="gfx/loadingScreen.gif")
         bl = Label(self.loading_fenster, image=bg)
         bl.place(x=0, y=0, relwidth=1, relheight=1)
-        #test = Label(master=self.loading_fenster, text="test text" )
-        #test.pack()
+
         progressbar = tkinter.ttk.Progressbar(master=self.loading_fenster, orient=HORIZONTAL, length=200, mode='determinate')
         progressbar.pack(side="bottom")
 

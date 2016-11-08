@@ -43,6 +43,8 @@ class Feld:
             self._item = Ork1()
         elif itemtyp==20101:    # Falle
             self._item = Steinschlagfalle()
+        elif itemtyp==30101:
+            self._item = Todesfalle()
 
         if schaltertyp[0]==0:
             self._schalter = Noschalter(schaltertyp[1])

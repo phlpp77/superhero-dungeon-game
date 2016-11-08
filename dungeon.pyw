@@ -64,11 +64,11 @@ class LoadingBalken(threading.Thread):
         threading.Thread.__init__ (self)
 
     def run(self):
-        for i in range(0, 9):  # ACHTUNG ÄNDERN! auf 90 statt 9
+        for i in range(0, 90):
             self.progressbar.step()
             time.sleep(0.05)
 
-        for i in range(0, 1):  # ACHTUNG ÄNDERN AUF 9 statt 1
+        for i in range(0, 9):
             self.progressbar.step()
             time.sleep(0.5)
 

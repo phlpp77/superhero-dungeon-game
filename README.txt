@@ -37,8 +37,10 @@ __Dokumentation-Mapcreation__
 911 - Treppe
 
 10101 - Ork
+20101 - Joker (Endboss)
 
 20101 - Steinschlagfalle
+30101 - Todesfalle
 
 
 --Schalterdaten:

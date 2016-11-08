@@ -77,16 +77,16 @@ class Hauptprogramm:
     def __init__(self):
         self.fenster = Tk()
         self.fenster.title('Dungeon Game')
-        self.fenster.minsize(600, 220)
-        self.fenster.maxsize(600, 220)
-        w = 600
-        h = 220
+        self.fenster.minsize(1088, 567)
+        self.fenster.maxsize(1088, 567)
+        w = 1088
+        h = 567
         ws = self.fenster.winfo_screenwidth()
         hs = self.fenster.winfo_screenheight()
         x = (ws / 2) - (w / 2)
         y = (hs / 2) - (h / 2)
         self.fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))     # Fenster mittig anordnen
-        background_image = PhotoImage(file="gfx/bg.gif")
+        background_image = PhotoImage(file="gfx/titlescreen.gif")
         background_label = Label(self.fenster, image=background_image)
         background_label.place(x=0, y=0, relwidth=1, relheight=1)
         self.parallel = Flackern(self.fenster)

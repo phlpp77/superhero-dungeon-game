@@ -543,7 +543,7 @@ class Hauptprogramm:
 
         self.end_fenster = Toplevel()
         self.end_fenster.focus_force()
-        self.end_fenster.title('Dungeon Game - Du hast gewonnen!')
+        self.end_fenster.title('Dungeon Game - Vollversion kaufen!')
         self.end_fenster.minsize(1088, 567)
         self.end_fenster.maxsize(1088, 567)
         w = 1088

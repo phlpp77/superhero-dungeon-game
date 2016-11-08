@@ -1,6 +1,6 @@
 Spider man ist geschickt darin Fallen zu überwinden.
 
 Kampf			mittel
-Türen öfnnen		mittel
-Fallen überwinden	gut
+Türen öffnen			mittel
+Fallen überwinden			gut
 Heilen			mittel

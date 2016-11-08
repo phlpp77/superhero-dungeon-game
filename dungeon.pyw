@@ -345,12 +345,12 @@ class Hauptprogramm:
             self.d = Dungeonebene02(levelnr,self.held)
         elif levelnr==3:
             self.d = Dungeonebene03(levelnr,self.held)
-        #elif levelnr==4:
-            #self.d = Dungeonebene04(levelnr,self.held)
-        #elif levelnr==5:
-           #self.d = Dungeonebene05(levelnr,self.held)
-        #elif levelnr==6:
-            #self.d = Dungeonebene06(levelnr,self.held)
+        elif levelnr==4:
+            self.d = Dungeonebene04(levelnr,self.held)
+        elif levelnr==5:
+            self.d = Dungeonebene05(levelnr,self.held)
+        elif levelnr==6:
+            self.d = Dungeonebene06(levelnr,self.held)
 
         
         self.feldbild = list(range(self.d.getmaxx()))     # Anlegen eines Feldes, in dem alle Bilder des Dungeons (Wand, Boden) gespeichert sind

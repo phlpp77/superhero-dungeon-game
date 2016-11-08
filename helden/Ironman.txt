@@ -1,6 +1,6 @@
-Der Dieb ist äußerst geschickt aber im Kampf sehr schwach.
+Ironman hat eine sehr hohe Sichtweite.
 
-Kampf			schlecht
+Kampf			mittel
 Türen öfnnen		gut
-Fallen überwinden		gut
+Fallen überwinden	mittel
 Heilen			schlecht

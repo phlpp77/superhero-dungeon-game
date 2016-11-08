@@ -1,6 +1,6 @@
 from level.dungeonebene import *
 
-class Dungeonebene01(Dungeonebene):
+class Dungeonebene03(Dungeonebene):
 
     def __init__(self,nr,held):
         self._nr = nr

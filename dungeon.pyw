@@ -1,14 +1,13 @@
-import time
 import threading
 from tkinter import *
 import tkinter.ttk
 from random import randint
-from helden.held import *               #Batman
-from helden.superman import *           #Superman
-from helden.spiderman import *          #Spiderman
-from helden.ironman import *            #Ironman
-from helden.green_lantern import *      #Green Lantern
-from helden.flash import *              #Flash
+from helden.batman import *             # Batman
+from helden.superman import *           # Superman
+from helden.spiderman import *          # Spiderman
+from helden.ironman import *            # Ironman
+from helden.green_lantern import *      # Green Lantern
+from helden.flash import *              # Flash
 from level.dungeonebene01 import *
 from level.dungeonebene02 import *
 from level.dungeonebene03 import *

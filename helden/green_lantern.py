@@ -6,7 +6,7 @@ class Green_Lantern(Held):
     def __init__(self,name):
         Held.__init__(self,name)
         self._heldentyp = 4
-        self._typname = 'Green Lantern'                      # Typ des Helden
+        self._typname = 'Green_Lantern'                      # Typ des Helden
         self._eigenschaften = [9,13,10,13,12,11,13,9] # MU KL CH IN FF GE KO KK
         self._kampfwerte = [14,10,90]                 # AT PA LeP
         self._maxle=self._kampfwerte[2]                  # LeP-Maximum        

@@ -198,7 +198,8 @@ class Heldenwahl:
         daten.close()
         self.beschreibung.insert(1.0, textdaten)
 
-    def heldenwahl_beenden(self):                      # TODO shadowsname from outer.. googeln
+    def heldenwahl_beenden(self):
+        global held
         if self.auswahl.get() == 'Batman':
             held = Batman('Bitte Name eingeben')
         elif self.auswahl.get() == 'Superman':
@@ -213,12 +214,12 @@ class Heldenwahl:
             held = Flash('Bitte Name eingeben')
         self.heldenwahl_fenster.destroy()
         print("heldbennen")
-        HeldBenennen(held)
+        HeldBenennen()
 
 
 class HeldBenennen:
 
-    def __init__(self, held):
+    def __init__(self):
         self.heldbenennen_fenster = Toplevel()
         self.heldbenennen_fenster.title('Dungeon Game')
         self.heldbenennen_fenster.minsize(220, 220)
@@ -254,7 +255,7 @@ class HeldBenennen:
                                     variable=self.auswahlgeschlecht)
         self.maennlich.select()
         self.weiter_button = Button(master=self.heldbenennen_fenster, text='weiter',
-                                    command=lambda: self.heldbenennen_beenden(held), bg='darkgray')
+                                    command=self.heldbenennen_beenden, bg='darkgray')
         self.zurueck_button = Button(master=self.heldbenennen_fenster, text='zurück',
                                      command=self.heldenwahl_neustart, bg='darkgray')
 
@@ -271,19 +272,19 @@ class HeldBenennen:
         self.heldbenennen_fenster.destroy()
         Heldenwahl()
 
-    def heldbenennen_beenden(self, held):
+    def heldbenennen_beenden(self):
         if self.eingabefeld.get() == "Bitte Name eingeben":
             held.setheldenname("Namenloser")
         else:
             held.setheldenname(self.eingabefeld.get())
         held.setgeschlecht(self.auswahlgeschlecht.get())
         self.heldbenennen_fenster.destroy()
-        Heldenzeigen(held)
+        Heldenzeigen()
 
 
 class Heldenzeigen:
 
-    def __init__(self, held):
+    def __init__(self):
         self.held_fenster = Toplevel()
         self.held_fenster.title('Dungeon Game')
         self.held_fenster.minsize(220, 220)
@@ -300,7 +301,7 @@ class Heldenzeigen:
         bg_label = Label(self.held_fenster, image=bg_image)
         bg_label.place(x=0, y=0, relwidth=1, relheight=1)
         self.weiter_button = Button(master=self.held_fenster, text='weiter',
-                                    command=lambda: self.heldenzeigen_beenden(held), bg='darkgray')
+                                    command=self.heldenzeigen_beenden, bg='darkgray')
         self.zurueck_button = Button(master=self.held_fenster, text='zurück',
                                      command=self.wahl_neustart, bg='darkgray')
         self.weiter_button.pack(side=BOTTOM, padx=30, pady=5, fill=X)
@@ -311,7 +312,7 @@ class Heldenzeigen:
         self.held_fenster.destroy()
         Heldenwahl()
 
-    def heldenzeigen_beenden(self, held):
+    def heldenzeigen_beenden(self):
         self.held_fenster.destroy()
         Spielfeldanzeigen(1, held)
 
@@ -344,127 +345,6 @@ class Spielfeldanzeigen:
         global held
         held = heldget
 
-        if levelnr == 1:  # laden des Levels nach Nummer
-            self.d = Dungeonebene01(levelnr, held)
-        elif levelnr == 2:
-            self.d = Dungeonebene02(levelnr, held)
-        elif levelnr == 3:
-            self.d = Dungeonebene03(levelnr, held)
-        elif levelnr == 4:
-            self.d = Dungeonebene04(levelnr, held)
-        elif levelnr == 5:
-            self.d = Dungeonebene05(levelnr, held)
-        elif levelnr == 6:
-            self.d = Dungeonebene06(levelnr, held)
-
-        self.feldbild = list(range(
-            self.d.getmaxx()))  # Anlegen eines Feldes, in dem alle Bilder des Dungeons (Wand, Boden) gespeichert sind
-        for i in range(self.d.getmaxx()):
-            self.feldbild[i] = list(range(self.d.getmaxy()))
-        self.overlaybild = list(
-            range(self.d.getmaxx()))  # Anlegen eines Feldes, in dem alle Bilder der Overlays gespeichert sind
-        for i in range(self.d.getmaxx()):
-            self.overlaybild[i] = list(range(self.d.getmaxy()))
-        self.itembild = list(
-            range(self.d.getmaxx()))  # Anlegen eines Feldes, in dem alle Bilder der Items gespeichert sind
-        for i in range(self.d.getmaxx()):
-            self.itembild[i] = list(range(self.d.getmaxy()))
-        self.fogbild = list(range(
-            self.d.getmaxx()))  # Anlegen eines Feldes, in dem alle Bilder des Fogs gespeichert sind:
-        # alle Bilder sind schwarz, werden dann beim Beleuchten per Held oder Schalter gelöscht
-        for i in range(self.d.getmaxx()):
-            self.fogbild[i] = list(range(self.d.getmaxy()))
-
-        self.canvas_zeichnen()
-        self.lightmap_aktualisieren()
-        self.heldenstats_zeichnen()
-
-        self.spielfeld_fenster.bind('<KeyPress-Left>', self.links)
-        self.spielfeld_fenster.bind('<KeyPress-Right>', self.rechts)
-        self.spielfeld_fenster.bind('<KeyPress-Up>', self.hoch)
-        self.spielfeld_fenster.bind('<KeyPress-Down>', self.runter)
-        self.spielfeld_fenster.bind('<KeyPress-a>', self.links)
-        self.spielfeld_fenster.bind('<KeyPress-d>', self.rechts)
-        self.spielfeld_fenster.bind('<KeyPress-w>', self.hoch)
-        self.spielfeld_fenster.bind('<KeyPress-s>', self.runter)
-        self.spielfeld_fenster.focus_set()
-        self.spielfeld_fenster.mainloop()
-
-    def canvas_zeichnen(self):
-        for x in range(self.d.getmaxx()):
-            for y in range(self.d.getmaxy()):
-                self.feldbild[x][y] = PhotoImage(file=self.d.getbild(x, y), gamma=self.d.getlightmap(x, y))
-                self.canvas.create_image(64 * x + 2, 64 * y + 2, anchor=NW,
-                                         image=self.feldbild[x][y])
-                self.overlaybild[x][y] = PhotoImage(file=self.d.getoverlaybild(x, y), gamma=self.d.getlightmap(x, y))
-                self.canvas.create_image(64 * x + 2, 64 * y + 2, anchor=NW,
-                                         image=self.overlaybild[x][y])
-                self.itembild[x][y] = PhotoImage(file=self.d.getitembild(x, y), gamma=self.d.getlightmap(x, y))
-                self.canvas.create_image(64 * x + 2, 64 * y + 2, anchor=NW,
-                                         image=self.itembild[x][y])
-                self.fogbild[x][y] = PhotoImage(file='gfx/fog.gif', gamma=self.d.getlightmap(x, y))
-                self.canvas.create_image(64 * x + 2, 64 * y + 2, anchor=NW,
-                                         image=self.fogbild[x][y])
-        global heldenbild
-        heldenbild = PhotoImage(file=held.getbild())  # Held zeichnen
-        global heldid
-        heldid = self.canvas.create_image(64 * held.getx() + 2, 64 * held.gety() + 2, anchor=NW,
-                                          image=heldenbild)
-
-    # def canvas_aktualisieren(self, heldenbild):  # alte Version - nicht benutzt
-    #     for x in range(self.d.getmaxx()):
-    #         for y in range(self.d.getmaxy()):
-    #             self.feldbild[x][y].config(file=self.d.getbild(x, y))
-    #             self.overlaybild[x][y].config(file=self.d.getoverlaybild(x, y))
-    #             self.itembild[x][y].config(file=self.d.getitembild(x, y))
-    #             if self.d.getfog(x, y):
-    #                 self.fogbild[x][y].config(file='gfx/fog.gif')
-    #             else:
-    #                 self.fogbild[x][y].config(file='gfx/blank.gif')
-    #     heldenbild.config(file=self.held.getbild())  # Held zeichnen
-
-    def canvas_aktualisieren(self, x, y):
-        for i in self.d.getschalter(x, y).getfelderliste():
-            self.feldbild[i[0]][i[1]].config(file=self.d.getbild(i[0], i[1]))
-            self.overlaybild[i[0]][i[1]].config(file=self.d.getoverlaybild(i[0], i[1]))
-            self.itembild[i[0]][i[1]].config(file=self.d.getitembild(i[0], i[1]))
-            if self.d.getfog(i[0], i[1]):
-                self.fogbild[i[0]][i[1]].config(file='gfx/fog.gif')
-            else:
-                self.fogbild[i[0]][i[1]].config(file='gfx/blank.gif')
-        heldenbild.config(file=held.getbild())  # Held zeichnen
-
-    def lightmap_aktualisieren(self):
-        # alle bekannten Felder werden verdunkelt: gamma=0.3
-        for i in range(self.d.getmaxx()):
-            for j in range(self.d.getmaxy()):
-                if self.feldbild[i][j].cget('gamma') == '1.0':
-                    self.feldbild[i][j].config(gamma=0.3)
-                    self.overlaybild[i][j].config(gamma=0.3)
-                    self.itembild[i][j].config(gamma=0.3)
-                # alle Felder, die durch einen Schalter auf einen Lichtwert von 0.999 gesetzt wurden,
-                # werden vom Schatten befreit
-                if self.d.getlightmap(i, j) == 0.999:
-                    self.fogbild[i][j].config(file='gfx/blank.gif')
-                    self.d.setfog(i, j, False)
-                    self.feldbild[i][j].config(gamma=0.999)
-                    self.overlaybild[i][j].config(gamma=0.999)
-                    self.itembild[i][j].config(gamma=0.999)
-                    # alle Felder im Lichtschein des Helden werden normal=ausgeleuchtet dargestellt: Gamma=1
-        for i in held.ausleuchten():
-            if (i[0] >= 0) and (i[0] < self.d.getmaxx()) and (i[1] >= 0) and (i[1] < self.d.getmaxy()):
-                self.fogbild[i[0]][i[1]].config(file='gfx/blank.gif')
-                self.d.setfog(i[0], i[1], False)
-                self.feldbild[i[0]][i[1]].config(gamma=1.0)
-                self.overlaybild[i[0]][i[1]].config(gamma=1.0)
-                self.itembild[i[0]][i[1]].config(gamma=1.0)
-                if self.d.getitem(i[0], i[1]).gettyp() > 20100 and self.d.getitem(i[0], i[
-                    1]).gettyp() < 20200:  # wenn das Item des ausgeleuchteten Feldes eine Falle ist,
-                    # wird deren entdeckt()-Methode aufgerufen
-                    self.d.getitem(i[0], i[1]).entdecken(held)
-                    self.itembild[i[0]][i[1]].config(file=self.d.getitembild(i[0], i[1]))
-
-    def heldenstats_zeichnen(self):
         self.statsframe1 = Frame(master=self.spielfeld_fenster, relief=FLAT,
                                  bd=2, bg='darkgray')
         self.statsframe2 = Frame(master=self.spielfeld_fenster, relief=FLAT,
@@ -501,6 +381,128 @@ class Spielfeldanzeigen:
         self.labelrs = Label(master=self.statsframe2, text='RS: ' + str(held.getruestung().getrs()),
                              bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 10))
 
+        global d
+
+        if levelnr == 1:  # laden des Levels nach Nummer
+            d = Dungeonebene01(levelnr, held)
+        elif levelnr == 2:
+            d = Dungeonebene02(levelnr, held)
+        elif levelnr == 3:
+            d = Dungeonebene03(levelnr, held)
+        elif levelnr == 4:
+            d = Dungeonebene04(levelnr, held)
+        elif levelnr == 5:
+            d = Dungeonebene05(levelnr, held)
+        elif levelnr == 6:
+            d = Dungeonebene06(levelnr, held)
+
+        self.feldbild = list(range(
+            d.getmaxx()))  # Anlegen eines Feldes, in dem alle Bilder des Dungeons (Wand, Boden) gespeichert sind
+        for i in range(d.getmaxx()):
+            self.feldbild[i] = list(range(d.getmaxy()))
+        self.overlaybild = list(
+            range(d.getmaxx()))  # Anlegen eines Feldes, in dem alle Bilder der Overlays gespeichert sind
+        for i in range(d.getmaxx()):
+            self.overlaybild[i] = list(range(d.getmaxy()))
+        self.itembild = list(
+            range(d.getmaxx()))  # Anlegen eines Feldes, in dem alle Bilder der Items gespeichert sind
+        for i in range(d.getmaxx()):
+            self.itembild[i] = list(range(d.getmaxy()))
+        self.fogbild = list(range(
+            d.getmaxx()))  # Anlegen eines Feldes, in dem alle Bilder des Fogs gespeichert sind:
+        # alle Bilder sind schwarz, werden dann beim Beleuchten per Held oder Schalter gelöscht
+        for i in range(d.getmaxx()):
+            self.fogbild[i] = list(range(d.getmaxy()))
+
+        self.canvas_zeichnen()
+        self.lightmap_aktualisieren()
+        self.heldenstats_zeichnen()
+
+        self.spielfeld_fenster.bind('<KeyPress-Left>', self.links)
+        self.spielfeld_fenster.bind('<KeyPress-Right>', self.rechts)
+        self.spielfeld_fenster.bind('<KeyPress-Up>', self.hoch)
+        self.spielfeld_fenster.bind('<KeyPress-Down>', self.runter)
+        self.spielfeld_fenster.bind('<KeyPress-a>', self.links)
+        self.spielfeld_fenster.bind('<KeyPress-d>', self.rechts)
+        self.spielfeld_fenster.bind('<KeyPress-w>', self.hoch)
+        self.spielfeld_fenster.bind('<KeyPress-s>', self.runter)
+        self.spielfeld_fenster.focus_set()
+        self.spielfeld_fenster.mainloop()
+
+    def canvas_zeichnen(self):
+        for x in range(d.getmaxx()):
+            for y in range(d.getmaxy()):
+                self.feldbild[x][y] = PhotoImage(file=d.getbild(x, y), gamma=d.getlightmap(x, y))
+                self.canvas.create_image(64 * x + 2, 64 * y + 2, anchor=NW,
+                                         image=self.feldbild[x][y])
+                self.overlaybild[x][y] = PhotoImage(file=d.getoverlaybild(x, y), gamma=d.getlightmap(x, y))
+                self.canvas.create_image(64 * x + 2, 64 * y + 2, anchor=NW,
+                                         image=self.overlaybild[x][y])
+                self.itembild[x][y] = PhotoImage(file=d.getitembild(x, y), gamma=d.getlightmap(x, y))
+                self.canvas.create_image(64 * x + 2, 64 * y + 2, anchor=NW,
+                                         image=self.itembild[x][y])
+                self.fogbild[x][y] = PhotoImage(file='gfx/fog.gif', gamma=d.getlightmap(x, y))
+                self.canvas.create_image(64 * x + 2, 64 * y + 2, anchor=NW,
+                                         image=self.fogbild[x][y])
+        global heldenbild
+        heldenbild = PhotoImage(file=held.getbild())  # Held zeichnen
+        global heldid
+        heldid = self.canvas.create_image(64 * held.getx() + 2, 64 * held.gety() + 2, anchor=NW,
+                                          image=heldenbild)
+
+    # def canvas_aktualisieren(self, heldenbild):  # alte Version - nicht benutzt
+    #     for x in range(d.getmaxx()):
+    #         for y in range(d.getmaxy()):
+    #             self.feldbild[x][y].config(file=d.getbild(x, y))
+    #             self.overlaybild[x][y].config(file=d.getoverlaybild(x, y))
+    #             self.itembild[x][y].config(file=d.getitembild(x, y))
+    #             if d.getfog(x, y):
+    #                 self.fogbild[x][y].config(file='gfx/fog.gif')
+    #             else:
+    #                 self.fogbild[x][y].config(file='gfx/blank.gif')
+    #     heldenbild.config(file=self.held.getbild())  # Held zeichnen
+
+    def canvas_aktualisieren(self, x, y):
+        for i in d.getschalter(x, y).getfelderliste():
+            self.feldbild[i[0]][i[1]].config(file=d.getbild(i[0], i[1]))
+            self.overlaybild[i[0]][i[1]].config(file=d.getoverlaybild(i[0], i[1]))
+            self.itembild[i[0]][i[1]].config(file=d.getitembild(i[0], i[1]))
+            if d.getfog(i[0], i[1]):
+                self.fogbild[i[0]][i[1]].config(file='gfx/fog.gif')
+            else:
+                self.fogbild[i[0]][i[1]].config(file='gfx/blank.gif')
+        heldenbild.config(file=held.getbild())  # Held zeichnen
+
+    def lightmap_aktualisieren(self):
+        # alle bekannten Felder werden verdunkelt: gamma=0.3
+        for i in range(d.getmaxx()):
+            for j in range(d.getmaxy()):
+                if self.feldbild[i][j].cget('gamma') == '1.0':
+                    self.feldbild[i][j].config(gamma=0.3)
+                    self.overlaybild[i][j].config(gamma=0.3)
+                    self.itembild[i][j].config(gamma=0.3)
+                # alle Felder, die durch einen Schalter auf einen Lichtwert von 0.999 gesetzt wurden,
+                # werden vom Schatten befreit
+                if d.getlightmap(i, j) == 0.999:
+                    self.fogbild[i][j].config(file='gfx/blank.gif')
+                    d.setfog(i, j, False)
+                    self.feldbild[i][j].config(gamma=0.999)
+                    self.overlaybild[i][j].config(gamma=0.999)
+                    self.itembild[i][j].config(gamma=0.999)
+                    # alle Felder im Lichtschein des Helden werden normal=ausgeleuchtet dargestellt: Gamma=1
+        for i in held.ausleuchten():
+            if (i[0] >= 0) and (i[0] < d.getmaxx()) and (i[1] >= 0) and (i[1] < d.getmaxy()):
+                self.fogbild[i[0]][i[1]].config(file='gfx/blank.gif')
+                d.setfog(i[0], i[1], False)
+                self.feldbild[i[0]][i[1]].config(gamma=1.0)
+                self.overlaybild[i[0]][i[1]].config(gamma=1.0)
+                self.itembild[i[0]][i[1]].config(gamma=1.0)
+                if 20100 < d.getitem(i[0], i[1]).gettyp() < 20200:
+                    # wenn das Item des ausgeleuchteten Feldes eine Falle ist, wird deren entdeckt()-Methode aufgerufen
+                    d.getitem(i[0], i[1]).entdecken(held)
+                    self.itembild[i[0]][i[1]].config(file=d.getitembild(i[0], i[1]))
+
+    def heldenstats_zeichnen(self):
         self.statsframe1.pack(anchor=NW, pady=2)
         self.statsframe2.pack(anchor=NW, pady=2)
         self.labelheldenname.pack(anchor=NW, side=LEFT)
@@ -532,8 +534,136 @@ class Spielfeldanzeigen:
         self.labelle.config(text='LE: ' + str(held.getkampfwerte()[2]) + '/' + str(held.getmaxle()))
         self.labelrs.config(text='RS: ' + str(held.getruestung().getrs()))
 
-    def deathScreen(self):
+    @staticmethod
+    def bildrichtung_aktualisieren(direction):
+        if direction == 1:
+            held.setbild(os.path.join("gfxhelden", held.gettypname() + "W.gif"))
+        elif direction == 2:
+            held.setbild(os.path.join("gfxhelden", held.gettypname() + "D.gif"))
+        elif direction == 3:
+            held.setbild(os.path.join("gfxhelden", held.gettypname() + "A.gif"))
+        elif direction == 4:
+            held.setbild(os.path.join("gfxhelden", held.gettypname() + ".gif"))
+        heldenbild.config(file=held.getbild())
 
+    def links(self, event):
+        held.rennen(held.getheldentyp())
+        self.bildrichtung_aktualisieren(3)
+        if held.getx() > 0:
+            self.d = d.getschalter(held.getx() - 1, held.gety()).ausloesen(d)
+            if self.d.getschalter(held.getx() - 1, held.gety()).getschaltertyp() != 0:
+                self.canvas_aktualisieren(held.getx() - 1, held.gety())
+            self.held = self.d.getfeld(held.getx() - 1, held.gety()).betreten(held)
+            self.itembild[held.getx() - 1][held.gety()].config(
+                file=self.d.getfeld(held.getx() - 1, held.gety()).getitembild())
+            if self.d.getbegehbar(held.getx() - 1, held.gety()):
+                self.canvas.move(heldid, -64, 0)
+                held.setx(held.getx() - 1)
+            self.lightmap_aktualisieren()
+            self.heldenstats_aktualisieren()
+            # wenn held.le > 0, dann held tot mit fenster
+            if held.getle() <= 0:
+                self.spielfeld_fenster.destroy()
+                DeathScreen()
+            # Heldtotschirm aufrufen
+            if self.d.getlevelende():
+                self.spielfeld_fenster.destroy()
+                LoadingScreen()
+            if self.d.getspielende():
+                self.spielfeld_fenster.destroy()
+                EndScreen()
+
+    # Spielendschirm aufrufen
+
+    def rechts(self, event):
+        held.rennen(held.getheldentyp())
+        self.bildrichtung_aktualisieren(2)
+        if held.getx() < d.getmaxx():
+            self.d = d.getschalter(held.getx() + 1, held.gety()).ausloesen(d)
+            if self.d.getschalter(held.getx() + 1, held.gety()).getschaltertyp() != 0:
+                self.canvas_aktualisieren(held.getx() + 1, held.gety())
+            self.held = self.d.getfeld(held.getx() + 1, held.gety()).betreten(held)
+            self.itembild[held.getx() + 1][held.gety()].config(
+                file=self.d.getfeld(held.getx() + 1, held.gety()).getitembild())
+            if self.d.getbegehbar(held.getx() + 1, held.gety()):
+                self.canvas.move(heldid, 64, 0)
+                held.setx(held.getx() + 1)
+            self.lightmap_aktualisieren()
+            self.heldenstats_aktualisieren()
+            # wenn held.le > 0, dann held tot mit fenster
+            if held.getle() <= 0:
+                self.spielfeld_fenster.destroy()
+                DeathScreen()
+            # Heldtotschirm aufrufen
+            if self.d.getlevelende():
+                self.spielfeld_fenster.destroy()
+                LoadingScreen()
+            if self.d.getspielende():
+                self.spielfeld_fenster.destroy()
+                EndScreen()
+
+    # Spielendschirm aufrufen
+
+    def hoch(self, event):
+        held.rennen(held.getheldentyp())
+        self.bildrichtung_aktualisieren(1)
+        if held.gety() > 0:
+            self.d = d.getschalter(held.getx(), held.gety() - 1).ausloesen(d)
+            if self.d.getschalter(held.getx(), held.gety() - 1).getschaltertyp() != 0:
+                self.canvas_aktualisieren(held.getx(), held.gety() - 1)
+            self.held = self.d.getfeld(held.getx(), held.gety() - 1).betreten(held)
+            self.itembild[held.getx()][held.gety() - 1].config(
+                file=self.d.getfeld(held.getx(), held.gety() - 1).getitembild())
+            if self.d.getbegehbar(held.getx(), held.gety() - 1):
+                self.canvas.move(heldid, 0, -64)
+                held.sety(held.gety() - 1)
+            self.lightmap_aktualisieren()
+            self.heldenstats_aktualisieren()
+            # wenn held.le > 0, dann held tot mit fenster
+            if self.held.getle() <= 0:
+                self.spielfeld_fenster.destroy()
+                DeathScreen()
+            # Heldtotschirm aufrufen
+            if self.d.getlevelende():
+                self.spielfeld_fenster.destroy()
+                LoadingScreen()
+            if self.d.getspielende():
+                self.spielfeld_fenster.destroy()
+                EndScreen()
+
+    # Spielendschirm aufrufen
+
+    def runter(self, event):
+        held.rennen(held.getheldentyp())
+        self.bildrichtung_aktualisieren(4)
+        if held.gety() < d.getmaxy():
+            self.d = d.getschalter(held.getx(), held.gety() + 1).ausloesen(d)
+            if self.d.getschalter(held.getx(), held.gety() + 1).getschaltertyp() != 0:
+                self.canvas_aktualisieren(held.getx(), held.gety() + 1)
+            self.held = self.d.getfeld(held.getx(), held.gety() + 1).betreten(held)
+            self.itembild[held.getx()][held.gety() + 1].config(
+                file=self.d.getfeld(held.getx(), held.gety() + 1).getitembild())
+            if self.d.getbegehbar(held.getx(), held.gety() + 1):
+                self.canvas.move(heldid, 0, 64)
+                held.sety(held.gety() + 1)
+            self.lightmap_aktualisieren()
+            self.heldenstats_aktualisieren()
+            # wenn held.le > 0, dann held tot mit fenster
+            if held.getle() <= 0:
+                self.spielfeld_fenster.destroy()
+                DeathScreen()
+            # Heldtotschirm aufrufen
+            if self.d.getlevelende():
+                self.spielfeld_fenster.destroy()
+                LoadingScreen()
+            if self.d.getspielende():
+                self.spielfeld_fenster.destroy()
+                EndScreen()
+
+
+class DeathScreen:
+
+    def __init__(self):
         self.death_fenster = Toplevel()
         self.death_fenster.focus_force()
         self.death_fenster.title('Dungeon Game - Du bist gestorben!')
@@ -552,8 +682,10 @@ class Spielfeldanzeigen:
         bl.place(x=0, y=0, relwidth=1, relheight=1)
         self.death_fenster.mainloop()
 
-    def endScreen(self):
 
+class EndScreen:
+
+    def __init__(self):
         self.end_fenster = Toplevel()
         self.end_fenster.focus_force()
         self.end_fenster.title('Dungeon Game - Vollversion kaufen!')
@@ -572,8 +704,10 @@ class Spielfeldanzeigen:
         bl.place(x=0, y=0, relwidth=1, relheight=1)
         self.end_fenster.mainloop()
 
-    def loadingScreen(self):
 
+class LoadingScreen:
+
+    def __init__(self):
         self.loading_fenster = Toplevel()
         self.loading_fenster.focus_force()
         self.loading_fenster.title('Dungeon Game - loading...')
@@ -595,7 +729,8 @@ class Spielfeldanzeigen:
                                               mode='determinate')
         progressbar.pack(side="bottom")
 
-        w_button = Button(master=self.loading_fenster, text='weiter', command=self.loading_beenden, bg='white')
+        w_button = Button(master=self.loading_fenster, text='weiter',
+                          command=lambda: self.loading_beenden(self.loading_fenster), bg='white')
 
         balken = LoadingBalken(progressbar, w_button)
         balken.setDaemon(True)
@@ -614,138 +749,12 @@ class Spielfeldanzeigen:
 
         self.loading_fenster.mainloop()
 
-    def loading_beenden(self):
-        self.loading_fenster.destroy()
-        Spielfeldanzeigen(self.d.getlevelnr() + 1, held)
-
     @staticmethod
-    def bildrichtung_aktualisieren(direction):
-        if direction == 1:
-            held.setbild(os.path.join("gfxhelden", held.gettypname() + "W.gif"))
-        elif direction == 2:
-            held.setbild(os.path.join("gfxhelden", held.gettypname() + "D.gif"))
-        elif direction == 3:
-            held.setbild(os.path.join("gfxhelden", held.gettypname() + "A.gif"))
-        elif direction == 4:
-            held.setbild(os.path.join("gfxhelden", held.gettypname() + ".gif"))
-        heldenbild.config(file=held.getbild())
-
-    def links(self, event):
-        held.rennen(held.getheldentyp())
-        self.bildrichtung_aktualisieren(3)
-        if (held.getx() > 0):
-            self.d = self.d.getschalter(held.getx() - 1, held.gety()).ausloesen(self.d)
-            if self.d.getschalter(held.getx() - 1, held.gety()).getschaltertyp() != 0:
-                self.canvas_aktualisieren(held.getx() - 1, held.gety())
-            self.held = self.d.getfeld(held.getx() - 1, held.gety()).betreten(held)
-            self.itembild[held.getx() - 1][held.gety()].config(
-                file=self.d.getfeld(held.getx() - 1, held.gety()).getitembild())
-            if (self.d.getbegehbar(held.getx() - 1, held.gety())):
-                self.canvas.move(heldid, -64, 0)
-                held.setx(held.getx() - 1)
-            self.lightmap_aktualisieren()
-            self.heldenstats_aktualisieren()
-            # wenn held.le > 0, dann held tot mit fenster
-            if held.getle() <= 0:
-                self.spielfeld_fenster.destroy()
-                self.deathScreen()
-            # Heldtotschirm aufrufen
-            if self.d.getlevelende():
-                self.spielfeld_fenster.destroy()
-                self.loadingScreen()
-            if self.d.getspielende():
-                self.spielfeld_fenster.destroy()
-                self.endScreen()
-
-    # Spielendschirm aufrufen
-
-    def rechts(self, event):
-        held.rennen(held.getheldentyp())
-        self.bildrichtung_aktualisieren(2)
-        if (held.getx() < self.d.getmaxx()):
-            self.d = self.d.getschalter(held.getx() + 1, held.gety()).ausloesen(self.d)
-            if self.d.getschalter(held.getx() + 1, held.gety()).getschaltertyp() != 0:
-                self.canvas_aktualisieren(held.getx() + 1, held.gety())
-            self.held = self.d.getfeld(held.getx() + 1, held.gety()).betreten(held)
-            self.itembild[held.getx() + 1][held.gety()].config(
-                file=self.d.getfeld(held.getx() + 1, held.gety()).getitembild())
-            if (self.d.getbegehbar(held.getx() + 1, held.gety())):
-                self.canvas.move(heldid, 64, 0)
-                held.setx(held.getx() + 1)
-            self.lightmap_aktualisieren()
-            self.heldenstats_aktualisieren()
-            # wenn held.le > 0, dann held tot mit fenster
-            if held.getle() <= 0:
-                self.spielfeld_fenster.destroy()
-                self.deathScreen()
-            # Heldtotschirm aufrufen
-            if self.d.getlevelende():
-                self.spielfeld_fenster.destroy()
-                self.loadingScreen()
-            if self.d.getspielende():
-                self.spielfeld_fenster.destroy()
-                self.endScreen()
-
-    # Spielendschirm aufrufen
-
-    def hoch(self, event):
-        held.rennen(held.getheldentyp())
-        self.bildrichtung_aktualisieren(1)
-        if (held.gety() > 0):
-            self.d = self.d.getschalter(held.getx(), held.gety() - 1).ausloesen(self.d)
-            if self.d.getschalter(held.getx(), held.gety() - 1).getschaltertyp() != 0:
-                self.canvas_aktualisieren(held.getx(), held.gety() - 1)
-            self.held = self.d.getfeld(held.getx(), held.gety() - 1).betreten(held)
-            self.itembild[held.getx()][held.gety() - 1].config(
-                file=self.d.getfeld(held.getx(), held.gety() - 1).getitembild())
-            if (self.d.getbegehbar(held.getx(), held.gety() - 1)):
-                self.canvas.move(heldid, 0, -64)
-                held.sety(held.gety() - 1)
-            self.lightmap_aktualisieren()
-            self.heldenstats_aktualisieren()
-            # wenn held.le > 0, dann held tot mit fenster
-            if self.held.getle() <= 0:
-                self.spielfeld_fenster.destroy()
-                self.deathScreen()
-            # Heldtotschirm aufrufen
-            if self.d.getlevelende():
-                self.spielfeld_fenster.destroy()
-                self.loadingScreen()
-            if self.d.getspielende():
-                self.spielfeld_fenster.destroy()
-                self.endScreen()
-
-    # Spielendschirm aufrufen
-
-    def runter(self, event):
-        held.rennen(held.getheldentyp())
-        self.bildrichtung_aktualisieren(4)
-        if held.gety() < self.d.getmaxy():
-            self.d = self.d.getschalter(held.getx(), held.gety() + 1).ausloesen(self.d)
-            if self.d.getschalter(held.getx(), held.gety() + 1).getschaltertyp() != 0:
-                self.canvas_aktualisieren(held.getx(), held.gety() + 1)
-            self.held = self.d.getfeld(held.getx(), held.gety() + 1).betreten(held)
-            self.itembild[held.getx()][held.gety() + 1].config(
-                file=self.d.getfeld(held.getx(), held.gety() + 1).getitembild())
-            if self.d.getbegehbar(held.getx(), held.gety() + 1):
-                self.canvas.move(heldid, 0, 64)
-                held.sety(held.gety() + 1)
-            self.lightmap_aktualisieren()
-            self.heldenstats_aktualisieren()
-            # wenn held.le > 0, dann held tot mit fenster
-            if held.getle() <= 0:
-                self.spielfeld_fenster.destroy()
-                self.deathScreen()
-            # Heldtotschirm aufrufen
-            if self.d.getlevelende():
-                self.spielfeld_fenster.destroy()
-                self.loadingScreen()
-            if self.d.getspielende():
-                self.spielfeld_fenster.destroy()
-                self.endScreen()
-
-
-# Spielendschirm aufrufen
+    def loading_beenden(loading_fenster):
+        loading_fenster.destroy()
+        Spielfeldanzeigen(d.getlevelnr() + 1, held)
 
 # Spiel
+
+
 spiel = Hauptprogramm()

@@ -1,6 +1,5 @@
 import threading
 from random import randint
-
 import tkinter.ttk
 from tkinter import *
 
@@ -100,6 +99,9 @@ class Hauptprogramm:
         self.neuesspiel_button = Button(master=self.fenster, text='START',
                                         command=self.einspieler, fg='white', bg='RED')
         self.neuesspiel_button.pack(side=BOTTOM, anchor=E, pady=54, padx=250)
+        self.beenden_button = Button(master=self.fenster, text="ENDE",
+                                     command=self.fenster.destroy, fg="white", bg="grey")
+        self.beenden_button.pack(side=BOTTOM, anchor=E, pady=110, padx=250)
         self.fenster.mainloop()
 
     def einspieler(self):
@@ -381,20 +383,9 @@ class Spielfeldanzeigen:
         self.labelrs = Label(master=self.statsframe2, text='RS: ' + str(held.getruestung().getrs()),
                              bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 10))
 
+        functionsname = "Dungeonebene0" + str(levelnr) + "(levelnr, held)"      # Level Aufrufen
         global d
-
-        if levelnr == 1:  # laden des Levels nach Nummer
-            d = Dungeonebene01(levelnr, held)
-        elif levelnr == 2:
-            d = Dungeonebene02(levelnr, held)
-        elif levelnr == 3:
-            d = Dungeonebene03(levelnr, held)
-        elif levelnr == 4:
-            d = Dungeonebene04(levelnr, held)
-        elif levelnr == 5:
-            d = Dungeonebene05(levelnr, held)
-        elif levelnr == 6:
-            d = Dungeonebene06(levelnr, held)
+        d = eval(functionsname)
 
         self.feldbild = list(range(
             d.getmaxx()))  # Anlegen eines Feldes, in dem alle Bilder des Dungeons (Wand, Boden) gespeichert sind

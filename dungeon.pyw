@@ -1,6 +1,6 @@
 import threading
-from random import randint
 import tkinter.ttk
+from random import randint
 from tkinter import *
 
 from helden.batman import *  # Batman
@@ -9,11 +9,17 @@ from helden.green_lantern import *  # Green Lantern
 from helden.ironman import *  # Ironman
 from helden.spiderman import *  # Spiderman
 from helden.superman import *  # Superman
+# noinspection PyUnresolvedReferences
 from level.dungeonebene01 import *
+# noinspection PyUnresolvedReferences
 from level.dungeonebene02 import *
+# noinspection PyUnresolvedReferences
 from level.dungeonebene03 import *
+# noinspection PyUnresolvedReferences
 from level.dungeonebene04 import *
+# noinspection PyUnresolvedReferences
 from level.dungeonebene05 import *
+# noinspection PyUnresolvedReferences
 from level.dungeonebene06 import *
 
 try:
@@ -319,6 +325,7 @@ class Heldenzeigen:
         Spielfeldanzeigen(1, held)
 
 
+# noinspection PyAttributeOutsideInit
 class Spielfeldanzeigen:
 
     def __init__(self, levelnr, heldget):
@@ -347,41 +354,45 @@ class Spielfeldanzeigen:
         global held
         held = heldget
 
-        self.statsframe1 = Frame(master=self.spielfeld_fenster, relief=FLAT,
+        self.statsframe = Frame(master=self.spielfeld_fenster, relief=GROOVE, bd=3, bg="darkgrey")
+
+        self.statsframe1 = Frame(master=self.statsframe, relief=FLAT,
                                  bd=2, bg='darkgray')
-        self.statsframe2 = Frame(master=self.spielfeld_fenster, relief=FLAT,
+        self.statsframe2 = Frame(master=self.statsframe, relief=FLAT,
                                  bd=2, bg='darkgray')
+
         self.labelheldenname = Label(master=self.statsframe1, text=held.getheldenname(),
-                                     bg='darkgray', fg='white', width=20, pady=2, font=('Comic Sans MS', 10))
+                                     bg='darkgray', fg='white', width=20, pady=2, font=('Comic Sans MS', 15))
         self.labelmu = Label(master=self.statsframe1, text='MU: ' + str(held.geteigenschaften()[0]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 10))
+                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
         self.labelkl = Label(master=self.statsframe1, text='KL: ' + str(held.geteigenschaften()[1]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 10))
+                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
         self.labelch = Label(master=self.statsframe1, text='CH: ' + str(held.geteigenschaften()[2]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 10))
+                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
         self.labelin = Label(master=self.statsframe1, text='IN: ' + str(held.geteigenschaften()[3]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 10))
+                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
         self.labelff = Label(master=self.statsframe1, text='FF: ' + str(held.geteigenschaften()[4]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 10))
+                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
         self.labelge = Label(master=self.statsframe1, text='GE: ' + str(held.geteigenschaften()[5]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 10))
+                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
         self.labelko = Label(master=self.statsframe1, text='KO: ' + str(held.geteigenschaften()[6]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 10))
+                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
         self.labelkk = Label(master=self.statsframe1, text='KK: ' + str(held.geteigenschaften()[7]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 10))
+                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
+
         self.labeltypname = Label(master=self.statsframe2, text=held.gettypname(),
-                                  bg='darkgray', fg='white', width=20, pady=2, font=('Comic Sans MS', 10))
+                                  bg='darkgray', fg='white', width=20, pady=2, font=('Comic Sans MS', 15))
         self.labelat = Label(master=self.statsframe2,
                              text='AT: ' + str(held.getkampfwerte()[0] + held.getwaffe().getmod()[0]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 10))
+                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
         self.labelpa = Label(master=self.statsframe2,
                              text='PA: ' + str(held.getkampfwerte()[1] + held.getwaffe().getmod()[1]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 10))
+                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
         self.labelle = Label(master=self.statsframe2,
                              text='LE: ' + str(held.getkampfwerte()[2]) + '/' + str(held.getmaxle()),
-                             bg='darkgray', fg='white', width=12, pady=2, font=('Comic Sans MS', 10))
+                             bg='darkgray', fg='white', width=12, pady=2, font=('Comic Sans MS', 13))
         self.labelrs = Label(master=self.statsframe2, text='RS: ' + str(held.getruestung().getrs()),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 10))
+                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
 
         functionsname = "Dungeonebene0" + str(levelnr) + "(levelnr, held)"      # Level Aufrufen
         global d
@@ -482,6 +493,7 @@ class Spielfeldanzeigen:
                     self.itembild[i[0]][i[1]].config(file=d.getitembild(i[0], i[1]))
 
     def heldenstats_zeichnen(self):
+        self.statsframe.pack(anchor=NW, pady=10, padx=2)
         self.statsframe1.pack(anchor=NW, pady=2)
         self.statsframe2.pack(anchor=NW, pady=2)
         self.labelheldenname.pack(anchor=NW, side=LEFT)

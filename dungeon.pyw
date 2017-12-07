@@ -98,10 +98,10 @@ class Hauptprogramm:
         self.fenster.wm_attributes('-alpha', 0.5)
         self.neuesspiel_button = Button(master=self.fenster, text='START',
                                         command=self.einspieler, fg='white', bg='RED')
-        self.neuesspiel_button.pack(side=BOTTOM, anchor=E, pady=54, padx=250)
+        self.neuesspiel_button.place(anchor=E, y=496, x=835)
         self.beenden_button = Button(master=self.fenster, text="ENDE",
                                      command=self.fenster.destroy, fg="white", bg="grey")
-        self.beenden_button.pack(side=BOTTOM, anchor=E, pady=110, padx=250)
+        self.beenden_button.place(anchor=E, y=528, x=829)
         self.fenster.mainloop()
 
     def einspieler(self):

@@ -5,7 +5,7 @@ from tkinter import *
 
 from helden.batman import *  # Batman
 from helden.flash import *  # Flash
-from helden.green_lantern import *  # Green Lantern
+from helden.GreenLantern import *  # Green Lantern
 from helden.ironman import *  # Ironman
 from helden.spiderman import *  # Spiderman
 from helden.superman import *  # Superman
@@ -165,11 +165,11 @@ class Heldenwahl:
                                                bg='darkgray',
                                                value='Ironman', variable=self.auswahl,
                                                command=self.aktualisiere_beschreibung)
-        self.green_lantern_radiobutton = Radiobutton(master=self.radiogroup,
+        self.GreenLantern_radiobutton = Radiobutton(master=self.radiogroup,
                                                      text='Green Lantern',
                                                      font=('Comic Sans MS', 10),
                                                      bg='darkgray',
-                                                     value='Green_Lantern', variable=self.auswahl,
+                                                     value='GreenLantern', variable=self.auswahl,
                                                      command=self.aktualisiere_beschreibung)
         self.flash_radiobutton = Radiobutton(master=self.radiogroup,
                                              text='Flash',
@@ -191,7 +191,7 @@ class Heldenwahl:
         self.superman_radiobutton.pack(anchor=W)
         self.spiderman_radiobutton.pack(anchor=W)
         self.ironman_radiobutton.pack(anchor=W)
-        self.green_lantern_radiobutton.pack(anchor=W)
+        self.GreenLantern_radiobutton.pack(anchor=W)
         self.flash_radiobutton.pack(anchor=W)
 
         self.weiter_button.pack(anchor=S, padx=5, pady=5, fill=X)
@@ -216,8 +216,8 @@ class Heldenwahl:
             held = Spiderman('Bitte Name eingeben')
         elif self.auswahl.get() == 'Ironman':
             held = Ironman('Bitte Name eingeben')
-        elif self.auswahl.get() == 'Green_Lantern':
-            held = Green_Lantern('Bitte Name eingeben')
+        elif self.auswahl.get() == 'GreenLantern':
+            held = GreenLantern('Bitte Name eingeben')
         else:
             held = Flash('Bitte Name eingeben')
         self.heldenwahl_fenster.destroy()

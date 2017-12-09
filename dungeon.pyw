@@ -26,6 +26,11 @@ try:
     import winsound
 except ImportError:
     winsound = None
+    try:
+        import pygame
+    except ImportError:
+        pygame = None
+        exit("Please install pygame http://www.pygame.org/download.shtml")
 
 
 # Threading
@@ -55,6 +60,12 @@ class Flackern(GUIThread):
 
 class Musik(GUIThread):
     def run(self):
+        if pygame:
+            pygame.mixer.init()
+            pygame.mixer.music.load("music/sound.wav")
+            pygame.mixer.music.play()
+            if self._stop:
+                pygame.mixer.music.stop()
         while not self._stop:
             if winsound:
                 winsound.PlaySound('music/sound.wav', winsound.SND_FILENAME)
@@ -166,11 +177,11 @@ class Heldenwahl:
                                                value='Ironman', variable=self.auswahl,
                                                command=self.aktualisiere_beschreibung)
         self.GreenLantern_radiobutton = Radiobutton(master=self.radiogroup,
-                                                     text='Green Lantern',
-                                                     font=('Comic Sans MS', 10),
-                                                     bg='darkgray',
-                                                     value='GreenLantern', variable=self.auswahl,
-                                                     command=self.aktualisiere_beschreibung)
+                                                    text='Green Lantern',
+                                                    font=('Comic Sans MS', 10),
+                                                    bg='darkgray',
+                                                    value='GreenLantern', variable=self.auswahl,
+                                                    command=self.aktualisiere_beschreibung)
         self.flash_radiobutton = Radiobutton(master=self.radiogroup,
                                              text='Flash',
                                              font=('Comic Sans MS', 10),
@@ -221,7 +232,6 @@ class Heldenwahl:
         else:
             held = Flash('Bitte Name eingeben')
         self.heldenwahl_fenster.destroy()
-        print("heldbennen")
         HeldBenennen()
 
 
@@ -273,7 +283,6 @@ class HeldBenennen:
         self.weiblich.pack(anchor=W, padx=30, pady=5)
         self.weiter_button.pack(side=BOTTOM, padx=30, pady=5, fill=X)
         self.zurueck_button.pack(side=BOTTOM, padx=30, pady=5, fill=X)
-        print("mainloop")
         self.heldbenennen_fenster.mainloop()
 
     def heldenwahl_neustart(self):
@@ -394,7 +403,7 @@ class Spielfeldanzeigen:
         self.labelrs = Label(master=self.statsframe2, text='RS: ' + str(held.getruestung().getrs()),
                              bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
 
-        functionsname = "Dungeonebene0" + str(levelnr) + "(levelnr, held)"      # Level Aufrufen
+        functionsname = "Dungeonebene0" + str(levelnr) + "(levelnr, held)"  # Level Aufrufen
         global d
         d = eval(functionsname)
 
@@ -535,9 +544,9 @@ class Spielfeldanzeigen:
             held.setbild(os.path.join("gfxhelden", held.gettypname() + "A.gif"))
         elif direction == 4:
             held.setbild(os.path.join("gfxhelden", held.gettypname() + ".gif"))
-        heldenbild.config(file=held.getbild())                 
+        heldenbild.config(file=held.getbild())
 
-    def bewegung(self, richtung):           # Richtung: 4=runter, 1=hoch, 2=rechts, 3=links
+    def bewegung(self, richtung):  # Richtung: 4=runter, 1=hoch, 2=rechts, 3=links
         # print(richtung)
         held.rennen(held.getheldentyp())
         self.bildrichtung_aktualisieren(richtung)
@@ -698,6 +707,7 @@ class LoadingScreen:
     def loading_beenden(loading_fenster):
         loading_fenster.destroy()
         Spielfeldanzeigen(d.getlevelnr() + 1, held)
+
 
 # Spiel
 

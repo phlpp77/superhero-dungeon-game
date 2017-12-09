@@ -2,6 +2,7 @@ from math import *
 from items import *
 import time
 
+
 class Held:
 
     def __init__(self,name):
@@ -97,6 +98,7 @@ class Held:
     def sety(self,y):
         self._y = y
 
+    # noinspection PyAttributeOutsideInit
     def ausleuchten(self):
         L=[(self._x,self._y)]
         self.fackelradius=1.0         # spaeter an anderer Stelle einfuegen, etwa beim Entzueden oder Besitzen einer Fackel

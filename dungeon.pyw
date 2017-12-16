@@ -363,7 +363,11 @@ class Spielfeldanzeigen:
         global held
         held = heldget
 
-        self.statsframe = Frame(master=self.spielfeld_fenster, relief=GROOVE, bd=3, bg="darkgrey")
+        self.infoframe = Frame(master=self.spielfeld_fenster, bg="darkgrey")
+
+        self.invframe = Frame(master=self.infoframe, relief=GROOVE, bd=3, bg="lightgrey")
+
+        self.statsframe = Frame(master=self.infoframe, relief=GROOVE, bd=3, bg="darkgrey")
 
         self.statsframe1 = Frame(master=self.statsframe, relief=FLAT,
                                  bd=2, bg='darkgray')
@@ -402,6 +406,10 @@ class Spielfeldanzeigen:
                              bg='darkgray', fg='white', width=12, pady=2, font=('Comic Sans MS', 13))
         self.labelrs = Label(master=self.statsframe2, text='RS: ' + str(held.getruestung().getrs()),
                              bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
+
+        self.invimg0 = PhotoImage(file="gfxitems/dolch.gif")
+        # self.invimg0 = self.invimg0.zoom()
+        self.inv0 = Label(master=self.invframe, image=self.invimg0)
 
         functionsname = "Dungeonebene0" + str(levelnr) + "(levelnr, held)"  # Level Aufrufen
         global d
@@ -502,7 +510,9 @@ class Spielfeldanzeigen:
                     self.itembild[i[0]][i[1]].config(file=d.getitembild(i[0], i[1]))
 
     def heldenstats_zeichnen(self):
-        self.statsframe.pack(anchor=NW, pady=10, padx=2)
+        self.infoframe.pack(anchor=NW, pady=10, padx=2)
+        self.invframe.grid(row=0, column=1, padx=30)
+        self.statsframe.grid(row=0)
         self.statsframe1.pack(anchor=NW, pady=2)
         self.statsframe2.pack(anchor=NW, pady=2)
         self.labelheldenname.pack(anchor=NW, side=LEFT)
@@ -519,6 +529,8 @@ class Spielfeldanzeigen:
         self.labelpa.pack(anchor=NW, side=LEFT)
         self.labelle.pack(anchor=NW, side=LEFT)
         self.labelrs.pack(anchor=NW, side=LEFT)
+
+        self.inv0.grid(row=0, column=1)
 
     def heldenstats_aktualisieren(self):
         self.labelmu.config(text='MU: ' + str(held.geteigenschaften()[0]))

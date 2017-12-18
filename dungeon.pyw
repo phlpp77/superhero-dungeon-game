@@ -1,5 +1,6 @@
 import threading
 import tkinter.ttk
+import shelve
 from random import randint
 from tkinter import *
 
@@ -90,6 +91,8 @@ class LoadingBalken(threading.Thread):
 
         self.button.pack(side=BOTTOM, anchor=E, padx=30, pady=30)
 
+
+# ###########################################GUI:Startbildschirm############################################
 
 class Hauptprogramm:
 
@@ -219,18 +222,16 @@ class Heldenwahl:
 
     def heldenwahl_beenden(self):
         global held
-        if self.auswahl.get() == 'Batman':
-            held = Batman('Bitte Name eingeben')
-        elif self.auswahl.get() == 'Superman':
-            held = Superman('Bitte Name eingeben')
-        elif self.auswahl.get() == 'Spiderman':
-            held = Spiderman('Bitte Name eingeben')
-        elif self.auswahl.get() == 'Ironman':
-            held = Ironman('Bitte Name eingeben')
-        elif self.auswahl.get() == 'GreenLantern':
-            held = GreenLantern('Bitte Name eingeben')
-        else:
-            held = Flash('Bitte Name eingeben')
+        text = "Bitten Name eingeben"
+        switcher = {
+            "Batman": Batman(text),
+            "Superman": Superman(text),
+            "Spiderman": Spiderman(text),
+            "Ironman": Ironman(text),
+            "GreenLantern": GreenLantern(text),
+            "Flash": Flash(text)
+        }
+        held = switcher.get(self.auswahl.get())
         self.heldenwahl_fenster.destroy()
         HeldBenennen()
 
@@ -334,6 +335,7 @@ class Heldenzeigen:
         Spielfeldanzeigen(1, held)
 
 
+# ###########################################GUI:Spielfeld############################################
 # noinspection PyAttributeOutsideInit
 class Spielfeldanzeigen:
 

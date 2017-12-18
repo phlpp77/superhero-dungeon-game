@@ -115,6 +115,9 @@ class Hauptprogramm:
         self.parallel.setDaemon(True)
         self.parallel.start()
 
+        self.fenster.bind('<Return>', lambda event: self.einspieler())
+        self.fenster.bind('<Escape>', lambda event: self.fenster.destroy())
+
         self.fenster.wm_attributes('-alpha', 0.5)
         self.neuesspiel_button = Button(master=self.fenster, text='START',
                                         command=self.einspieler, fg='white', bg='RED')
@@ -144,6 +147,8 @@ class Heldenwahl:
         y = (hs / 2) - (h / 2)
         self.heldenwahl_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.heldenwahl_fenster.config(bg='darkgray')
+
+        self.heldenwahl_fenster.bind('<Return>', lambda event: self.heldenwahl_beenden())
 
         self.label = Label(master=self.heldenwahl_fenster,
                            text='Heldenauswahl',
@@ -252,6 +257,8 @@ class HeldBenennen:
         self.heldbenennen_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.heldbenennen_fenster.config(bg='darkgray')
 
+        self.heldbenennen_fenster.bind('<Return>', lambda event: self.heldbenennen_beenden())
+
         self.label = Label(master=self.heldbenennen_fenster,
                            text='Held benennen',
                            padx=30, pady=10,
@@ -315,6 +322,9 @@ class Heldenzeigen:
         y = (hs / 2) - (h / 2)
         self.held_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.held_fenster.config(bg='darkgray')
+
+        self.held_fenster.bind('<Return>', lambda event: self.heldenzeigen_beenden())
+
         bg_image = PhotoImage(file=held.getanzeigeBild())
         bg_label = Label(self.held_fenster, image=bg_image)
         bg_label.place(x=0, y=0, relwidth=1, relheight=1)
@@ -550,14 +560,8 @@ class Spielfeldanzeigen:
 
     @staticmethod
     def bildrichtung_aktualisieren(direction):
-        if direction == 1:
-            held.setbild(os.path.join("gfxhelden", held.gettypname() + "W.gif"))
-        elif direction == 2:
-            held.setbild(os.path.join("gfxhelden", held.gettypname() + "D.gif"))
-        elif direction == 3:
-            held.setbild(os.path.join("gfxhelden", held.gettypname() + "A.gif"))
-        elif direction == 4:
-            held.setbild(os.path.join("gfxhelden", held.gettypname() + ".gif"))
+        switcher = {1: "W.gif", 2: "D.gif", 3: "A.gif", 4: ".gif"}
+        held.setbild(os.path.join("gfxhelden", held.gettypname() + switcher.get(direction)))
         heldenbild.config(file=held.getbild())
 
     def bewegung(self, richtung):  # Richtung: 4=runter, 1=hoch, 2=rechts, 3=links
@@ -697,6 +701,8 @@ class LoadingScreen:
                                               mode='determinate')
         progressbar.pack(side="bottom")
 
+        self.loading_fenster.bind('<KeyPress-s>', lambda: self.loading_beenden(self.loading_fenster))
+        self.loading_fenster.bind('<Escape>', lambda: self.loading_beenden(self.loading_fenster))
         w_button = Button(master=self.loading_fenster, text='weiter',
                           command=lambda: self.loading_beenden(self.loading_fenster), bg='white')
 

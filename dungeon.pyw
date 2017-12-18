@@ -27,11 +27,11 @@ try:
     import winsound
 except ImportError:
     winsound = None
-    try:
-        import pygame
-    except ImportError:
-        pygame = None
-        exit("Please install pygame http://www.pygame.org/download.shtml")
+try:
+    import pygame
+except ImportError:
+    pygame = None
+    exit("Please install pygame http://www.pygame.org/download.shtml")
 
 
 # Threading
@@ -374,7 +374,11 @@ class Spielfeldanzeigen:
 
         self.labelheldenname = Label(master=self.statsframe1, text=held.getheldenname(),
                                      bg='darkgray', fg='white', width=20, pady=2, font=('Comic Sans MS', 15))
-        self.labelmu = Label(master=self.statsframe1, text='MU: ' + str(held.geteigenschaften()[0]),
+
+        self.labeltypname = Label(master=self.statsframe2, text=held.gettypname(),
+                                  bg='darkgray', fg='white', width=20, pady=2, font=('Comic Sans MS', 15))
+        # Heldenstats initialisieren
+        """self.labelmu = Label(master=self.statsframe1, text='MU: ' + str(held.geteigenschaften()[0]),
                              bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
         self.labelkl = Label(master=self.statsframe1, text='KL: ' + str(held.geteigenschaften()[1]),
                              bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
@@ -389,21 +393,35 @@ class Spielfeldanzeigen:
         self.labelko = Label(master=self.statsframe1, text='KO: ' + str(held.geteigenschaften()[6]),
                              bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
         self.labelkk = Label(master=self.statsframe1, text='KK: ' + str(held.geteigenschaften()[7]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
+                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))"""
+        # amount_characteristics describes the number of labels that are characteristics (the rest are combat values)
+        self.amount_characteristics, self.amount_combat_values = 8, 2
+        self.label, self.labeltext = [], ["MU: ", "KL: ", "CH: ", "IN: ", "FF: ", "GE: ", "KO: ", "KK: ", "AT: ",
+                                          "PA: ", "LE: ", "RS: "]
+        # initialize characteristics
+        for i in range(self.amount_characteristics):
+            tmp_label = Label(master=self.statsframe1, text=self.labeltext[i] + str(held.geteigenschaften()[i]),
+                              bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
+            self.label.append(tmp_label)
 
-        self.labeltypname = Label(master=self.statsframe2, text=held.gettypname(),
-                                  bg='darkgray', fg='white', width=20, pady=2, font=('Comic Sans MS', 15))
-        self.labelat = Label(master=self.statsframe2,
-                             text='AT: ' + str(held.getkampfwerte()[0] + held.getwaffe().getmod()[0]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
-        self.labelpa = Label(master=self.statsframe2,
-                             text='PA: ' + str(held.getkampfwerte()[1] + held.getwaffe().getmod()[1]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
-        self.labelle = Label(master=self.statsframe2,
-                             text='LE: ' + str(held.getkampfwerte()[2]) + '/' + str(held.getmaxle()),
-                             bg='darkgray', fg='white', width=12, pady=2, font=('Comic Sans MS', 13))
-        self.labelrs = Label(master=self.statsframe2, text='RS: ' + str(held.getruestung().getrs()),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
+        # initialize combat values
+        for i in range(self.amount_characteristics, self.amount_characteristics + self.amount_combat_values):
+            tmp_label = Label(master=self.statsframe2,
+                              text=self.labeltext[i] + str(
+                                  held.getkampfwerte()[i - self.amount_characteristics] + held.getwaffe().getmod()[
+                                      i - self.amount_characteristics]), bg='darkgray',
+                              fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
+            self.label.append(tmp_label)
+
+        # initialize life value
+        self.label.append(Label(master=self.statsframe2,
+                                text=self.labeltext[len(self.labeltext) - 2] + str(held.getkampfwerte()[2]) + '/' + str(
+                                    held.getmaxle()),
+                                bg='darkgray', fg='white', width=12, pady=2, font=('Comic Sans MS', 13)))
+        # initialize armor
+        self.label.append(Label(master=self.statsframe2,
+                                text=self.labeltext[len(self.labeltext) - 1] + str(held.getruestung().getrs()),
+                                bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13)))
 
         functionsname = "Dungeonebene0" + str(levelnr) + "(levelnr, held)"  # Level Aufrufen
         global d
@@ -508,33 +526,27 @@ class Spielfeldanzeigen:
         self.statsframe1.pack(anchor=NW, pady=2)
         self.statsframe2.pack(anchor=NW, pady=2)
         self.labelheldenname.pack(anchor=NW, side=LEFT)
-        self.labelmu.pack(anchor=NW, side=LEFT)
-        self.labelkl.pack(anchor=NW, side=LEFT)
-        self.labelch.pack(anchor=NW, side=LEFT)
-        self.labelin.pack(anchor=NW, side=LEFT)
-        self.labelff.pack(anchor=NW, side=LEFT)
-        self.labelge.pack(anchor=NW, side=LEFT)
-        self.labelko.pack(anchor=NW, side=LEFT)
-        self.labelkk.pack(anchor=NW, side=LEFT)
         self.labeltypname.pack(anchor=NW, side=LEFT)
-        self.labelat.pack(anchor=NW, side=LEFT)
-        self.labelpa.pack(anchor=NW, side=LEFT)
-        self.labelle.pack(anchor=NW, side=LEFT)
-        self.labelrs.pack(anchor=NW, side=LEFT)
+        # packing characteristics and combat values
+        for i in self.label:
+            i.pack(anchor=NW, side=LEFT)
 
     def heldenstats_aktualisieren(self):
-        self.labelmu.config(text='MU: ' + str(held.geteigenschaften()[0]))
-        self.labelkl.config(text='KL: ' + str(held.geteigenschaften()[1]))
-        self.labelch.config(text='CH: ' + str(held.geteigenschaften()[2]))
-        self.labelin.config(text='IN: ' + str(held.geteigenschaften()[3]))
-        self.labelff.config(text='FF: ' + str(held.geteigenschaften()[4]))
-        self.labelge.config(text='GE: ' + str(held.geteigenschaften()[5]))
-        self.labelko.config(text='KO: ' + str(held.geteigenschaften()[6]))
-        self.labelkk.config(text='KK: ' + str(held.geteigenschaften()[7]))
-        self.labelat.config(text='AT: ' + str(held.getkampfwerte()[0] + held.getwaffe().getmod()[0]))
-        self.labelpa.config(text='PA: ' + str(held.getkampfwerte()[1] + held.getwaffe().getmod()[1]))
-        self.labelle.config(text='LE: ' + str(held.getkampfwerte()[2]) + '/' + str(held.getmaxle()))
-        self.labelrs.config(text='RS: ' + str(held.getruestung().getrs()))
+        # updating characteristics
+        for i in range(self.amount_characteristics):
+            self.label[i].config(text=self.labeltext[i] + str(held.geteigenschaften()[i]))
+
+        # updating combat values
+        for i in range(self.amount_characteristics, self.amount_characteristics + self.amount_combat_values):
+            self.label[i].config(text=self.labeltext[i] + str(
+                held.getkampfwerte()[i - self.amount_characteristics] + held.getwaffe().getmod()[
+                    i - self.amount_characteristics]))
+
+        # updating health and armor
+        self.label[len(self.label) - 2].config(
+            text=self.labeltext[len(self.labeltext) - 2] + str(held.getkampfwerte()[2]) + '/' + str(held.getmaxle()))
+        self.label[len(self.label) - 1].config(
+            text=self.labeltext[len(self.labeltext) - 1] + str(held.getruestung().getrs()))
 
     @staticmethod
     def bildrichtung_aktualisieren(direction):

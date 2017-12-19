@@ -97,6 +97,10 @@ class LoadingBalken(threading.Thread):
 class Hauptprogramm:
 
     def __init__(self):
+        global text_color
+        text_color = '#c3e2e7'
+        global bg_color
+        bg_color = '#000000'
         # starting-window setup
         self.fenster = Tk()
         self.fenster.title('Dungeon Game')
@@ -133,7 +137,7 @@ class Hauptprogramm:
         self.beenden_button.place(anchor=E, y=528, x=829)
         self.reset_button = Button(master=self.fenster, text="RESET",
                                    command=self.reset_score, fg="white", bg="grey")
-        self.reset_button.place(anchor=E, y=height-height*0.027, x=width*0.043)
+        self.reset_button.place(anchor=E, y=height - height * 0.027, x=width * 0.043)
         # reading the highscore from score.txt
         highscore = shelve.open("score.txt")
         # on initial startup the score is set to 0
@@ -168,7 +172,7 @@ class Heldenwahl:
 
     def __init__(self):
         # initializing window
-        w, h = 600, 320
+        w, h = 590, 280
         self.heldenwahl_fenster = Toplevel()
         self.heldenwahl_fenster.title('Dungeon Game')
         self.heldenwahl_fenster.minsize(w, h)
@@ -181,86 +185,80 @@ class Heldenwahl:
         self.heldenwahl_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.heldenwahl_fenster.config(bg='darkgray')
         self.heldenwahl_fenster.focus()
-        self.heldenwahl_fenster.bind('<Return>', lambda event: self.heldenwahl_beenden())
-        self.heldenwahl_fenster.bind('<Escape>', lambda event: self.heldenwahl_fenster.destroy())
 
         self.label = Label(master=self.heldenwahl_fenster,
                            text='Heldenauswahl',
-                           padx=30, pady=10,
                            font=('Comic Sans MS', 14),
                            fg='white', bg='darkgray')
-        self.radiogroup = Frame(master=self.heldenwahl_fenster, relief=RIDGE,
+        # initializing radiobuttons
+        self.radiogroup = Frame(master=self.heldenwahl_fenster,
                                 bd=2, bg='darkgray')
         self.auswahl = StringVar()
         self.auswahl.set(0)
-        self.batman_radiobutton = Radiobutton(master=self.radiogroup,
-                                              text='Batman',
-                                              font=('Comic Sans MS', 10),
-                                              bg='darkgray',
-                                              value='Batman', variable=self.auswahl,
-                                              command=self.aktualisiere_beschreibung)
-        self.batman_radiobutton.select()
-        self.superman_radiobutton = Radiobutton(master=self.radiogroup,
-                                                text='Superman',
-                                                font=('Comic Sans MS', 10),
-                                                bg='darkgray',
-                                                value='Superman', variable=self.auswahl,
-                                                command=self.aktualisiere_beschreibung)
-        self.spiderman_radiobutton = Radiobutton(master=self.radiogroup,
-                                                 text='Spiderman',
-                                                 font=('Comic Sans MS', 10),
-                                                 bg='darkgray',
-                                                 value='Spiderman', variable=self.auswahl,
-                                                 command=self.aktualisiere_beschreibung)
-        self.ironman_radiobutton = Radiobutton(master=self.radiogroup,
-                                               text='Ironman',
-                                               font=('Comic Sans MS', 10),
-                                               bg='darkgray',
-                                               value='Ironman', variable=self.auswahl,
-                                               command=self.aktualisiere_beschreibung)
-        self.GreenLantern_radiobutton = Radiobutton(master=self.radiogroup,
-                                                    text='Green Lantern',
-                                                    font=('Comic Sans MS', 10),
-                                                    bg='darkgray',
-                                                    value='GreenLantern', variable=self.auswahl,
-                                                    command=self.aktualisiere_beschreibung)
-        self.flash_radiobutton = Radiobutton(master=self.radiogroup,
-                                             text='Flash',
-                                             font=('Comic Sans MS', 10),
-                                             bg='darkgray',
-                                             value='Flash', variable=self.auswahl,
-                                             command=self.aktualisiere_beschreibung)
-
+        self.radiobuttons = []
+        self.radio_names = ["Batman", "Superman", "Spiderman", "Ironman", "GreenLantern", "Flash"]
+        for i in self.radio_names:
+            self.radiobuttons.append(Radiobutton(master=self.radiogroup, text=i, font=('Comic Sans MS', 10),
+                                                 bg='darkgray', value=i, variable=self.auswahl,
+                                                 command=self.refresh))
+        self.radiobuttons[0].select()
+        self.radio_pos = 0
+        # initializing buttons
         self.weiter_button = Button(master=self.radiogroup, text='weiter',
                                     command=self.heldenwahl_beenden, bg='darkgray')
         self.beschreibung = Text(master=self.heldenwahl_fenster, width=50,
-                                 height=8, wrap=WORD, font=('Comic Sans MS', 10))
+                                 height=11, wrap=WORD, font=('Comic Sans MS', 10))
 
-        self.aktualisiere_beschreibung()
+        # initializaing hero preview
+        self.hero_image = PhotoImage(file=self.get_hero().getanzeigeBild())
+        self.hero_label = Label(self.heldenwahl_fenster, image=self.hero_image, bg='darkgray')
+        self.hero_label.pack(side=RIGHT, padx=5, pady=5)
+        self.refresh()
 
-        self.label.pack()
+        # packing all elements
+        self.label.place(x=w / 2, y=h * 0.07, anchor='center')
         self.radiogroup.pack(side=LEFT, padx=5, pady=5)
-        self.batman_radiobutton.pack(anchor=W)
-        self.superman_radiobutton.pack(anchor=W)
-        self.spiderman_radiobutton.pack(anchor=W)
-        self.ironman_radiobutton.pack(anchor=W)
-        self.GreenLantern_radiobutton.pack(anchor=W)
-        self.flash_radiobutton.pack(anchor=W)
-
+        for i in self.radiobuttons:
+            i.pack(anchor=W)
         self.weiter_button.pack(anchor=S, padx=5, pady=5, fill=X)
-        self.beschreibung.pack(side=RIGHT, padx=5, pady=5)
+        self.beschreibung.pack(side=LEFT, padx=5, pady=0)
+        # binding keys to game functions
+        self.heldenwahl_fenster.bind('<Return>', lambda event: self.heldenwahl_beenden())
+        self.heldenwahl_fenster.bind('<Escape>', lambda event: self.heldenwahl_fenster.destroy())
+        self.heldenwahl_fenster.bind('<KeyPress-Down>', lambda event: self.scroll(0))
+        self.heldenwahl_fenster.bind('<KeyPress-Up>', lambda event: self.scroll(1))
+
         self.heldenwahl_fenster.mainloop()
 
-    def aktualisiere_beschreibung(self):
+    # function to scroll up and down the radiobutton list
+    def scroll(self, direction):
+        # if the direction is upwards
+        if direction:
+            if self.radio_pos > 0:
+                self.radio_pos -= 1
+                self.radiobuttons[self.radio_pos].select()
+        # direction downwards
+        else:
+            if self.radio_pos < len(self.radiobuttons) - 1:
+                self.radio_pos += 1
+                self.radiobuttons[self.radio_pos].select()
+        self.refresh()
+
+    # function to refresh the seleced hero's data
+    def refresh(self):
+        # updating the text
         self.beschreibung.delete(1.0, END)
         dateiname = os.path.join("helden", self.auswahl.get() + '.txt')
         daten = open(dateiname, "r", encoding="iso-8859-15")
         textdaten = daten.read()
         daten.close()
         self.beschreibung.insert(1.0, textdaten)
+        # updating the image
+        self.hero_image = PhotoImage(file=self.get_hero().getanzeigeBild())
+        self.hero_label.configure(image=self.hero_image)
 
-    def heldenwahl_beenden(self):
-        global held
+    # function to get the selected hero
+    def get_hero(self):
         text = "Bitten Name eingeben"
         switcher = {
             "Batman": Batman(text),
@@ -270,7 +268,12 @@ class Heldenwahl:
             "GreenLantern": GreenLantern(text),
             "Flash": Flash(text)
         }
-        held = switcher.get(self.auswahl.get())
+        return switcher.get(self.auswahl.get())
+
+    # function to set the selected hero and terminate the hero selection
+    def heldenwahl_beenden(self):
+        global held
+        held = self.get_hero()
         self.heldenwahl_fenster.destroy()
         HeldBenennen()
 
@@ -345,46 +348,6 @@ class HeldBenennen:
             held.setheldenname(self.eingabefeld.get())
         held.setgeschlecht(self.auswahlgeschlecht.get())
         self.heldbenennen_fenster.destroy()
-        Heldenzeigen()
-
-
-class Heldenzeigen:
-
-    def __init__(self):
-        # initializing window
-        w = h = 220
-        self.held_fenster = Toplevel()
-        self.held_fenster.title('Dungeon Game')
-        self.held_fenster.minsize(w, h)
-        self.held_fenster.maxsize(w, h)
-        # centering the window on screen
-        ws = self.held_fenster.winfo_screenwidth()
-        hs = self.held_fenster.winfo_screenheight()
-        x = (ws / 2) - (w / 2)
-        y = (hs / 2) - (h / 2)
-        self.held_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        self.held_fenster.config(bg='darkgray')
-        self.held_fenster.focus()
-
-        self.held_fenster.bind('<Return>', lambda event: self.heldenzeigen_beenden())
-
-        bg_image = PhotoImage(file=held.getanzeigeBild())
-        bg_label = Label(self.held_fenster, image=bg_image)
-        bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-        self.weiter_button = Button(master=self.held_fenster, text='weiter',
-                                    command=self.heldenzeigen_beenden, bg='darkgray')
-        self.zurueck_button = Button(master=self.held_fenster, text='zurück',
-                                     command=self.wahl_neustart, bg='darkgray')
-        self.weiter_button.pack(side=BOTTOM, padx=30, pady=5, fill=X)
-        self.zurueck_button.pack(side=BOTTOM, padx=30, pady=5, fill=X)
-        self.held_fenster.mainloop()
-
-    def wahl_neustart(self):
-        self.held_fenster.destroy()
-        Heldenwahl()
-
-    def heldenzeigen_beenden(self):
-        self.held_fenster.destroy()
         Spielfeldanzeigen(1, held)
 
 

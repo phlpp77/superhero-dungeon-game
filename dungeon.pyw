@@ -130,7 +130,7 @@ class Hauptprogramm:
         self.fenster.wm_attributes('-alpha', 0.5)
         # initializing the buttons
         self.neuesspiel_button = Button(master=self.fenster, text='START',
-                                        command=self.einspieler, fg='white', bg='RED')
+                                        command=self.einspieler, fg=text_color, bg='RED')
         self.neuesspiel_button.place(anchor=E, y=496, x=835)
         self.beenden_button = Button(master=self.fenster, text="ENDE",
                                      command=self.fenster.destroy, fg="white", bg="grey")
@@ -183,35 +183,35 @@ class Heldenwahl:
         x = (ws / 2) - (w / 2)
         y = (hs / 2) - (h / 2)
         self.heldenwahl_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        self.heldenwahl_fenster.config(bg='darkgray')
+        self.heldenwahl_fenster.config(bg=bg_color)
         self.heldenwahl_fenster.focus()
 
         self.label = Label(master=self.heldenwahl_fenster,
                            text='Heldenauswahl',
                            font=('Comic Sans MS', 14),
-                           fg='white', bg='darkgray')
+                           fg=text_color, bg=bg_color)
         # initializing radiobuttons
         self.radiogroup = Frame(master=self.heldenwahl_fenster,
-                                bd=2, bg='darkgray')
+                                bd=2, bg=bg_color)
         self.auswahl = StringVar()
         self.auswahl.set(0)
         self.radiobuttons = []
         self.radio_names = ["Batman", "Superman", "Spiderman", "Ironman", "GreenLantern", "Flash"]
         for i in self.radio_names:
             self.radiobuttons.append(Radiobutton(master=self.radiogroup, text=i, font=('Comic Sans MS', 10),
-                                                 bg='darkgray', value=i, variable=self.auswahl,
+                                                 bg=bg_color, fg=text_color, value=i, variable=self.auswahl,
                                                  command=self.refresh))
         self.radiobuttons[0].select()
         self.radio_pos = 0
         # initializing buttons
         self.weiter_button = Button(master=self.radiogroup, text='weiter',
-                                    command=self.heldenwahl_beenden, bg='darkgray')
+                                    command=self.heldenwahl_beenden, bg=bg_color, fg=text_color)
         self.beschreibung = Text(master=self.heldenwahl_fenster, width=50,
-                                 height=11, wrap=WORD, font=('Comic Sans MS', 10))
+                                 height=11, wrap=WORD, font=('Comic Sans MS', 10), bg=bg_color, fg=text_color)
 
         # initializaing hero preview
         self.hero_image = PhotoImage(file=self.get_hero().getanzeigeBild())
-        self.hero_label = Label(self.heldenwahl_fenster, image=self.hero_image, bg='darkgray')
+        self.hero_label = Label(self.heldenwahl_fenster, image=self.hero_image, bg=bg_color)
         self.hero_label.pack(side=RIGHT, padx=5, pady=5)
         self.refresh()
 
@@ -220,6 +220,7 @@ class Heldenwahl:
         self.radiogroup.pack(side=LEFT, padx=5, pady=5)
         for i in self.radiobuttons:
             i.pack(anchor=W)
+
         self.weiter_button.pack(anchor=S, padx=5, pady=5, fill=X)
         self.beschreibung.pack(side=LEFT, padx=5, pady=0)
         # binding keys to game functions
@@ -293,7 +294,7 @@ class HeldBenennen:
         x = (ws / 2) - (w / 2)
         y = (hs / 2) - (h / 2)
         self.heldbenennen_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        self.heldbenennen_fenster.config(bg='darkgray')
+        self.heldbenennen_fenster.config(bg=bg_color)
         self.heldbenennen_fenster.focus()
         # binding keys to game functions
         self.heldbenennen_fenster.bind('<Return>', lambda event: self.heldbenennen_beenden())
@@ -303,9 +304,10 @@ class HeldBenennen:
                            text='Held benennen',
                            padx=30, pady=10,
                            font=('Comic Sans MS', 14),
-                           fg='white', bg='darkgray')
-        self.eingabefeld = Entry(self.heldbenennen_fenster)
-        self.eingabefeld.insert(END, held.getheldenname())
+                           fg=text_color, bg=bg_color)
+        self.eingabefeld = Entry(self.heldbenennen_fenster, bg=bg_color, fg=text_color)
+        print(held.getheldenname())
+        self.eingabefeld.insert(END, held.gettypname())
         # automatically selecting text of name field
         self.eingabefeld.focus()
         self.eingabefeld.select_range(0, 'end')
@@ -314,20 +316,22 @@ class HeldBenennen:
         self.maennlich = Radiobutton(master=self.heldbenennen_fenster,
                                      text='maennlich',
                                      font=('Comic Sans MS', 10),
-                                     bg='darkgray',
+                                     bg=bg_color,
+                                     fg=text_color,
                                      value='0',
                                      variable=self.auswahlgeschlecht)
         self.weiblich = Radiobutton(master=self.heldbenennen_fenster,
                                     text='weiblich',
                                     font=('Comic Sans MS', 10),
-                                    bg='darkgray',
+                                    bg=bg_color,
+                                    fg=text_color,
                                     value='1',
                                     variable=self.auswahlgeschlecht)
         self.maennlich.select()
         self.weiter_button = Button(master=self.heldbenennen_fenster, text='weiter',
-                                    command=self.heldbenennen_beenden, bg='darkgray')
+                                    command=self.heldbenennen_beenden, bg=bg_color, fg=text_color)
         self.zurueck_button = Button(master=self.heldbenennen_fenster, text='zurück',
-                                     command=self.heldenwahl_neustart, bg='darkgray')
+                                     command=self.heldenwahl_neustart, bg=bg_color, fg=text_color)
 
         self.label.pack()
         self.eingabefeld.pack(padx=30, fill=X)
@@ -368,48 +372,32 @@ class Spielfeldanzeigen:
         x = (ws / 2) - (w / 2)
         y = (hs / 2) - (h / 2)
         self.spielfeld_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        self.spielfeld_fenster.config(bg='darkgray')
+        self.spielfeld_fenster.config(bg=bg_color)
 
         self.music = Musik(self.spielfeld_fenster)
         self.music.setDaemon(True)
         self.music.start()
 
         self.canvas = Canvas(master=self.spielfeld_fenster, width=1088,
-                             height=576)
+                             height=576, bg=bg_color)
         self.canvas.pack(padx=0, pady=0)
 
         global held
         held = heldget
 
-        self.statsframe = Frame(master=self.spielfeld_fenster, relief=GROOVE, bd=3, bg="darkgrey")
+        self.statsframe = Frame(master=self.spielfeld_fenster, bd=3, bg=bg_color)
 
         self.statsframe1 = Frame(master=self.statsframe, relief=FLAT,
-                                 bd=2, bg='darkgray')
+                                 bd=2, bg=bg_color)
         self.statsframe2 = Frame(master=self.statsframe, relief=FLAT,
-                                 bd=2, bg='darkgray')
+                                 bd=2, bg=bg_color)
 
         self.labelheldenname = Label(master=self.statsframe1, text=held.getheldenname(),
-                                     bg='darkgray', fg='white', width=20, pady=2, font=('Comic Sans MS', 15))
+                                     bg=bg_color, fg=text_color, width=20, pady=2, font=('Comic Sans MS', 15))
 
         self.labeltypname = Label(master=self.statsframe2, text=held.gettypname(),
-                                  bg='darkgray', fg='white', width=20, pady=2, font=('Comic Sans MS', 15))
-        # Heldenstats initialisieren
-        """self.labelmu = Label(master=self.statsframe1, text='MU: ' + str(held.geteigenschaften()[0]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
-        self.labelkl = Label(master=self.statsframe1, text='KL: ' + str(held.geteigenschaften()[1]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
-        self.labelch = Label(master=self.statsframe1, text='CH: ' + str(held.geteigenschaften()[2]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
-        self.labelin = Label(master=self.statsframe1, text='IN: ' + str(held.geteigenschaften()[3]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
-        self.labelff = Label(master=self.statsframe1, text='FF: ' + str(held.geteigenschaften()[4]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
-        self.labelge = Label(master=self.statsframe1, text='GE: ' + str(held.geteigenschaften()[5]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
-        self.labelko = Label(master=self.statsframe1, text='KO: ' + str(held.geteigenschaften()[6]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
-        self.labelkk = Label(master=self.statsframe1, text='KK: ' + str(held.geteigenschaften()[7]),
-                             bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))"""
+                                  bg=bg_color, fg=text_color, width=20, pady=2, font=('Comic Sans MS', 15))
+
         # amount_characteristics describes the number of labels that are characteristics (the rest are combat values)
         self.amount_characteristics, self.amount_combat_values = 8, 2
         self.label, self.labeltext = [], ["MU: ", "KL: ", "CH: ", "IN: ", "FF: ", "GE: ", "KO: ", "KK: ", "AT: ",
@@ -417,7 +405,7 @@ class Spielfeldanzeigen:
         # initialize characteristics
         for i in range(self.amount_characteristics):
             tmp_label = Label(master=self.statsframe1, text=self.labeltext[i] + str(held.geteigenschaften()[i]),
-                              bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
+                              bg=bg_color, fg=text_color, width=6, pady=2, font=('Comic Sans MS', 13))
             self.label.append(tmp_label)
 
         # initialize combat values
@@ -425,19 +413,19 @@ class Spielfeldanzeigen:
             tmp_label = Label(master=self.statsframe2,
                               text=self.labeltext[i] + str(
                                   held.getkampfwerte()[i - self.amount_characteristics] + held.getwaffe().getmod()[
-                                      i - self.amount_characteristics]), bg='darkgray',
-                              fg='white', width=6, pady=2, font=('Comic Sans MS', 13))
+                                      i - self.amount_characteristics]), bg=bg_color,
+                              fg=text_color, width=6, pady=2, font=('Comic Sans MS', 13))
             self.label.append(tmp_label)
 
         # initialize life value
         self.label.append(Label(master=self.statsframe2,
                                 text=self.labeltext[len(self.labeltext) - 2] + str(held.getkampfwerte()[2]) + '/' + str(
                                     held.getmaxle()),
-                                bg='darkgray', fg='white', width=12, pady=2, font=('Comic Sans MS', 13)))
+                                bg=bg_color, fg=text_color, width=12, pady=2, font=('Comic Sans MS', 13)))
         # initialize armor
         self.label.append(Label(master=self.statsframe2,
                                 text=self.labeltext[len(self.labeltext) - 1] + str(held.getruestung().getrs()),
-                                bg='darkgray', fg='white', width=6, pady=2, font=('Comic Sans MS', 13)))
+                                bg=bg_color, fg=text_color, width=6, pady=2, font=('Comic Sans MS', 13)))
 
         functionsname = "Dungeonebene0" + str(levelnr) + "(levelnr, held)"  # Level Aufrufen
         global d
@@ -658,7 +646,7 @@ class DeathScreen:
         x = (ws / 2) - (w / 2)
         y = (hs / 2) - (h / 2)
         self.death_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        self.death_fenster.config(bg='darkgray')
+        self.death_fenster.config(bg=bg_color)
         bg = PhotoImage(file="gfx/deathScreen.gif")
         bl = Label(self.death_fenster, image=bg)
         bl.place(x=0, y=0, relwidth=1, relheight=1)
@@ -680,7 +668,7 @@ class EndScreen:
         x = (ws / 2) - (w / 2)
         y = (hs / 2) - (h / 2)
         self.end_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        self.end_fenster.config(bg='darkgray')
+        self.end_fenster.config(bg=bg_color)
         bg = PhotoImage(file="gfx/endScreen.gif")
         bl = Label(self.end_fenster, image=bg)
         bl.place(x=0, y=0, relwidth=1, relheight=1)
@@ -702,7 +690,7 @@ class LoadingScreen:
         x = (ws / 2) - (w / 2)
         y = (hs / 2) - (h / 2)
         self.loading_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        self.loading_fenster.config(bg='darkgray')
+        self.loading_fenster.config(bg=bg_color)
 
         self.loading_fenster.bind('<Return>', lambda event: self.loading_beenden(self.loading_fenster))
 
@@ -717,7 +705,7 @@ class LoadingScreen:
         self.loading_fenster.bind('<KeyPress-s>', lambda event: self.loading_beenden(self.loading_fenster))
         self.loading_fenster.bind('<Escape>', lambda event: self.loading_beenden(self.loading_fenster))
         w_button = Button(master=self.loading_fenster, text='weiter',
-                          command=lambda: self.loading_beenden(self.loading_fenster), bg='white')
+                          command=lambda: self.loading_beenden(self.loading_fenster), bg=text_color)
 
         balken = LoadingBalken(progressbar, w_button)
         balken.setDaemon(True)
@@ -731,7 +719,7 @@ class LoadingScreen:
         tipps = Label(master=self.loading_fenster, text=tippslist[randint(0, len(tippslist) - 1)],
                       padx=30, pady=10,
                       font=('Comic Sans MS', 14),
-                      fg='black', bg='white')
+                      fg='black', bg=text_color)
         tipps.pack()
 
         self.loading_fenster.mainloop()
@@ -743,6 +731,4 @@ class LoadingScreen:
 
 
 # Spiel
-
-
 spiel = Hauptprogramm()

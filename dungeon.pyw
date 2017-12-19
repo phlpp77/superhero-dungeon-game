@@ -97,35 +97,67 @@ class LoadingBalken(threading.Thread):
 class Hauptprogramm:
 
     def __init__(self):
+        # starting-window setup
         self.fenster = Tk()
         self.fenster.title('Dungeon Game')
-        self.fenster.minsize(1088, 567)
-        self.fenster.maxsize(1088, 567)
-        w = 1088
-        h = 567
+        # opening the titlescreen and getting its dimensions
+        background_image = PhotoImage(file="gfx/titlescreen1.gif")
+        width, height = background_image.width(), background_image.height()
+        # configuring the window to be of same size as titlescreen
+        self.fenster.minsize(width, height)
+        self.fenster.maxsize(width, height)
+        # centering the window on screen
         ws = self.fenster.winfo_screenwidth()
         hs = self.fenster.winfo_screenheight()
-        x = (ws / 2) - (w / 2)
-        y = (hs / 2) - (h / 2)
-        self.fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))  # Fenster mittig anordnen
-        background_image = PhotoImage(file="gfx/titlescreen.gif")
+        x = (ws / 2) - (width / 2)
+        y = (hs / 2) - (height / 2)
+        self.fenster.geometry('%dx%d+%d+%d' % (width, height, x, y))
+        # showing the background image
         background_label = Label(self.fenster, image=background_image)
         background_label.place(x=0, y=0, relwidth=1, relheight=1)
+        # starting flickering of the screen
         self.parallel = Flackern(self.fenster)
         self.parallel.setDaemon(True)
         self.parallel.start()
-
+        # binding keys to game functions
         self.fenster.bind('<Return>', lambda event: self.einspieler())
         self.fenster.bind('<Escape>', lambda event: self.fenster.destroy())
-
+        self.fenster.bind('<Motion>', lambda event: self.parallel.stop())
         self.fenster.wm_attributes('-alpha', 0.5)
+        # initializing the buttons
         self.neuesspiel_button = Button(master=self.fenster, text='START',
                                         command=self.einspieler, fg='white', bg='RED')
         self.neuesspiel_button.place(anchor=E, y=496, x=835)
         self.beenden_button = Button(master=self.fenster, text="ENDE",
                                      command=self.fenster.destroy, fg="white", bg="grey")
         self.beenden_button.place(anchor=E, y=528, x=829)
+        self.reset_button = Button(master=self.fenster, text="RESET",
+                                   command=self.reset_score, fg="white", bg="grey")
+        self.reset_button.place(anchor=E, y=height-height*0.027, x=width*0.043)
+        # reading the highscore from score.txt
+        highscore = shelve.open("score.txt")
+        # on initial startup the score is set to 0
+        if "Score" not in highscore:
+            self.reset_score()
+        score = highscore["Score"]
+        highscore.close()
+        # displaying the highscore on the starting screen
+        self.scorelabel = Label(self.fenster, text=score, compound=CENTER, bg="black", fg="light yellow",
+                                font="System 26 bold")
+        self.scorelabel.place(anchor=E, y=320, x=587)
+
         self.fenster.mainloop()
+
+    def reset_score(self):
+        highscore = shelve.open("score.txt")
+        highscore["Score"] = 0
+        self.refresh_score()
+        highscore.close()
+
+    def refresh_score(self):
+        highscore = shelve.open("score.txt")
+        self.scorelabel.config(text=highscore["Score"])
+        highscore.close()
 
     def einspieler(self):
         self.parallel.stop()
@@ -135,20 +167,22 @@ class Hauptprogramm:
 class Heldenwahl:
 
     def __init__(self):
+        # initializing window
+        w, h = 600, 320
         self.heldenwahl_fenster = Toplevel()
         self.heldenwahl_fenster.title('Dungeon Game')
-        self.heldenwahl_fenster.minsize(600, 320)
-        self.heldenwahl_fenster.maxsize(600, 320)
-        w = 600
-        h = 320
+        self.heldenwahl_fenster.minsize(w, h)
+        self.heldenwahl_fenster.maxsize(w, h)
+        # centering the window on screen
         ws = self.heldenwahl_fenster.winfo_screenwidth()
         hs = self.heldenwahl_fenster.winfo_screenheight()
         x = (ws / 2) - (w / 2)
         y = (hs / 2) - (h / 2)
         self.heldenwahl_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.heldenwahl_fenster.config(bg='darkgray')
-
+        self.heldenwahl_fenster.focus()
         self.heldenwahl_fenster.bind('<Return>', lambda event: self.heldenwahl_beenden())
+        self.heldenwahl_fenster.bind('<Escape>', lambda event: self.heldenwahl_fenster.destroy())
 
         self.label = Label(master=self.heldenwahl_fenster,
                            text='Heldenauswahl',
@@ -244,21 +278,24 @@ class Heldenwahl:
 class HeldBenennen:
 
     def __init__(self):
+        # initializing window
+        w = h = 220
         self.heldbenennen_fenster = Toplevel()
         self.heldbenennen_fenster.title('Dungeon Game')
-        self.heldbenennen_fenster.minsize(220, 220)
-        self.heldbenennen_fenster.maxsize(220, 220)
-        w = 220
-        h = 220
+        self.heldbenennen_fenster.minsize(w, h)
+        self.heldbenennen_fenster.maxsize(w, h)
+        # centering the window on screen
         ws = self.heldbenennen_fenster.winfo_screenwidth()
         hs = self.heldbenennen_fenster.winfo_screenheight()
         x = (ws / 2) - (w / 2)
         y = (hs / 2) - (h / 2)
         self.heldbenennen_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.heldbenennen_fenster.config(bg='darkgray')
-
+        self.heldbenennen_fenster.focus()
+        # binding keys to game functions
         self.heldbenennen_fenster.bind('<Return>', lambda event: self.heldbenennen_beenden())
-
+        self.heldbenennen_fenster.bind('<Escape>', lambda event: self.heldenwahl_neustart())
+        # initializing name input
         self.label = Label(master=self.heldbenennen_fenster,
                            text='Held benennen',
                            padx=30, pady=10,
@@ -266,6 +303,10 @@ class HeldBenennen:
                            fg='white', bg='darkgray')
         self.eingabefeld = Entry(self.heldbenennen_fenster)
         self.eingabefeld.insert(END, held.getheldenname())
+        # automatically selecting text of name field
+        self.eingabefeld.focus()
+        self.eingabefeld.select_range(0, 'end')
+        # gender selection
         self.auswahlgeschlecht = StringVar()
         self.maennlich = Radiobutton(master=self.heldbenennen_fenster,
                                      text='maennlich',
@@ -310,18 +351,20 @@ class HeldBenennen:
 class Heldenzeigen:
 
     def __init__(self):
+        # initializing window
+        w = h = 220
         self.held_fenster = Toplevel()
         self.held_fenster.title('Dungeon Game')
-        self.held_fenster.minsize(220, 220)
-        self.held_fenster.maxsize(220, 220)
-        w = 220
-        h = 220
+        self.held_fenster.minsize(w, h)
+        self.held_fenster.maxsize(w, h)
+        # centering the window on screen
         ws = self.held_fenster.winfo_screenwidth()
         hs = self.held_fenster.winfo_screenheight()
         x = (ws / 2) - (w / 2)
         y = (hs / 2) - (h / 2)
         self.held_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.held_fenster.config(bg='darkgray')
+        self.held_fenster.focus()
 
         self.held_fenster.bind('<Return>', lambda event: self.heldenzeigen_beenden())
 
@@ -624,6 +667,10 @@ class Spielfeldanzeigen:
 
         # Heldtotschirm aufrufen
         if d.getlevelende():
+            self.highscore = shelve.open("score.txt")
+            if self.highscore["Score"] < d.getlevelnr() + 1:
+                self.highscore["Score"] = d.getlevelnr() + 1
+            self.highscore.close()
             self.spielfeld_fenster.destroy()
             LoadingScreen()
 
@@ -693,6 +740,9 @@ class LoadingScreen:
         y = (hs / 2) - (h / 2)
         self.loading_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.loading_fenster.config(bg='darkgray')
+
+        self.loading_fenster.bind('<Return>', lambda event: self.loading_beenden(self.loading_fenster))
+
         bg = PhotoImage(file="gfx/loadingScreen.gif")
         bl = Label(self.loading_fenster, image=bg)
         bl.place(x=0, y=0, relwidth=1, relheight=1)
@@ -701,8 +751,8 @@ class LoadingScreen:
                                               mode='determinate')
         progressbar.pack(side="bottom")
 
-        self.loading_fenster.bind('<KeyPress-s>', lambda: self.loading_beenden(self.loading_fenster))
-        self.loading_fenster.bind('<Escape>', lambda: self.loading_beenden(self.loading_fenster))
+        self.loading_fenster.bind('<KeyPress-s>', lambda event: self.loading_beenden(self.loading_fenster))
+        self.loading_fenster.bind('<Escape>', lambda event: self.loading_beenden(self.loading_fenster))
         w_button = Button(master=self.loading_fenster, text='weiter',
                           command=lambda: self.loading_beenden(self.loading_fenster), bg='white')
 

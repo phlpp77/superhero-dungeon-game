@@ -138,31 +138,39 @@ class Hauptprogramm:
         self.reset_button = Button(master=self.fenster, text="RESET",
                                    command=self.reset_score, fg="white", bg="grey")
         self.reset_button.place(anchor=E, y=height - height * 0.027, x=width * 0.043)
+
+        # displaying the highscore on the starting screen
+        self.score = 0
+        self.scorelabel = Label(self.fenster, text=self.score, compound=CENTER, bg="black", fg="light yellow",
+                                font="System 26 bold")
+        self.scorelabel.place(anchor=E, y=320, x=587)
         # reading the highscore from score.txt
         highscore = shelve.open("score.txt")
         # on initial startup the score is set to 0
-        if "Score" not in highscore:
+        if "Score" in highscore:
+            highscore.close()
+            self.refresh_score()
+        else:
+            highscore.close()
             self.reset_score()
-        score = highscore["Score"]
-        highscore.close()
-        # displaying the highscore on the starting screen
-        self.scorelabel = Label(self.fenster, text=score, compound=CENTER, bg="black", fg="light yellow",
-                                font="System 26 bold")
-        self.scorelabel.place(anchor=E, y=320, x=587)
 
         self.fenster.mainloop()
 
+    # function to set the score to zero
     def reset_score(self):
         highscore = shelve.open("score.txt")
         highscore["Score"] = 0
-        self.refresh_score()
         highscore.close()
+        self.refresh_score()
 
+    # function to refresh the highscore label
     def refresh_score(self):
         highscore = shelve.open("score.txt")
-        self.scorelabel.config(text=highscore["Score"])
+        self.score = highscore["Score"]
+        self.scorelabel.config(text=self.score)
         highscore.close()
 
+    # function to start the hero selection
     def einspieler(self):
         self.parallel.stop()
         Heldenwahl()

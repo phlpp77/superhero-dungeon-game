@@ -75,7 +75,7 @@ class Musik(GUIThread):
                     sound_queue.put(sound_path)
 
         # using pygame to play all music in the music folder
-        if not pygame:
+        if pygame:
             # playing music if there is music in the music folder
             if len(all_music) > 0:
                 # initializing the music player

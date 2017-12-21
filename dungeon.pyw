@@ -1,8 +1,10 @@
+import queue
+import sndhdr
 import threading
-import tkinter.ttk
-import shelve
 from random import randint
+import shelve
 from tkinter import *
+import tkinter.ttk
 
 from helden.batman import *  # Batman
 from helden.flash import *  # Flash
@@ -61,15 +63,40 @@ class Flackern(GUIThread):
 
 class Musik(GUIThread):
     def run(self):
-        if pygame:
-            pygame.mixer.init()
-            pygame.mixer.music.load("music/sound.wav")
-            pygame.mixer.music.play()
+        # queueing all music files in music folder
+        all_music = []
+        sound_queue = queue.Queue()
+        for root, dirs, filenames in os.walk('./music'):
+            for filename in filenames:
+                # checking if the file is a soundfile
+                sound_path = "music/" + filename
+                if sndhdr.what(sound_path):
+                    all_music.append(sound_path)
+                    sound_queue.put(sound_path)
+
+        # using pygame to play all music in the music folder
+        if not pygame:
+            # playing music if there is music in the music folder
+            if len(all_music) > 0:
+                # initializing the music player
+                pygame.mixer.init()
+                pygame.mixer.music.load(all_music[0])
+                pygame.mixer.music.play()
+                # queueing the music
+                for filename in all_music[0:]:
+                    pygame.mixer.music.queue(filename)
+            # stopping music
             if self._stop:
                 pygame.mixer.music.stop()
+
+        # using Windows to play music
         while not self._stop:
-            if winsound:
-                winsound.PlaySound('music/sound.wav', winsound.SND_FILENAME)
+            # checking if winsound is available
+            if winsound and not pygame:
+                sound = sound_queue.get()
+                winsound.PlaySound(sound, winsound.SND_FILENAME)
+                sound_queue.put(sound)
+            # if no soundplayer is available, the process is stopped
             else:
                 self.stop()
 
@@ -123,6 +150,10 @@ class Hauptprogramm:
         self.parallel = Flackern(self.fenster)
         self.parallel.setDaemon(True)
         self.parallel.start()
+        # starting music play
+        self.music = Musik(self.fenster)
+        self.music.setDaemon(True)
+        self.music.start()
         # binding keys to game functions
         self.fenster.bind('<Return>', lambda event: self.einspieler())
         self.fenster.bind('<Escape>', lambda event: self.fenster.destroy())
@@ -354,7 +385,8 @@ class HeldBenennen:
         Heldenwahl()
 
     def heldbenennen_beenden(self):
-        if self.eingabefeld.get() == "Bitte Name eingeben":
+        if self.eingabefeld.get() == held.gettypname():
+            print("1")
             held.setheldenname("Namenloser")
         else:
             held.setheldenname(self.eingabefeld.get())
@@ -381,10 +413,6 @@ class Spielfeldanzeigen:
         y = (hs / 2) - (h / 2)
         self.spielfeld_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.spielfeld_fenster.config(bg=bg_color)
-
-        self.music = Musik(self.spielfeld_fenster)
-        self.music.setDaemon(True)
-        self.music.start()
 
         self.canvas = Canvas(master=self.spielfeld_fenster, width=1088,
                              height=576, bg=bg_color)
@@ -664,20 +692,19 @@ class DeathScreen:
 class EndScreen:
 
     def __init__(self):
+        bg = PhotoImage(file="gfx/endScreen.gif")
+        width, height = bg.width(), bg.height()
         self.end_fenster = Toplevel()
         self.end_fenster.focus_force()
         self.end_fenster.title('Dungeon Game - Vollversion kaufen!')
-        self.end_fenster.minsize(1088, 567)
-        self.end_fenster.maxsize(1088, 567)
-        w = 1088
-        h = 567
+        self.end_fenster.minsize(width, height)
+        self.end_fenster.maxsize(width, height)
         ws = self.end_fenster.winfo_screenwidth()
         hs = self.end_fenster.winfo_screenheight()
-        x = (ws / 2) - (w / 2)
-        y = (hs / 2) - (h / 2)
-        self.end_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        x = (ws / 2) - (width / 2)
+        y = (hs / 2) - (height / 2)
+        self.end_fenster.geometry('%dx%d+%d+%d' % (width, height, x, y))
         self.end_fenster.config(bg=bg_color)
-        bg = PhotoImage(file="gfx/endScreen.gif")
         bl = Label(self.end_fenster, image=bg)
         bl.place(x=0, y=0, relwidth=1, relheight=1)
         self.end_fenster.mainloop()

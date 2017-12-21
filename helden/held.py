@@ -3,25 +3,39 @@ from items import *
 import time
 
 
-class Held:
+# Class hero
+class Hero:
 
     def __init__(self, name):
         self._heldenname = name
-        self._heldentyp = 0  # 0 Batman; 1 Superman; 2 Ironman; 3 Heiler
+        self._heldentyp = 0  # 0 Batman, 1 Superman, 2 Spiderman, 3 Ironman, Green Lantern, 4 Flash
         self._geschlecht = 0  # 0 maennlich; 1 weiblich
-        self._typname = 'Batman'  # Typ des Helden
+        self._typname = 'Batman'  # Typ des Heroen
         self._eigenschaften = [11, 11, 10, 11, 10, 11, 10, 10]  # MU KL CH IN FF GE KO KK
         self._kampfwerte = [11, 11, 165]  # AT PA LeP
-        self._maxle = self._kampfwerte[2]  # LeP-Maximum
         self._bild = 'gfxhelden/Batman.gif'
         self._anzeigeBild = 'gfxhelden/Batman0.gif'
-        self._x = 0
-        self._y = 0
+        self._x, self._y, self._ap = 0, 0, 0
         self._lichtradius = 1.0
         self._itemliste = [Schwert(), Wattierterwaffenrock()]  # leere Liste, in der alle Items gespeichert sind
-        self._waffe = self._itemliste[0]  # Waffe
-        self._ruestung = self._itemliste[1]  # Ruestung
-        self._ap = 0
+        self._ruestung = self._waffe = self._maxle = 0
+        self.var_init()
+
+    @staticmethod
+    def factory(wanted_obj):
+        text = "Bitten Name eingeben"
+        subclasses = {
+            "Batman": Batman(text),
+            "Superman": Superman(text),
+            "Spiderman": Spiderman(text),
+            "Ironman": Ironman(text),
+            "GreenLantern": GreenLantern(text),
+            "Flash": Flash(text)
+        }
+        return subclasses.get(wanted_obj)
+
+    def var_init(self):
+        self._maxle, self._waffe, self._ruestung = self._kampfwerte[2], self._itemliste[0], self._itemliste[1]
 
     def getheldenname(self):
         return self._heldenname
@@ -83,7 +97,7 @@ class Held:
     def setbild(self, bild):
         self._bild = bild
 
-    def getanzeigeBild(self):
+    def get_anzeige_bild(self):
         return self._anzeigeBild
 
     def getx(self):
@@ -100,14 +114,14 @@ class Held:
 
     # noinspection PyAttributeOutsideInit
     def ausleuchten(self):
-        L = [(self._x, self._y)]
+        light = [(self._x, self._y)]
         self.fackelradius = 1.0  # spaeter an anderer Stelle einfuegen, etwa beim Entzueden oder Besitzen einer Fackel
         maxr = self._lichtradius + self.fackelradius
         for i in range(int(8 * maxr)):
             for r in range(int(maxr)):
-                L = L + [(self._x + int(round((r + 1) * cos(2 * pi * (i + 1) / (8 * maxr)), 0)),
-                          self._y + int(round((r + 1) * sin(2 * pi * (i + 1) / (8 * maxr)), 0)))]
-        return L
+                light = light + [(self._x + int(round((r + 1) * cos(2 * pi * (i + 1) / (8 * maxr)), 0)),
+                                  self._y + int(round((r + 1) * sin(2 * pi * (i + 1) / (8 * maxr)), 0)))]
+        return light
 
     def itemnehmen(self, it):  # nimmt das Item it in die Itemliste auf
         self._itemliste = self._itemliste + [it]
@@ -143,8 +157,75 @@ class Held:
     def heilen(self, sp):
         self._kampfwerte[2] = self._kampfwerte[2] + int(sp * (self._eigenschaften[4] + self._eigenschaften[6]) / 40)
         if self._kampfwerte[2] > self._maxle:
-            self._kampfwerte[2] = self.maxle
+            self._kampfwerte[2] = self._maxle
 
-    def rennen(self, heldentyp):
+    @staticmethod
+    def rennen(heldentyp):
         if heldentyp != 5:
             time.sleep(0.1)
+
+
+# Subclasses for all heros, new ones are added on top of the old ones
+class Flash(Hero):
+    def __init__(self, name):
+        Hero.__init__(self, name)
+        self._heldentyp, self._typname = 5, 'Flash'
+        self._bild, self._anzeigeBild = 'gfxhelden/Flash.gif', 'gfxhelden/Flash0.gif'
+        self._eigenschaften, self._kampfwerte = [9, 13, 10, 13, 12, 11, 13, 9], [14, 10, 150]
+        self._itemliste = [Dolch(), Kleidung()]
+        self.var_init()
+
+
+class GreenLantern(Hero):
+    def __init__(self, name):
+        Hero.__init__(self, name)
+        self._heldentyp, self._typname, self._lichtradius = 4, 'GreenLantern', 2.0
+        self._bild, self._anzeigeBild = 'gfxhelden/GreenLantern.gif', 'gfxhelden/GreenLantern0.gif'
+        self._eigenschaften, self._kampfwerte = [9, 13, 10, 13, 12, 11, 13, 9], [14, 10, 90]
+        self._itemliste = [Dolch(), Kleidung()]
+        self.var_init()
+
+    def heilen(self, sp):
+        self._kampfwerte[2] += int(sp * (self._eigenschaften[4] + self._eigenschaften[6] + 6) / 40)  # 15% heilen Bonus
+        if self._kampfwerte[2] > self._maxle:
+            self._kampfwerte[2] = self._maxle
+
+
+class Ironman(Hero):
+    def __init__(self, name):
+        Hero.__init__(self, name)
+        self._heldentyp, self._typname, self._lichtradius = 2, 'Ironman', 2.0
+        self._bild, self._anzeigeBild = 'gfxhelden/Ironman.gif', 'gfxhelden/Ironman0.gif'
+        self._eigenschaften, self._kampfwerte = [12, 9, 8, 10, 11, 12, 13, 13], [13, 10, 180]
+        self._itemliste = [Langschwert(), Kettenhemd()]
+        self.var_init()
+
+
+class Spiderman(Hero):
+    def __init__(self, name):
+        Hero.__init__(self, name)
+        self._heldentyp, self._typname, self._lichtradius = 2, 'Spiderman', 2.0
+        self._bild, self._anzeigeBild = 'gfxhelden/Spiderman.gif', 'gfxhelden/Spiderman0.gif'
+        self._eigenschaften, self._kampfwerte = [10, 11, 13, 12, 13, 13, 10, 10], [8, 12, 166]
+        self._itemliste = [Kurzschwert(), Wattierterwaffenrock()]
+        self.var_init()
+
+
+class Superman(Hero):
+    def __init__(self, name):
+        Hero.__init__(self, name)
+        self._heldentyp, self._typname = 1, 'Superman'
+        self._bild, self._anzeigeBild = 'gfxhelden/Superman.gif', 'gfxhelden/Superman0.gif'
+        self._eigenschaften, self._kampfwerte = [12, 9, 8, 10, 11, 12, 13, 13], [19, 10, 98]
+        self._itemliste = [Langschwert(), Kettenhemd()]
+        self.var_init()
+
+
+class Batman(Hero):
+    def __init__(self, name):
+        Hero.__init__(self, name)
+        self._heldentyp, self._typname = 0, 'Batman'
+        self._bild, self._anzeigeBild = 'gfxhelden/Batman.gif', 'gfxhelden/Batman0.gif'
+        self._eigenschaften, self._kampfwerte = [11, 11, 10, 11, 10, 11, 10, 10], [11, 11, 165]
+        self._itemliste = [Schwert(), Wattierterwaffenrock()]
+        self.var_init()

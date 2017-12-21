@@ -1,17 +1,13 @@
 import queue
 import sndhdr
 import threading
+from time import sleep
 from random import randint
 import shelve
 from tkinter import *
 import tkinter.ttk
 
-from helden.batman import *  # Batman
-from helden.flash import *  # Flash
-from helden.GreenLantern import *  # Green Lantern
-from helden.ironman import *  # Ironman
-from helden.spiderman import *  # Spiderman
-from helden.superman import *  # Superman
+from helden.held import Hero
 # noinspection PyUnresolvedReferences
 from level.dungeonebene01 import *
 # noinspection PyUnresolvedReferences
@@ -54,9 +50,9 @@ class GUIThread(threading.Thread):
 class Flackern(GUIThread):
     def run(self):
         while not self._stop:
-            time.sleep(0.2)
+            sleep(0.2)
             self.fenster.wm_attributes('-alpha', 0.25)
-            time.sleep(0.2)
+            sleep(0.2)
             # print("Flacker!" + str(threading.get_ident()))
             self.fenster.wm_attributes('-alpha', 1)
 
@@ -75,7 +71,7 @@ class Musik(GUIThread):
                     sound_queue.put(sound_path)
 
         # using pygame to play all music in the music folder
-        if not pygame:
+        if pygame:
             # playing music if there is music in the music folder
             if len(all_music) > 0:
                 # initializing the music player
@@ -110,11 +106,11 @@ class LoadingBalken(threading.Thread):
     def run(self):  # TODO auf 0.05 und auf 0.5 später zurück ändern
         for i in range(0, 90):
             self.progressbar.step()
-            time.sleep(0.0005)
+            sleep(0.0005)
 
         for i in range(0, 9):
             self.progressbar.step()
-            time.sleep(0.005)
+            sleep(0.005)
 
         self.button.pack(side=BOTTOM, anchor=E, padx=30, pady=30)
 
@@ -249,7 +245,7 @@ class Heldenwahl:
                                  height=11, wrap=WORD, font=('Comic Sans MS', 10), bg=bg_color, fg=text_color)
 
         # initializaing hero preview
-        self.hero_image = PhotoImage(file=self.get_hero().getanzeigeBild())
+        self.hero_image = PhotoImage(file=self.get_hero().get_anzeige_bild())
         self.hero_label = Label(self.heldenwahl_fenster, image=self.hero_image, bg=bg_color)
         self.hero_label.pack(side=RIGHT, padx=5, pady=5)
         self.refresh()
@@ -294,21 +290,12 @@ class Heldenwahl:
         daten.close()
         self.beschreibung.insert(1.0, textdaten)
         # updating the image
-        self.hero_image = PhotoImage(file=self.get_hero().getanzeigeBild())
+        self.hero_image = PhotoImage(file=self.get_hero().get_anzeige_bild())
         self.hero_label.configure(image=self.hero_image)
 
     # function to get the selected hero
     def get_hero(self):
-        text = "Bitten Name eingeben"
-        switcher = {
-            "Batman": Batman(text),
-            "Superman": Superman(text),
-            "Spiderman": Spiderman(text),
-            "Ironman": Ironman(text),
-            "GreenLantern": GreenLantern(text),
-            "Flash": Flash(text)
-        }
-        return switcher.get(self.auswahl.get())
+        return Hero.factory(self.auswahl.get())
 
     # function to set the selected hero and terminate the hero selection
     def heldenwahl_beenden(self):
@@ -345,7 +332,6 @@ class HeldBenennen:
                            font=('Comic Sans MS', 14),
                            fg=text_color, bg=bg_color)
         self.eingabefeld = Entry(self.heldbenennen_fenster, bg=bg_color, fg=text_color)
-        print(held.getheldenname())
         self.eingabefeld.insert(END, held.gettypname())
         # automatically selecting text of name field
         self.eingabefeld.focus()
@@ -386,7 +372,6 @@ class HeldBenennen:
 
     def heldbenennen_beenden(self):
         if self.eingabefeld.get() == held.gettypname():
-            print("1")
             held.setheldenname("Namenloser")
         else:
             held.setheldenname(self.eingabefeld.get())
@@ -438,13 +423,13 @@ class Spielfeldanzeigen:
         self.amount_characteristics, self.amount_combat_values = 8, 2
         self.label, self.labeltext = [], ["MU: ", "KL: ", "CH: ", "IN: ", "FF: ", "GE: ", "KO: ", "KK: ", "AT: ",
                                           "PA: ", "LE: ", "RS: "]
-        # initialize characteristics
+        # initialize characteristics readout
         for i in range(self.amount_characteristics):
             tmp_label = Label(master=self.statsframe1, text=self.labeltext[i] + str(held.geteigenschaften()[i]),
                               bg=bg_color, fg=text_color, width=6, pady=2, font=('Comic Sans MS', 13))
             self.label.append(tmp_label)
 
-        # initialize combat values
+        # initialize combat values readout
         for i in range(self.amount_characteristics, self.amount_characteristics + self.amount_combat_values):
             tmp_label = Label(master=self.statsframe2,
                               text=self.labeltext[i] + str(
@@ -453,12 +438,12 @@ class Spielfeldanzeigen:
                               fg=text_color, width=6, pady=2, font=('Comic Sans MS', 13))
             self.label.append(tmp_label)
 
-        # initialize life value
+        # initialize life value readout
         self.label.append(Label(master=self.statsframe2,
                                 text=self.labeltext[len(self.labeltext) - 2] + str(held.getkampfwerte()[2]) + '/' + str(
                                     held.getmaxle()),
                                 bg=bg_color, fg=text_color, width=12, pady=2, font=('Comic Sans MS', 13)))
-        # initialize armor
+        # initialize armor readout
         self.label.append(Label(master=self.statsframe2,
                                 text=self.labeltext[len(self.labeltext) - 1] + str(held.getruestung().getrs()),
                                 bg=bg_color, fg=text_color, width=6, pady=2, font=('Comic Sans MS', 13)))
@@ -572,17 +557,17 @@ class Spielfeldanzeigen:
             i.pack(anchor=NW, side=LEFT)
 
     def heldenstats_aktualisieren(self):
-        # updating characteristics
+        # updating characteristics readout
         for i in range(self.amount_characteristics):
             self.label[i].config(text=self.labeltext[i] + str(held.geteigenschaften()[i]))
 
-        # updating combat values
+        # updating combat value readout
         for i in range(self.amount_characteristics, self.amount_characteristics + self.amount_combat_values):
             self.label[i].config(text=self.labeltext[i] + str(
                 held.getkampfwerte()[i - self.amount_characteristics] + held.getwaffe().getmod()[
                     i - self.amount_characteristics]))
 
-        # updating health and armor
+        # updating health and armor readout
         self.label[len(self.label) - 2].config(
             text=self.labeltext[len(self.labeltext) - 2] + str(held.getkampfwerte()[2]) + '/' + str(held.getmaxle()))
         self.label[len(self.label) - 1].config(

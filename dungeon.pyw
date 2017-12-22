@@ -98,12 +98,12 @@ class Musik(GUIThread):
 
 
 class LoadingBalken(threading.Thread):
-    def __init__(self, progressbar, button):
-        self.progressbar = progressbar
-        self.button = button
+    def __init__(self, stop, progressbar, button, window):
+        self.stop, self.progressbar, self.button, self.window = stop, progressbar, button, window
         threading.Thread.__init__(self)
 
     def run(self):  # TODO auf 0.05 und auf 0.5 später zurück ändern
+        # showing the progressbar with 90 steps
         for i in range(0, 90):
             self.progressbar.step()
             sleep(0.0005)
@@ -112,7 +112,11 @@ class LoadingBalken(threading.Thread):
             self.progressbar.step()
             sleep(0.005)
 
+        # after the progressbar has finished
+        # binding the button and keys to termminate the loading screen
         self.button.pack(side=BOTTOM, anchor=E, padx=30, pady=30)
+        self.window.bind('<Escape>', lambda event: self.stop(self.window))
+        self.window.bind('<Return>', lambda event: self.stop(self.window))
 
 
 # ###########################################GUI:Startbildschirm############################################
@@ -377,14 +381,14 @@ class HeldBenennen:
             held.setheldenname(self.eingabefeld.get())
         held.setgeschlecht(self.auswahlgeschlecht.get())
         self.heldbenennen_fenster.destroy()
-        Spielfeldanzeigen(1, held)
+        Spielfeldanzeigen(1)
 
 
 # ###########################################GUI:Spielfeld############################################
 # noinspection PyAttributeOutsideInit
 class Spielfeldanzeigen:
 
-    def __init__(self, levelnr, heldget):
+    def __init__(self, levelnr):
         self.spielfeld_fenster = Toplevel()
         self.spielfeld_fenster.focus_force()
         self.spielfeld_fenster.title('Dungeon Game - Level ' + str(levelnr))
@@ -402,9 +406,6 @@ class Spielfeldanzeigen:
         self.canvas = Canvas(master=self.spielfeld_fenster, width=1088,
                              height=576, bg=bg_color)
         self.canvas.pack(padx=0, pady=0)
-
-        global held
-        held = heldget
 
         self.statsframe = Frame(master=self.spielfeld_fenster, bd=3, bg=bg_color)
 
@@ -698,13 +699,13 @@ class EndScreen:
 class LoadingScreen:
 
     def __init__(self):
+        bg = PhotoImage(file="gfx/loadingScreen.gif")
+        w, h = bg.width(), bg.height()
         self.loading_fenster = Toplevel()
         self.loading_fenster.focus_force()
         self.loading_fenster.title('Dungeon Game - loading...')
-        self.loading_fenster.minsize(1088, 567)
-        self.loading_fenster.maxsize(1088, 567)
-        w = 1088
-        h = 567
+        self.loading_fenster.minsize(w, h)
+        self.loading_fenster.maxsize(w, h)
         ws = self.loading_fenster.winfo_screenwidth()
         hs = self.loading_fenster.winfo_screenheight()
         x = (ws / 2) - (w / 2)
@@ -712,9 +713,6 @@ class LoadingScreen:
         self.loading_fenster.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.loading_fenster.config(bg=bg_color)
 
-        self.loading_fenster.bind('<Return>', lambda event: self.loading_beenden(self.loading_fenster))
-
-        bg = PhotoImage(file="gfx/loadingScreen.gif")
         bl = Label(self.loading_fenster, image=bg)
         bl.place(x=0, y=0, relwidth=1, relheight=1)
 
@@ -722,12 +720,10 @@ class LoadingScreen:
                                               mode='determinate')
         progressbar.pack(side="bottom")
 
-        self.loading_fenster.bind('<KeyPress-s>', lambda event: self.loading_beenden(self.loading_fenster))
-        self.loading_fenster.bind('<Escape>', lambda event: self.loading_beenden(self.loading_fenster))
         w_button = Button(master=self.loading_fenster, text='weiter',
                           command=lambda: self.loading_beenden(self.loading_fenster), bg=text_color)
 
-        balken = LoadingBalken(progressbar, w_button)
+        balken = LoadingBalken(self.loading_beenden(), progressbar, w_button, self.loading_fenster)
         balken.setDaemon(True)
         balken.start()
 
@@ -747,7 +743,7 @@ class LoadingScreen:
     @staticmethod
     def loading_beenden(loading_fenster):
         loading_fenster.destroy()
-        Spielfeldanzeigen(d.getlevelnr() + 1, held)
+        Spielfeldanzeigen(d.getlevelnr() + 1)
 
 
 # Spiel

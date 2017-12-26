@@ -475,6 +475,8 @@ class Spielfeldanzeigen:
         self.lightmap_aktualisieren()
         self.heldenstats_zeichnen()
 
+        # binding keys to game events
+        self.spielfeld_fenster.bind('<Escape>', lambda event: self.spielfeld_fenster.destroy())
         self.spielfeld_fenster.bind('<KeyPress-Left>', lambda event, a=3: self.bewegung(a))
         self.spielfeld_fenster.bind('<KeyPress-Right>', lambda event, a=2: self.bewegung(a))
         self.spielfeld_fenster.bind('<KeyPress-Up>', lambda event, a=1: self.bewegung(a))
@@ -576,30 +578,27 @@ class Spielfeldanzeigen:
 
     @staticmethod
     def bildrichtung_aktualisieren(direction):
-        switcher = {1: "W.gif", 2: "D.gif", 3: "A.gif", 4: ".gif"}
-        held.setbild(os.path.join("gfxhelden", held.gettypname() + switcher.get(direction)))
+        switcher = {1: 'W', 2: 'D', 3: 'A', 4: ''}
+        held.setbild(os.path.join("gfxhelden", held.gettypname() + switcher.get(direction) + ".gif"))
         heldenbild.config(file=held.getbild())
 
     def bewegung(self, direction):  # direction: 1:up, 2:right, 3:left, 4:down
         # the required amount of movement of the hero per field
         block_dimension = 64
         # slowing the hero down according to it's type
-        held.rennen(held.getheldentyp())
+        sleep(held.get_timeout())
         # refreshing the shown image of the hero according to it's direction
         self.bildrichtung_aktualisieren(direction)
         # getting the current coordinates of the hero
         x, y = held.getx(), held.gety()
         # getting the direction vector
-        dir_vector = {1: (0, -1),
-                      2: (1, 0),
-                      3: (-1, 0),
-                      4: (0, 1)}
+        dir_vector = {1: (0, -1), 2: (1, 0), 3: (-1, 0), 4: (0, 1)}
         vec_x, vec_y = dir_vector.get(direction)
         # calculating the new coordinates of the hero
         new_x, new_y = x + vec_x, y + vec_y
 
         # checking if the wanted movement is a legal operation
-        if 0 < new_x < d.getmaxx() and 0 < new_y < d.getmaxy():
+        if 0 <= new_x < d.getmaxx() and 0 <= new_y < d.getmaxy():
             # triggering the switch at the current coordinates
             self.d = d.getschalter(new_x, new_y).ausloesen(d)
             # showing non-invisible switches

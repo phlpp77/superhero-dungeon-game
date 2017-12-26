@@ -16,7 +16,7 @@ class Hero:
         self._bild = 'gfxhelden/Batman.gif'
         self._anzeigeBild = 'gfxhelden/Batman0.gif'
         self._x, self._y, self._ap = 0, 0, 0
-        self._lichtradius = 1.0
+        self._lichtradius, self.timeout = 1.0, 0.1
         self._itemliste = [Schwert(), Wattierterwaffenrock()]  # leere Liste, in der alle Items gespeichert sind
         self._ruestung = self._waffe = self._maxle = 0
         self.var_init()
@@ -159,17 +159,15 @@ class Hero:
         if self._kampfwerte[2] > self._maxle:
             self._kampfwerte[2] = self._maxle
 
-    @staticmethod
-    def rennen(heldentyp):
-        if heldentyp != 5:
-            time.sleep(0.1)
+    def get_timeout(self):
+        return self.timeout
 
 
 # Subclasses for all heros, new ones are added on top of the old ones
 class Flash(Hero):
     def __init__(self, name):
         Hero.__init__(self, name)
-        self._heldentyp, self._typname = 5, 'Flash'
+        self._heldentyp, self.timeout, self._typname = 5, 0, 'Flash'
         self._bild, self._anzeigeBild = 'gfxhelden/Flash.gif', 'gfxhelden/Flash0.gif'
         self._eigenschaften, self._kampfwerte = [9, 13, 10, 13, 12, 11, 13, 9], [14, 10, 150]
         self._itemliste = [Dolch(), Kleidung()]

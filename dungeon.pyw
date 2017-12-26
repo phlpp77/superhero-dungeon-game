@@ -106,11 +106,11 @@ class LoadingBalken(threading.Thread):
         # showing the progressbar with 90 steps
         for i in range(0, 90):
             self.progressbar.step()
-            sleep(0.0005)
+            sleep(0.005)
 
         for i in range(0, 9):
             self.progressbar.step()
-            sleep(0.005)
+            sleep(0.05)
 
         # after the progressbar has finished
         # binding the button and keys to termminate the loading screen
@@ -580,76 +580,67 @@ class Spielfeldanzeigen:
         held.setbild(os.path.join("gfxhelden", held.gettypname() + switcher.get(direction)))
         heldenbild.config(file=held.getbild())
 
-    def bewegung(self, richtung):  # Richtung: 4=runter, 1=hoch, 2=rechts, 3=links
-        # print(richtung)
+    def bewegung(self, direction):  # direction: 1:up, 2:right, 3:left, 4:down
+        # the required amount of movement of the hero per field
+        block_dimension = 64
+        # slowing the hero down according to it's type
         held.rennen(held.getheldentyp())
-        self.bildrichtung_aktualisieren(richtung)
+        # refreshing the shown image of the hero according to it's direction
+        self.bildrichtung_aktualisieren(direction)
+        # getting the current coordinates of the hero
+        x, y = held.getx(), held.gety()
+        # getting the direction vector
+        dir_vector = {1: (0, -1),
+                      2: (1, 0),
+                      3: (-1, 0),
+                      4: (0, 1)}
+        vec_x, vec_y = dir_vector.get(direction)
+        # calculating the new coordinates of the hero
+        new_x, new_y = x + vec_x, y + vec_y
 
-        if richtung == 4:
-            if held.gety() < d.getmaxy():
-                self.d = d.getschalter(held.getx(), held.gety() + 1).ausloesen(d)
-                if self.d.getschalter(held.getx(), held.gety() + 1).getschaltertyp() != 0:
-                    self.canvas_aktualisieren(held.getx(), held.gety() + 1)
-                self.held = self.d.getfeld(held.getx(), held.gety() + 1).betreten(held)
-                self.itembild[held.getx()][held.gety() + 1].config(
-                    file=self.d.getfeld(held.getx(), held.gety() + 1).getitembild())
-                if self.d.getbegehbar(held.getx(), held.gety() + 1):
-                    self.canvas.move(heldid, 0, 64)
-                    held.sety(held.gety() + 1)
-        elif richtung == 3:
-            if held.getx() > 0:
-                self.d = d.getschalter(held.getx() - 1, held.gety()).ausloesen(d)
-                if self.d.getschalter(held.getx() - 1, held.gety()).getschaltertyp() != 0:
-                    self.canvas_aktualisieren(held.getx() - 1, held.gety())
-                self.held = self.d.getfeld(held.getx() - 1, held.gety()).betreten(held)
-                self.itembild[held.getx() - 1][held.gety()].config(
-                    file=self.d.getfeld(held.getx() - 1, held.gety()).getitembild())
-                if self.d.getbegehbar(held.getx() - 1, held.gety()):
-                    self.canvas.move(heldid, -64, 0)
-                    held.setx(held.getx() - 1)
-        elif richtung == 2:
-            if held.getx() < d.getmaxx():
-                self.d = d.getschalter(held.getx() + 1, held.gety()).ausloesen(d)
-                if self.d.getschalter(held.getx() + 1, held.gety()).getschaltertyp() != 0:
-                    self.canvas_aktualisieren(held.getx() + 1, held.gety())
-                self.held = self.d.getfeld(held.getx() + 1, held.gety()).betreten(held)
-                self.itembild[held.getx() + 1][held.gety()].config(
-                    file=self.d.getfeld(held.getx() + 1, held.gety()).getitembild())
-                if self.d.getbegehbar(held.getx() + 1, held.gety()):
-                    self.canvas.move(heldid, 64, 0)
-                    held.setx(held.getx() + 1)
-        else:
-            if held.gety() > 0:
-                self.d = d.getschalter(held.getx(), held.gety() - 1).ausloesen(d)
-                if self.d.getschalter(held.getx(), held.gety() - 1).getschaltertyp() != 0:
-                    self.canvas_aktualisieren(held.getx(), held.gety() - 1)
-                self.held = self.d.getfeld(held.getx(), held.gety() - 1).betreten(held)
-                self.itembild[held.getx()][held.gety() - 1].config(
-                    file=self.d.getfeld(held.getx(), held.gety() - 1).getitembild())
-                if self.d.getbegehbar(held.getx(), held.gety() - 1):
-                    self.canvas.move(heldid, 0, -64)
-                    held.sety(held.gety() - 1)
+        # checking if the wanted movement is a legal operation
+        if 0 < new_x < d.getmaxx() and 0 < new_y < d.getmaxy():
+            # triggering the switch at the current coordinates
+            self.d = d.getschalter(new_x, new_y).ausloesen(d)
+            # showing non-invisible switches
+            if self.d.getschalter(new_x, new_y).getschaltertyp() != 0:
+                self.canvas_aktualisieren(new_x, new_y)
+            # hero enters the field at the new coordinates
+            self.d.getfeld(new_x, new_y).betreten(held)
+            # refreshing the shown item
+            self.itembild[new_x][new_y].config(file=self.d.getfeld(new_x, new_y).getitembild())
+            if self.d.getbegehbar(new_x, new_y):
+                self.canvas.move(heldid, block_dimension * vec_x, block_dimension * vec_y)
+                held.setx(new_x)
+                held.sety(new_y)
 
+        # showing the changes made
         self.lightmap_aktualisieren()
         self.heldenstats_aktualisieren()
 
-        # wenn held.le > 0, dann held tot mit fenster
+        # if the hero has no lifes left the deathscreen is shown
         if held.getle() <= 0:
+            # terminating the current level window
             self.spielfeld_fenster.destroy()
             DeathScreen()
 
-        # Heldtotschirm aufrufen
+        # if the level is finished the highscore gets refreshed and the loading screen is shown
         if d.getlevelende():
+            # writing the new highscore
             self.highscore = shelve.open("score.txt")
             if self.highscore["Score"] < d.getlevelnr() + 1:
                 self.highscore["Score"] = d.getlevelnr() + 1
             self.highscore.close()
+            # terminating the current level window
             self.spielfeld_fenster.destroy()
+            # opening the loading screen
             LoadingScreen()
 
-        # Spielende Bildschirm aufrufen
+        # if the game is finished the end screen is shown
         if d.getspielende():
+            # terminating the current level window
             self.spielfeld_fenster.destroy()
+            # opening the end screen
             EndScreen()
 
 
@@ -723,7 +714,7 @@ class LoadingScreen:
         w_button = Button(master=self.loading_fenster, text='weiter',
                           command=lambda: self.loading_beenden(self.loading_fenster), bg=text_color)
 
-        balken = LoadingBalken(self.loading_beenden(), progressbar, w_button, self.loading_fenster)
+        balken = LoadingBalken(self.loading_beenden, progressbar, w_button, self.loading_fenster)
         balken.setDaemon(True)
         balken.start()
 
@@ -742,6 +733,7 @@ class LoadingScreen:
 
     @staticmethod
     def loading_beenden(loading_fenster):
+        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
         loading_fenster.destroy()
         Spielfeldanzeigen(d.getlevelnr() + 1)
 

@@ -732,7 +732,6 @@ class LoadingScreen:
 
     @staticmethod
     def loading_beenden(loading_fenster):
-        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
         loading_fenster.destroy()
         Spielfeldanzeigen(d.getlevelnr() + 1)
 

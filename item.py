@@ -51,3 +51,9 @@ class Item:
 
     def wirdgetragen(self):
         return self._wirdgetragen
+
+    def next_lvl(self):
+        pass
+
+    def get_image(self):
+        return self._bild

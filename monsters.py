@@ -3,17 +3,19 @@ from monster import *
 
 
 class Nomonster(Monster):
-    def __init__(self):
+    def __init__(self, lvl_number):
         Monster.__init__(self, 10100, '', True, False, 'gfxitems/noitem.gif', (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Noitem()))
 
+    def get_image(self):
+        pass
 
 class Ork1(Monster):  # Handlanger
-    def __init__(self):
+    def __init__(self, lvl_number):
         Monster.__init__(self, 10101, 'Ork', False, False, 'gfxmnstr/ork1.gif',
-                         (0, 11, 9, 25, 1, 4, 0, 0, 2, 20, Noitem()))
+                         (0, 11, 9, 25, 1, 4, 0, 0, 2, 20, Noitem(lvl_number)))
 
 
 class Joker(Monster):  # Endboss
-    def __init__(self):
+    def __init__(self, lvl_number):
         Monster.__init__(self, 10102, 'Joker', False, False, 'gfxmnstr/joker.gif',
-                         (0, 11, 7, 10, 1, 4, 0, 0, 2, 20, Noitem()))
+                         (0, 11, 7, 10, 1, 4, 0, 0, 2, 20, Noitem(lvl_number)))

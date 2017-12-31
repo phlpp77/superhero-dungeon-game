@@ -1,5 +1,7 @@
 from monsters import *
 from fallen import *
+from switches import *
+from time import sleep
 
 # noinspection PyUnresolvedReferences
 from level.dungeonlevels import *
@@ -16,37 +18,51 @@ all_level = [DungeonLevel01, DungeonLevel02(), DungeonLevel03(), DungeonLevel04(
 #                                                  in format: [[[Layout, Item], [Layout, Item]], [[Layout, Item]]]
 
 class MapConstructor:
+    # noinspection PyUnusedLocal
     def __init__(self):
         self._lvl_number, self._max_lvl = 1, len(all_level)
-        self._lvl_layout, self._lvl_items, = all_level[0].dungeonlayout, all_level[0].dungeonitems
+        self._lvl_layout, self._lvl_items = all_level[0].dungeonlayout, all_level[0].dungeonitems
         self._lvl_height, self._lvl_width = len(self._lvl_layout), len(self._lvl_layout[0])
-        # creating a list with same dimensions
-        self.map = self._lvl_layout
+        # splitting the
+        self._lvl_switches = [[0 for x in range(self._lvl_width)] for y in range(self._lvl_height)]
+        self._lvl_targets = [[0 for x in range(self._lvl_width)] for y in range(self._lvl_height)]
+        for x in range(self._lvl_height):
+            for y in range(self._lvl_width):
+                switch = all_level[0].dungeonswitches[x][y]
+                self._lvl_switches[x][y] = switch[0]
+                self._lvl_targets[x][y] = switch[1]
+
+        # creating a map with same dimensions as the level to store the objects in
+        self.map = [[0 for x in range(self._lvl_width)] for y in range(self._lvl_height)]
         self._all_images = []
         # creating a fieldconstructor
         self._field_factory = FieldConstructor()
 
         # defining the translation dictionary for the level maps
         self._layout_dict = {0: "Wall", 1: "Floor", 254: "Entrance", 255: "Exit"}
-        self._item_dict = {0: "NoItem", 101: "Dagger", 104: "Landgschwert", 203: "Kettenhemd", 902: "Teleport",
-                           911: "Stairs", 10101: "Ork", 10102: "Joker", 20101: "Rockfall", 30101: "Deathtrap"}
-        # self._switch_dict = {0: "NoSwitch", 1: "LvlEnd", 2: "GameEnd", 11: "LightSwitch", 21: "WallSwitch"}
+        self._item_dict = {0: "NoItem", 101: "Dagger", 104: "Landgschwert", 203: "Kettenhemd", 902: "NoItem",
+                           911: "NoItem", 10101: "Ork", 10102: "Joker", 20101: "Rockfall", 30101: "Deathtrap"}
+        self._switch_dict = {0: "NoSwitch", 1: "LvlEnd", 2: "GameEnd", 11: "LightSwitch", 21: "WallSwitch"}
 
         # setting up the first level
-        self.generatemap()
+        self.__generate_map()
+        # setting up the image list
+        self.__refresh_all_images()
 
     # initial setup of the level map
-    def generatemap(self):
+    def __generate_map(self):
         for x in range(self._lvl_height):
             for y in range(self._lvl_width):
                 obj_list = []
-                layout, item = self._lvl_layout[x][y], self._lvl_items[x][y]
+                layout, item, switch = self._lvl_layout[x][y], self._lvl_items[x][y], self._lvl_switches[x][y]
+                switch_target = self._lvl_targets[x][y]
                 obj_list.append(self._layout_dict.get(layout))
                 obj_list.append(self._item_dict.get(item))
+                # creating switch-target tuple
+                obj_list.append((self._switch_dict.get(switch), switch_target))
+
                 # setting the objects in the map
                 self.map[x][y] = self._field_factory.generate_new(obj_list)
-        # setting up the image list
-        self.__refresh_all_images()
 
     # function updating each field to the next level
     def next_lvl(self):
@@ -56,24 +72,19 @@ class MapConstructor:
                 self._lvl_number].dungeonlayout, all_level[self._lvl_number].dungeonitems
 
         # updating the map to the new level layout
-        for x in range(self._lvl_height):
-            for y in range(self._lvl_width):
-                obj_list = []
-                layout, item = self._lvl_layout[x][y], self._lvl_items[x][y]
-                obj_list.append(self._layout_dict.get(layout))
-                obj_list.append(self._item_dict.get(item))
-                # replacing the objects in the map
-                self.map[x][y] = self._field_factory.generate_new(obj_list)
+        self.__generate_map()
         # setting the next level for all objects
         self._field_factory.next_lvl()
         # refreshing the image list
         self.__refresh_all_images()
 
-    # returns a list of all images needed to display the single field, in order: Wall/Floor, Items
+    # given x and y coords, returns a list of all images needed to display the single field, in order: Wall/Floor, Items
     def get_all_images_field(self, x, y):
         all_images = []
         for obj in self.map[x][y]:
             all_images.append(obj.get_image())
+        # removing "None" elements returned by objects that are non-visible
+        all_images = [x for x in all_images if x is not None]
         return all_images
 
     # sets a list of lists containing all images needed to display the level, in order: Wall/Floor, Items
@@ -93,46 +104,58 @@ class MapConstructor:
 class FieldConstructor:
     def __init__(self):
         self._lvl_number = 1
-        self.object_mem = {}
+        self._object_mem = {}
         self._objects = []
-        self._all_objects = {"Wall": Wall(self._lvl_number), "Floor": Floor(self._lvl_number),
-                             "Entrance": Entrance(self._lvl_number), "Exit": Exit(self._lvl_number), "NoItem": Noitem(),
-                             "Dagger": Dolch(), "Landgschwert": Langschwert(), "Kettenhemd": Kettenhemd(),
-                             "Ork": Ork1(), "Joker": Joker(), "Rockfall": Steinschlagfalle(), "Deathtrap": Todesfalle()}
+        self._all_objects = {"Wall": Wall, "Floor": Floor,
+                             "Entrance": Entrance, "Exit": Exit, "NoItem": Noitem,
+                             "Dagger": Dolch, "Landgschwert": Langschwert, "Kettenhemd": Kettenhemd,
+                             "Ork": Ork1, "Joker": Joker, "Rockfall": Steinschlagfalle, "Deathtrap": Todesfalle}
+        self._all_switches = {"NoSwitch": NoSwitch, "LvlEnd": LvlEnd, "GameEnd": GameEnd, "LightSwitch": LightSwitch,
+                              "WallSwitch": WallSwitch}
 
-    # given a list of object names, the list should be in order: Wall/Floor, Items
+    # given a list of object names, the list should be in order: Wall/Floor, Items, Switches
     # returns a list containing the wanted objects
     def generate_new(self, objects):
         # resetting the old object list
         self._objects = []
+        # each wanted object gets appended to the object list
         for obj in objects:
-            self._objects.append(self.obj_memorization(obj))
+            self._objects.append(self.__obj_memorization(obj))
         return self._objects
 
-    # using memorization pattern to limit memory usage
+    # using memorization pattern to minimize memory usage
     # given an object name, returns the wanted object
-    def obj_memorization(self, obj):
-        if obj not in self.object_mem:
-            self.object_mem[obj] = self.factory(obj)
-        return self.object_mem.get(obj)
+    # given a switch-target tuple, returns the wanted switch
+    def __obj_memorization(self, obj):
+        # if the wanted object is not in the memory it gets created
+        if type(obj) is str and obj not in self._object_mem:
+            self._object_mem[obj] = self.__factory(obj)
+        elif type(obj) is tuple and obj[0] + str(obj[1]) not in self._object_mem:
+            # storing the switch combined with the target for easy identification
+            self._object_mem[obj[0] + str(obj[1])] = self.__factory(obj)
+
+        if type(obj) is str:
+            return self._object_mem.get(obj)
+        elif type(obj) is tuple:
+            return self._object_mem.get(obj[0] + str(obj[1]))
 
     # using factory pattern to generate wanted objects
     # given an object name, generates and returns the wanted object
-    def factory(self, obj):
-        return self._all_objects.get(obj)
+    def __factory(self, obj):
+        # if the wanted object is no switch it is simply returned
+        if type(obj) is str:
+            return self._all_objects.get(obj)(self._lvl_number)
+        # if the wanted object is a switch the target parameter gets passed and the object is returned
+        elif type(obj) is tuple:
+            return self._all_switches.get(obj[0])(obj[1])
 
     def set_lvl_number(self, lvl_number):
         self._lvl_number = lvl_number
 
     def next_lvl(self):
-        # self.set_lvl_number(self._lvl_number + 1)
-        # for obj in self._all_objects:
-        #     obj.next_lvl()
-        # return self.get_all_images()
-
         # setting each object in memory to next level
-        for key in self.object_mem:
-            self.object_mem[key].next_lvl()
+        for key in self._object_mem:
+            self._object_mem[key].next_lvl()
 
 
 class Field:
@@ -190,3 +213,6 @@ class Exit(Field):
 
 # creating a map constructor starting with level one
 map_constructor = MapConstructor()
+print(map_constructor.get_all_images())
+map_constructor.next_lvl()
+print(map_constructor.get_all_images())

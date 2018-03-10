@@ -6,7 +6,7 @@ import shelve
 from tkinter import *
 import tkinter.ttk
 
-from helden.batman import *  # Batman
+from helden.batman import *  # Batman  # TODO Imports aufräumen
 from helden.flash import *  # Flash
 from helden.GreenLantern import *  # Green Lantern
 from helden.ironman import *  # Ironman
@@ -61,7 +61,7 @@ class Flackern(GUIThread):
             self.fenster.wm_attributes('-alpha', 1)
 
 
-class Musik(GUIThread):
+class Musik(GUIThread):  # TODO Musik beim Spielstart im Level erst einspielen und stoppen beim schließen
     def run(self):
         # queueing all music files in music folder
         all_music = []
@@ -497,6 +497,7 @@ class Spielfeldanzeigen:
         self.spielfeld_fenster.bind('<KeyPress-d>', lambda event, a=2: self.bewegung(a))
         self.spielfeld_fenster.bind('<KeyPress-w>', lambda event, a=1: self.bewegung(a))
         self.spielfeld_fenster.bind('<KeyPress-s>', lambda event, a=4: self.bewegung(a))
+        self.spielfeld_fenster.bind('<KeyPress-Escape>', self.escape)
         self.spielfeld_fenster.focus_set()
         self.spielfeld_fenster.mainloop()
 
@@ -665,6 +666,9 @@ class Spielfeldanzeigen:
         if d.getspielende():
             self.spielfeld_fenster.destroy()
             EndScreen()
+
+    def escape(self, event):
+        self.spielfeld_fenster.destroy()
 
 
 class DeathScreen:

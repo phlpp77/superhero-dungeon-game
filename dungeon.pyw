@@ -1,3 +1,5 @@
+import queue
+import sndhdr
 import threading
 from random import randint
 import shelve
@@ -122,6 +124,10 @@ class LoadingBalken(threading.Thread):
 class Hauptprogramm:
 
     def __init__(self):
+        global text_color
+        text_color = '#c3e2e7'
+        global bg_color
+        bg_color = 'darkgrey'
         self.fenster = Tk()
         self.fenster.title('Dungeon Game')
         # opening the titlescreen and getting its dimensions
@@ -414,14 +420,19 @@ class Spielfeldanzeigen:
         global held
         held = heldget
 
+        # inventory and framesorting ingame
         self.infoframe = Frame(master=self.spielfeld_fenster, bg="darkgrey")
 
+        # main inventoryframe
         self.invframe = Frame(master=self.infoframe, relief=GROOVE, bd=3, bg="lightgrey")
 
+        # main statsframe
         self.statsframe = Frame(master=self.infoframe, relief=GROOVE, bd=3, bg="darkgrey")
 
+        # first line stats
         self.statsframe1 = Frame(master=self.statsframe, relief=FLAT,
                                  bd=2, bg=bg_color)
+        # second line stats
         self.statsframe2 = Frame(master=self.statsframe, relief=FLAT,
                                  bd=2, bg=bg_color)
 
@@ -460,9 +471,13 @@ class Spielfeldanzeigen:
                                 text=self.labeltext[len(self.labeltext) - 1] + str(held.getruestung().getrs()),
                                 bg=bg_color, fg=text_color, width=6, pady=2, font=('Comic Sans MS', 13)))
 
-        self.invimg0 = PhotoImage(file="gfxitems/dolch.gif")
-        # self.invimg0 = self.invimg0.zoom()
-        self.inv0 = Label(master=self.invframe, image=self.invimg0)
+        # initialize inventory
+        self.invimg = []
+        self.inv = []
+        for i in range(9):
+            self.invimg.append(PhotoImage(file="gfxitems/spare.gif"))
+            # self.invimg[i] = self.invimg[i].zoom()
+            self.inv.append(Label(master=self.invframe, image=self.invimg[i]))
 
         functionsname = "Dungeonebene0" + str(levelnr) + "(levelnr, held)"  # Level Aufrufen
         global d
@@ -574,8 +589,14 @@ class Spielfeldanzeigen:
         # packing characteristics and combat values
         for i in self.label:
             i.pack(anchor=NW, side=LEFT)
-
-        self.inv0.grid(row=0, column=1)
+        # packing inventory
+        for i in range(len(self.inv)):
+            if i < 3:
+                self.inv[i].grid(row=0, column=i)
+            elif 2 < i < 6:
+                self.inv[i].grid(row=1, column=i-3)
+            else:
+                self.inv[i].grid(row=2, column=i-6)
 
     def heldenstats_aktualisieren(self):
         # updating characteristics
@@ -593,6 +614,11 @@ class Spielfeldanzeigen:
             text=self.labeltext[len(self.labeltext) - 2] + str(held.getkampfwerte()[2]) + '/' + str(held.getmaxle()))
         self.label[len(self.label) - 1].config(
             text=self.labeltext[len(self.labeltext) - 1] + str(held.getruestung().getrs()))
+
+        # updating inventory
+        for i in range(held.getitemamount()):
+            for item in held.getitemliste():
+                self.invimg[i] = PhotoImage(file="gfxitems/" + item.getname() + ".gif")
 
     @staticmethod
     def bildrichtung_aktualisieren(direction):

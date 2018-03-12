@@ -38,7 +38,7 @@ class Kleidung(Ruestung):
 
 class Wattierterwaffenrock(Ruestung):
     def __init__(self):
-        Ruestung.__init__(self, 202, 'wattierter Waffenrock', True, True, 'gfxitems/watwaffenrock.gif', (30, 2))
+        Ruestung.__init__(self, 202, 'Watwaffenrock', True, True, 'gfxitems/watwaffenrock.gif', (30, 2))
 
 
 class Kettenhemd(Ruestung):

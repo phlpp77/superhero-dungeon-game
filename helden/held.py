@@ -122,6 +122,9 @@ class Held:
     def getitemliste(self):
         return self._itemliste
 
+    def getitemamount(self):
+        return len(self._itemliste)
+
     def getap(self):
         return self._ap
 

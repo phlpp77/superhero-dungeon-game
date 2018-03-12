@@ -497,7 +497,7 @@ class Spielfeldanzeigen:
         self.spielfeld_fenster.bind('<KeyPress-d>', lambda event, a=2: self.bewegung(a))
         self.spielfeld_fenster.bind('<KeyPress-w>', lambda event, a=1: self.bewegung(a))
         self.spielfeld_fenster.bind('<KeyPress-s>', lambda event, a=4: self.bewegung(a))
-        self.spielfeld_fenster.bind('<KeyPress-Escape>', self.escape)
+        self.spielfeld_fenster.bind('<KeyPress-Escape>', lambda event: self.escape())
         self.spielfeld_fenster.focus_set()
         self.spielfeld_fenster.mainloop()
 
@@ -667,7 +667,7 @@ class Spielfeldanzeigen:
             self.spielfeld_fenster.destroy()
             EndScreen()
 
-    def escape(self, event):
+    def escape(self):
         self.spielfeld_fenster.destroy()
 
 

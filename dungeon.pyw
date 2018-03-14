@@ -5,25 +5,11 @@ from random import randint
 import shelve
 from tkinter import *
 import tkinter.ttk
+# noinspection PyUnresolvedReferences
+from helden import *
+# noinspection PyUnresolvedReferences
+from level import *
 
-from helden.batman import *  # Batman  # TODO Imports aufräumen
-from helden.flash import *  # Flash
-from helden.GreenLantern import *  # Green Lantern
-from helden.ironman import *  # Ironman
-from helden.spiderman import *  # Spiderman
-from helden.superman import *  # Superman
-# noinspection PyUnresolvedReferences
-from level.dungeonebene01 import *
-# noinspection PyUnresolvedReferences
-from level.dungeonebene02 import *
-# noinspection PyUnresolvedReferences
-from level.dungeonebene03 import *
-# noinspection PyUnresolvedReferences
-from level.dungeonebene04 import *
-# noinspection PyUnresolvedReferences
-from level.dungeonebene05 import *
-# noinspection PyUnresolvedReferences
-from level.dungeonebene06 import *
 
 try:
     import winsound

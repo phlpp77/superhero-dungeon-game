@@ -504,6 +504,7 @@ class Spielfeldanzeigen:
         self.canvas_zeichnen()
         self.lightmap_aktualisieren()
         self.heldenstats_zeichnen()
+        self.update_inventory()
 
         self.spielfeld_fenster.bind('<KeyPress-Left>', lambda event, a=3: self.bewegung(a))
         self.spielfeld_fenster.bind('<KeyPress-Right>', lambda event, a=2: self.bewegung(a))
@@ -578,6 +579,20 @@ class Spielfeldanzeigen:
                     d.getitem(i[0], i[1]).entdecken(held)
                     self.itembild[i[0]][i[1]].config(file=d.getitembild(i[0], i[1]))
 
+    def update_inventory(self):
+        i = 0
+        for item in held.getitemliste():
+            self.invimg[i] = PhotoImage(file="gfxitems/" + item.getname() + ".gif")
+            self.inv[i] = Label(master=self.invframe, image=self.invimg[i])
+            i += 1
+        for i in range(len(self.inv)):
+            if i < 3:
+                self.inv[i].grid(row=0, column=i)
+            elif 2 < i < 6:
+                self.inv[i].grid(row=1, column=i-3)
+            else:
+                self.inv[i].grid(row=2, column=i-6)
+
     def heldenstats_zeichnen(self):
         self.infoframe.pack(anchor=NW, pady=10, padx=2)
         self.invframe.grid(row=0, column=1, padx=30)
@@ -589,14 +604,6 @@ class Spielfeldanzeigen:
         # packing characteristics and combat values
         for i in self.label:
             i.pack(anchor=NW, side=LEFT)
-        # packing inventory
-        for i in range(len(self.inv)):
-            if i < 3:
-                self.inv[i].grid(row=0, column=i)
-            elif 2 < i < 6:
-                self.inv[i].grid(row=1, column=i-3)
-            else:
-                self.inv[i].grid(row=2, column=i-6)
 
     def heldenstats_aktualisieren(self):
         # updating characteristics
@@ -616,9 +623,7 @@ class Spielfeldanzeigen:
             text=self.labeltext[len(self.labeltext) - 1] + str(held.getruestung().getrs()))
 
         # updating inventory
-        for i in range(held.getitemamount()):
-            for item in held.getitemliste():
-                self.invimg[i] = PhotoImage(file="gfxitems/" + item.getname() + ".gif")
+        self.update_inventory()
 
     @staticmethod
     def bildrichtung_aktualisieren(direction):

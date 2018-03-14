@@ -47,7 +47,7 @@ class Flackern(GUIThread):
             self.fenster.wm_attributes('-alpha', 1)
 
 
-class Musik(GUIThread):  # TODO Musik beim Spielstart im Level erst einspielen und stoppen beim schließen
+class Musik(GUIThread):
     def run(self):
         # queueing all music files in music folder
         all_music = []
@@ -136,9 +136,9 @@ class Hauptprogramm:
         self.parallel.setDaemon(True)
         self.parallel.start()
         # starting music play
-        self.music = Musik(self.fenster)
-        self.music.setDaemon(True)
-        self.music.start()
+        global music
+        music = Musik(self.fenster)
+        music.setDaemon(True)
         # binding keys to game functions
         self.fenster.bind('<Return>', lambda event: self.einspieler())
         self.fenster.bind('<Escape>', lambda event: self.fenster.destroy())
@@ -377,6 +377,7 @@ class HeldBenennen:
             held.setheldenname(self.eingabefeld.get())
         held.setgeschlecht(self.auswahlgeschlecht.get())
         self.heldbenennen_fenster.destroy()
+        music.start()
         Spielfeldanzeigen(1, held)
 
 
@@ -691,6 +692,7 @@ class Spielfeldanzeigen:
 
     def escape(self):
         self.spielfeld_fenster.destroy()
+        music.stop()  # TODO music is not stopping - fix
 
 
 class DeathScreen:

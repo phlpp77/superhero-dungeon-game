@@ -21,8 +21,16 @@ except ImportError:
     pygame = None
     exit("Please install pygame http://www.pygame.org/download.shtml")
 
+# TODO fight animation
+# TODO checkpoints
+# TODO range guns maybe with <space>
+# TODO powerups
+# TODO new enemies
+# TODO hidden timelevel
+# TODO unlocking new characters
 
 # Threading
+
 
 class GUIThread(threading.Thread):
     def __init__(self, fenster):
@@ -35,6 +43,7 @@ class GUIThread(threading.Thread):
 
     def stop(self):
         self._stop = True
+        print("STOPPING THREAD")
 
 
 class Flackern(GUIThread):
@@ -377,7 +386,11 @@ class HeldBenennen:
             held.setheldenname(self.eingabefeld.get())
         held.setgeschlecht(self.auswahlgeschlecht.get())
         self.heldbenennen_fenster.destroy()
-        music.start()
+        try:
+            music.start()
+        except RuntimeError:
+            music.stop()
+            print("stopp, weil error")
         Spielfeldanzeigen(1, held)
 
 
@@ -618,8 +631,7 @@ class Spielfeldanzeigen:
         held.setbild(os.path.join("gfxhelden", held.gettypname() + switcher.get(direction)))
         heldenbild.config(file=held.getbild())
 
-    def bewegung(self, richtung):  # Richtung: 4=runter, 1=hoch, 2=rechts, 3=links
-        # print(richtung)
+    def bewegung(self, richtung):  # direction: 4=down, 1=up, 2=right, 3=left
         held.rennen(held.getheldentyp())
         self.bildrichtung_aktualisieren(richtung)
 
@@ -692,7 +704,9 @@ class Spielfeldanzeigen:
 
     def escape(self):
         self.spielfeld_fenster.destroy()
-        music.stop()  # TODO music is not stopping - fix
+        music.stop()  # TODO music thread is not stopping - fix
+        print("stopped")
+        music.run()
 
 
 class DeathScreen:

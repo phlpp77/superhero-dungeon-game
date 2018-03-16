@@ -1,4 +1,5 @@
 from schalter import *
+from helden import held
 
 
 # Sammlung der Schalter
@@ -23,6 +24,15 @@ class Spielendschalter(Schalter):
 
     def ausloesen(self, dungeonebene):
         dungeonebene.setspielende(True)
+        return dungeonebene
+
+
+class Torch(Schalter):
+    def __init__(self, felderliste):
+        Schalter.__init__(self, 10, [])
+
+    def ausloesen(self, dungeonebene):
+        # TODO add torch lightradius around placement
         return dungeonebene
 
 

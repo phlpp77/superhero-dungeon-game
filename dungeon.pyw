@@ -152,7 +152,7 @@ class Hauptprogramm:
         # binding keys to game functions
         self.fenster.bind('<Return>', lambda event: self.einspieler())
         self.fenster.bind('<Escape>', lambda event: self.fenster.destroy())
-        self.fenster.bind('<Motion>', lambda event: self.parallel.stop())
+        self.fenster.bind('<Motion>', lambda event: self.parallel.stop())  # TODO just do it once please
         self.fenster.wm_attributes('-alpha', 0.5)
         # initializing the buttons
         self.neuesspiel_button = Button(master=self.fenster, text='START',

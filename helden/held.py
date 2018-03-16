@@ -101,7 +101,7 @@ class Held:
     # noinspection PyAttributeOutsideInit
     def ausleuchten(self):
         L = [(self._x, self._y)]
-        self.fackelradius = 1.0  # spaeter an anderer Stelle einfuegen, etwa beim Entzueden oder Besitzen einer Fackel
+        self.fackelradius = 1.0  # spaeter an anderer Stelle einfuegen, etwa beim Entzuenden oder Besitzen einer Fackel
         maxr = self._lichtradius + self.fackelradius
         for i in range(int(8 * maxr)):
             for r in range(int(maxr)):
@@ -129,7 +129,7 @@ class Held:
         return self._ap
 
     def addap(self, ap):
-        self._ap = self._ap + ap
+        self._ap += ap
 
     def getmaxle(self):
         return self._maxle
@@ -143,8 +143,8 @@ class Held:
     def setle(self, le):
         self._kampfwerte[2] = le
 
-    def heilen(self, sp):
-        self._kampfwerte[2] = self._kampfwerte[2] + int(sp * (self._eigenschaften[4] + self._eigenschaften[6]) / 40)
+    def heilen(self, sp):  # Fingerfertigkeit und KO beeinflussen die Heilung
+        self._kampfwerte[2] += int(sp * (self._eigenschaften[4] + self._eigenschaften[6]) / 40)
         if self._kampfwerte[2] > self._maxle:
             self._kampfwerte[2] = self.maxle
 

@@ -9,6 +9,7 @@ class Item:
         # wird intern von abgeleiteten Items in der Benutzen-Methode verwaltet
         self._bild = bild  # Bild des Items
         self._wert = werte[0]  # erster Wert ist immer der Wert des Items in Silbertalern
+        self._eigenschaften = werte[1:]
         self._wirdgetragen = False
 
     def gettyp(self):
@@ -37,6 +38,9 @@ class Item:
 
     def getwert(self):
         return self._wert
+
+    def geteigenschaften(self):
+        return self._eigenschaften
 
     def benutzen(self, held):
         return held

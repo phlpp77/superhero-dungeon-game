@@ -28,6 +28,7 @@ except ImportError:
 # TODO new enemies
 # TODO hidden timelevel
 # TODO unlocking new characters
+# TODO placeble torches (-> ausleuchten() in Held)
 
 # Threading
 
@@ -339,7 +340,6 @@ class HeldBenennen:
                            font=('Comic Sans MS', 14),
                            fg=text_color, bg=bg_color)
         self.eingabefeld = Entry(self.heldbenennen_fenster, bg=bg_color, fg=text_color)
-        print(held.getheldenname())
         self.eingabefeld.insert(END, held.gettypname())
         # automatically selecting text of name field
         self.eingabefeld.focus()
@@ -380,7 +380,6 @@ class HeldBenennen:
 
     def heldbenennen_beenden(self):
         if self.eingabefeld.get() == held.gettypname():
-            print("1")
             held.setheldenname("Namenloser")
         else:
             held.setheldenname(self.eingabefeld.get())
@@ -683,12 +682,12 @@ class Spielfeldanzeigen:
         self.lightmap_aktualisieren()
         self.heldenstats_aktualisieren()
 
-        # wenn held.le > 0, dann held tot mit fenster
+        # game over screen
         if held.getle() <= 0:
             self.spielfeld_fenster.destroy()
             DeathScreen()
 
-        # Heldtotschirm aufrufen
+        # level finished screen
         if d.getlevelende():
             self.highscore = shelve.open("score.txt")
             if self.highscore["Score"] < d.getlevelnr() + 1:
@@ -697,7 +696,7 @@ class Spielfeldanzeigen:
             self.spielfeld_fenster.destroy()
             LoadingScreen()
 
-        # Spielende Bildschirm aufrufen
+        # end screen
         if d.getspielende():
             self.spielfeld_fenster.destroy()
             EndScreen()

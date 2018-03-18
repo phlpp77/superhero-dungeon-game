@@ -11,6 +11,7 @@ class Batman(Held):
         self._eigenschaften = [11, 11, 10, 11, 10, 11, 10, 10]  # MU KL CH IN FF GE KO KK
         self._kampfwerte = [11, 11, 165]  # AT PA LeP
         self._maxle = self._kampfwerte[2]  # LeP-Maximum
+        self._unlocklevel = 0
         self._bild = 'gfxhelden/Batman.gif'
         self._anzeigeBild = 'gfxhelden/Batman0.gif'
         self._lichtradius = 1.0

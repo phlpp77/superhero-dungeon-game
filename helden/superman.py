@@ -11,6 +11,7 @@ class Superman(Held):
         self._eigenschaften = [12, 9, 8, 10, 11, 12, 13, 13]  # MU KL CH IN FF GE KO KK
         self._kampfwerte = [19, 10, 98]  # AT PA LeP
         self._maxle = self._kampfwerte[2]  # LeP-Maximum
+        self._unlocklevel = 0
         self._bild = 'gfxhelden/Superman.gif'
         self._anzeigeBild = 'gfxhelden/Superman0.gif'
         self._itemliste = [Langschwert(), Kettenhemd()]  # leere Liste, in der alle Items gespeichert sind

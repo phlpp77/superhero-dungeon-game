@@ -11,6 +11,7 @@ class Ironman(Held):
         self._eigenschaften = [12, 9, 8, 10, 11, 12, 13, 13]  # MU KL CH IN FF GE KO KK
         self._kampfwerte = [13, 10, 180]  # AT PA LeP
         self._maxle = self._kampfwerte[2]  # LeP-Maximum
+        self._unlocklevel = 3
         self._bild = 'gfxhelden/Ironman.gif'
         self._anzeigeBild = 'gfxhelden/Ironman0.gif'
         self._lichtradius = 2.0

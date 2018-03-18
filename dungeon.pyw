@@ -171,32 +171,34 @@ class Hauptprogramm:
                                 font="System 26 bold")
         self.scorelabel.place(anchor=E, y=320, x=587)
         # reading the highscore from score.txt
-        highscore = shelve.open("score.txt")
-        # on initial startup the score is set to 0
-        if "Score" in highscore:
-            highscore.close()
-            self.refresh_score()
-        else:
-            highscore.close()
-            self.reset_score()
+        with shelve.open("score.txt") as f:
+            # on initial startup the score is set to 0
+            if "Score" in f:
+                self.refresh_score()
+            else:
+                self.reset_score()
+
+        with shelve.open("score.txt") as f:
+            self.score = f["Score"]
+
+        global highscore
+        highscore = self.score
 
         self.fenster.mainloop()
 
     # function to set the score to zero
     def reset_score(self):
-        highscore = shelve.open("score.txt")
-        highscore["Score"] = 0
-        highscore.close()
+        with shelve.open("score.txt") as f:
+            f["Score"] = 0
         self.refresh_score()
 
     # function to refresh the highscore label
     def refresh_score(self):
-        highscore = shelve.open("score.txt")
-        self.score = highscore["Score"]
+        with shelve.open("score.txt") as f:
+            self.score = f["Score"]
         self.scorelabel.config(text=self.score)
-        highscore.close()
 
-    # function to start the hero selection
+        # function to start the hero selection
     def einspieler(self):
         self.parallel.stop()
         Heldenwahl()
@@ -284,9 +286,8 @@ class Heldenwahl:
         # updating the text
         self.beschreibung.delete(1.0, END)
         dateiname = os.path.join("helden", self.auswahl.get() + '.txt')
-        daten = open(dateiname, "r", encoding="iso-8859-15")
-        textdaten = daten.read()
-        daten.close()
+        with open(dateiname, "r", encoding="iso-8859-15") as daten:
+            textdaten = daten.read()
         self.beschreibung.insert(1.0, textdaten)
         # updating the image
         self.hero_image = PhotoImage(file=self.get_hero().getanzeigeBild())
@@ -307,10 +308,14 @@ class Heldenwahl:
 
     # function to set the selected hero and terminate the hero selection
     def heldenwahl_beenden(self):
-        global held
-        held = self.get_hero()
-        self.heldenwahl_fenster.destroy()
-        HeldBenennen()
+        if highscore >= self.get_hero().getunlocklvl():
+            global held
+            held = self.get_hero()
+            self.heldenwahl_fenster.destroy()
+            HeldBenennen()
+        else:
+            print("Held noch nicht freigespielt")  # TODO grafical implementation
+            Heldenwahl()
 
 
 class HeldBenennen:
@@ -788,10 +793,9 @@ class LoadingScreen:
         balken.start()
 
         tippslist = []
-        tippstxt = open("tipps/tipps.txt", "r", encoding="iso-8859-15")
-        for line in tippstxt:
-            tippslist.append(line)
-        tippstxt.close()
+        with open("tipps/tipps.txt", "r", encoding="iso-8859-15") as tippstxt:
+            for line in tippstxt:
+                tippslist.append(line)
         tipps = Label(master=self.loading_fenster, text=tippslist[randint(0, len(tippslist) - 1)],
                       padx=30, pady=10,
                       font=('Comic Sans MS', 14),

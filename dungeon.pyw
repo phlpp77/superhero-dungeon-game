@@ -1,5 +1,3 @@
-import queue
-import sndhdr
 import threading
 from random import randint
 import shelve
@@ -57,44 +55,16 @@ class Flackern(GUIThread):
             self.fenster.wm_attributes('-alpha', 1)
 
 
-class Musik(GUIThread):
-    def run(self):
-        # queueing all music files in music folder
-        all_music = []
-        sound_queue = queue.Queue()
-        for root, dirs, filenames in os.walk('./music'):
-            for filename in filenames:
-                # checking if the file is a soundfile
-                sound_path = "music/" + filename
-                if sndhdr.what(sound_path):
-                    all_music.append(sound_path)
-                    sound_queue.put(sound_path)
+class Musik:
+    def __init__(_):
+        pygame.mixer.init()
 
-        # using pygame to play all music in the music folder
-        if pygame:
-            # playing music if there is music in the music folder
-            if len(all_music) > 0:
-                # initializing the music player
-                pygame.mixer.init()
-                pygame.mixer.music.load(all_music[0])
-                pygame.mixer.music.play()
-                # queueing the music
-                for filename in all_music[0:]:
-                    pygame.mixer.music.queue(filename)
-            # stopping music
-            if self._stop:
-                pygame.mixer.music.stop()
+    def start(_):
+        pygame.mixer.music.load("./music/sound.wav")
+        pygame.mixer.music.play(-1)
 
-        # using Windows to play music
-        while not self._stop:
-            # checking if winsound is available
-            if winsound and not pygame:
-                sound = sound_queue.get()
-                winsound.PlaySound(sound, winsound.SND_FILENAME)
-                sound_queue.put(sound)
-            # if no soundplayer is available, the process is stopped
-            else:
-                self.stop()
+    def stop(_):
+        pygame.mixer.music.stop()
 
 
 class LoadingBalken(threading.Thread):
@@ -147,8 +117,8 @@ class Hauptprogramm:
         self.parallel.start()
         # starting music play
         global music
-        music = Musik(self.fenster)
-        music.setDaemon(True)
+        music = Musik()
+        # music.setDaemon(True)
         # binding keys to game functions
         self.fenster.bind('<Return>', lambda event: self.einspieler())
         self.fenster.bind('<Escape>', lambda event: self.fenster.destroy())
@@ -709,8 +679,6 @@ class Spielfeldanzeigen:
     def escape(self):
         self.spielfeld_fenster.destroy()
         music.stop()  # TODO music thread is not stopping - fix
-        print("stopped")
-        music.run()
 
 
 class DeathScreen:

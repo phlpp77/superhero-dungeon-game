@@ -4,7 +4,7 @@ from waffe import *
 from ruestung import *
 
 
-# Sammlung der aufnehmbaren Items
+# pickable items
 
 class Noitem(Item):
     # noinspection PyUnusedLocal
@@ -46,9 +46,8 @@ class Kleidung(Ruestung):
 
 
 class Wattierterwaffenrock(Ruestung):
-    # noinspection PyUnusedLocal
-    def __init__(self, lvl_number):
-        Ruestung.__init__(self, 202, 'wattierter Waffenrock', True, True, 'gfxitems/watwaffenrock.gif', (30, 2))
+    def __init__(self):
+        Ruestung.__init__(self, 202, 'Watwaffenrock', True, True, 'gfxitems/watwaffenrock.gif', (30, 2))
 
 
 class Kettenhemd(Ruestung):
@@ -56,8 +55,15 @@ class Kettenhemd(Ruestung):
     def __init__(self, lvl_number):
         Ruestung.__init__(self, 203, 'Kettenhemd', True, True, 'gfxitems/kettenhemd.gif', (50, 3))
 
-    # Teleportpunkte
 
+# not pickable items
+
+class Torch(Item):
+    def __init__(self):
+        Item.__init__(self, 801, "Torch", True, False, "gfxoverlay/51fackel.gif", (0,))
+
+
+# Teleportation
 
 class Teleport2(Item):
     def __init__(self, lvl_number):

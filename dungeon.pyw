@@ -1,38 +1,32 @@
-import queue
-import sndhdr
 import threading
 from time import sleep
 from random import randint
 import shelve
 from tkinter import *
+from tkinter.colorchooser import *
 import tkinter.ttk
+# noinspection PyUnresolvedReferences
+from helden import *
+# noinspection PyUnresolvedReferences
+from level import *
 
-from helden.held import Hero
-# noinspection PyUnresolvedReferences
-from level.dungeonebene01 import *
-# noinspection PyUnresolvedReferences
-from level.dungeonebene02 import *
-# noinspection PyUnresolvedReferences
-from level.dungeonebene03 import *
-# noinspection PyUnresolvedReferences
-from level.dungeonebene04 import *
-# noinspection PyUnresolvedReferences
-from level.dungeonebene05 import *
-# noinspection PyUnresolvedReferences
-from level.dungeonebene06 import *
-
-try:
-    import winsound
-except ImportError:
-    winsound = None
 try:
     import pygame
 except ImportError:
     pygame = None
-    exit("Please install pygame http://www.pygame.org/download.shtml")
+    exit("Please install pygame http://www.pygame.org/download.shtml or via - pip install pygame - in the terminal")
 
+
+# TODO fight animation
+# TODO checkpoints
+# TODO range guns maybe with <space>
+# TODO powerups
+# TODO new enemies
+# TODO hidden timelevel
+# TODO placeble torches (-> ausleuchten() in Held)
 
 # Threading
+
 
 class GUIThread(threading.Thread):
     def __init__(self, fenster):
@@ -45,6 +39,7 @@ class GUIThread(threading.Thread):
 
     def stop(self):
         self._stop = True
+        print("STOPPING THREAD")
 
 
 class Flackern(GUIThread):
@@ -55,46 +50,6 @@ class Flackern(GUIThread):
             sleep(0.2)
             # print("Flacker!" + str(threading.get_ident()))
             self.fenster.wm_attributes('-alpha', 1)
-
-
-class Musik(GUIThread):
-    def run(self):
-        # queueing all music files in music folder
-        all_music = []
-        sound_queue = queue.Queue()
-        for root, dirs, filenames in os.walk('./music'):
-            for filename in filenames:
-                # checking if the file is a soundfile
-                sound_path = "music/" + filename
-                if sndhdr.what(sound_path):
-                    all_music.append(sound_path)
-                    sound_queue.put(sound_path)
-
-        # using pygame to play all music in the music folder
-        if pygame:
-            # playing music if there is music in the music folder
-            if len(all_music) > 0:
-                # initializing the music player
-                pygame.mixer.init()
-                pygame.mixer.music.load(all_music[0])
-                pygame.mixer.music.play()
-                # queueing the music
-                for filename in all_music[0:]:
-                    pygame.mixer.music.queue(filename)
-            # stopping music
-            if self._stop:
-                pygame.mixer.music.stop()
-
-        # using Windows to play music
-        while not self._stop:
-            # checking if winsound is available
-            if winsound and not pygame:
-                sound = sound_queue.get()
-                winsound.PlaySound(sound, winsound.SND_FILENAME)
-                sound_queue.put(sound)
-            # if no soundplayer is available, the process is stopped
-            else:
-                self.stop()
 
 
 class LoadingBalken(threading.Thread):
@@ -119,7 +74,22 @@ class LoadingBalken(threading.Thread):
         self.window.bind('<Return>', lambda event: self.stop(self.window))
 
 
+class Musik:
+    def __init__(self):
+        pygame.mixer.init()
+
+    @staticmethod
+    def start():
+        pygame.mixer.music.load("./music/sound.wav")
+        pygame.mixer.music.play(-1)
+
+    @staticmethod
+    def stop():
+        pygame.mixer.music.stop()
+
+
 # ###########################################GUI:Startbildschirm############################################
+
 
 class Hauptprogramm:
 
@@ -127,8 +97,7 @@ class Hauptprogramm:
         global text_color
         text_color = '#c3e2e7'
         global bg_color
-        bg_color = '#000000'
-        # starting-window setup
+        bg_color = 'darkgrey'
         self.fenster = Tk()
         self.fenster.title('Dungeon Game')
         # opening the titlescreen and getting its dimensions
@@ -151,24 +120,24 @@ class Hauptprogramm:
         self.parallel.setDaemon(True)
         self.parallel.start()
         # starting music play
-        self.music = Musik(self.fenster)
-        self.music.setDaemon(True)
-        self.music.start()
+        global music
+        music = Musik()
+        # music.setDaemon(True)
         # binding keys to game functions
         self.fenster.bind('<Return>', lambda event: self.einspieler())
         self.fenster.bind('<Escape>', lambda event: self.fenster.destroy())
-        self.fenster.bind('<Motion>', lambda event: self.parallel.stop())
+        self.fenster.bind('<Motion>', lambda event: self.parallel.stop())  # TODO just do it once please
         self.fenster.wm_attributes('-alpha', 0.5)
         # initializing the buttons
         self.neuesspiel_button = Button(master=self.fenster, text='START',
                                         command=self.einspieler, fg=text_color, bg='RED')
         self.neuesspiel_button.place(anchor=E, y=496, x=835)
-        self.beenden_button = Button(master=self.fenster, text="ENDE",
-                                     command=self.fenster.destroy, fg="white", bg="grey")
+        self.beenden_button = Button(master=self.fenster, text="Settings",
+                                     command=Settings, fg="white", bg="grey")
         self.beenden_button.place(anchor=E, y=528, x=829)
-        self.reset_button = Button(master=self.fenster, text="RESET",
-                                   command=self.reset_score, fg="white", bg="grey")
-        self.reset_button.place(anchor=E, y=height - height * 0.027, x=width * 0.043)
+        # self.reset_button = Button(master=self.fenster, text="RESET",
+                                   # command=self.reset_score, fg="white", bg="grey")
+        # self.reset_button.place(anchor=E, y=height - height * 0.027, x=width * 0.043)
 
         # displaying the highscore on the starting screen
         self.score = 0
@@ -176,35 +145,92 @@ class Hauptprogramm:
                                 font="System 26 bold")
         self.scorelabel.place(anchor=E, y=320, x=587)
         # reading the highscore from score.txt
-        highscore = shelve.open("score.txt")
-        # on initial startup the score is set to 0
-        if "Score" in highscore:
-            highscore.close()
-            self.refresh_score()
-        else:
-            highscore.close()
-            self.reset_score()
+        with shelve.open("score.txt") as f:
+            # on initial startup the score is set to 0
+            if "Score" in f:
+                self.refresh_score()
+            else:
+                self.reset_score()
+
+        with shelve.open("score.txt") as f:
+            self.score = f["Score"]
+
+        global highscore
+        highscore = self.score
 
         self.fenster.mainloop()
 
     # function to set the score to zero
     def reset_score(self):
-        highscore = shelve.open("score.txt")
-        highscore["Score"] = 0
-        highscore.close()
+        with shelve.open("score.txt") as f:
+            f["Score"] = 0
         self.refresh_score()
 
     # function to refresh the highscore label
     def refresh_score(self):
-        highscore = shelve.open("score.txt")
-        self.score = highscore["Score"]
+        with shelve.open("score.txt") as f:
+            self.score = f["Score"]
         self.scorelabel.config(text=self.score)
-        highscore.close()
 
     # function to start the hero selection
     def einspieler(self):
         self.parallel.stop()
         Heldenwahl()
+
+
+class Settings:
+
+    def __init__(self):
+        # initializing window
+        w = h = 200
+        self.settings_window = Toplevel()
+        self.settings_window.title('Dungeon Game - Settings')
+        self.settings_window.minsize(w, h)
+        self.settings_window.maxsize(w, h)
+        # centering the window on screen
+        ws = self.settings_window.winfo_screenwidth()
+        hs = self.settings_window.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.settings_window.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        self.settings_window.config(bg=bg_color)
+        self.settings_window.focus()
+        # labels and buttons for settings
+        self.reset_highscore = Label(master=self.settings_window,
+                                     text="Reset your highscore and \n unlocked heros",
+                                     font=("Comic Sans MS", 14),
+                                     fg=text_color, bg=bg_color)
+        self.exit_game = Label(master=self.settings_window,
+                               text="Exit the game",
+                               font=("Comic Sans MS", 14),
+                               fg=text_color, bg=bg_color)
+        self.change_bg_color = Label(master=self.settings_window,
+                                     text="Change color of the background",
+                                     font=("Comic Sans MS", 14),
+                                     fg=text_color, bg=bg_color)
+        self.reset_highscore_b = Button(master=self.settings_window,
+                                        text="reset",
+                                        command=self.reset_score)
+        self.exit_game_b = Button(master=self.settings_window,
+                                  text="exit",
+                                  command=quit)
+        self.change_bg_color_b = Button(master=self.settings_window,
+                                        text="change",
+                                        command=self.change_bg_color)
+        self.reset_highscore.grid(row=0, padx=15)
+        self.reset_highscore_b.grid(row=1)
+        self.exit_game.grid(row=2)
+        self.exit_game_b.grid(row=3)
+        self.change_bg_color.grid(row=4)
+        self.change_bg_color_b.grid(row=5)
+
+    def reset_score(self):
+        with shelve.open("score.txt") as f:
+            f["Score"] = 0
+
+    def change_bg_color(self):
+        color = askcolor()
+        bg_color = color[1]
 
 
 class Heldenwahl:
@@ -289,9 +315,8 @@ class Heldenwahl:
         # updating the text
         self.beschreibung.delete(1.0, END)
         dateiname = os.path.join("helden", self.auswahl.get() + '.txt')
-        daten = open(dateiname, "r", encoding="iso-8859-15")
-        textdaten = daten.read()
-        daten.close()
+        with open(dateiname, "r", encoding="iso-8859-15") as daten:
+            textdaten = daten.read()
         self.beschreibung.insert(1.0, textdaten)
         # updating the image
         self.hero_image = PhotoImage(file=self.get_hero().get_anzeige_bild())
@@ -303,10 +328,14 @@ class Heldenwahl:
 
     # function to set the selected hero and terminate the hero selection
     def heldenwahl_beenden(self):
-        global held
-        held = self.get_hero()
-        self.heldenwahl_fenster.destroy()
-        HeldBenennen()
+        if highscore >= self.get_hero().getunlocklvl():
+            global held
+            held = self.get_hero()
+            self.heldenwahl_fenster.destroy()
+            HeldBenennen()
+        else:
+            print("Held noch nicht freigespielt")  # TODO grafical implementation
+            Heldenwahl()
 
 
 class HeldBenennen:
@@ -381,6 +410,7 @@ class HeldBenennen:
             held.setheldenname(self.eingabefeld.get())
         held.setgeschlecht(self.auswahlgeschlecht.get())
         self.heldbenennen_fenster.destroy()
+        music.start()
         Spielfeldanzeigen(1)
 
 
@@ -407,10 +437,22 @@ class Spielfeldanzeigen:
                              height=576, bg=bg_color)
         self.canvas.pack(padx=0, pady=0)
 
-        self.statsframe = Frame(master=self.spielfeld_fenster, bd=3, bg=bg_color)
+        global held
+        held = heldget
 
+        # inventory and framesorting ingame
+        self.infoframe = Frame(master=self.spielfeld_fenster, bg="darkgrey")
+
+        # main inventoryframe
+        self.invframe = Frame(master=self.infoframe, relief=GROOVE, bd=3, bg="lightgrey")
+
+        # main statsframe
+        self.statsframe = Frame(master=self.infoframe, relief=GROOVE, bd=3, bg="darkgrey")
+
+        # first line stats
         self.statsframe1 = Frame(master=self.statsframe, relief=FLAT,
                                  bd=2, bg=bg_color)
+        # second line stats
         self.statsframe2 = Frame(master=self.statsframe, relief=FLAT,
                                  bd=2, bg=bg_color)
 
@@ -449,6 +491,14 @@ class Spielfeldanzeigen:
                                 text=self.labeltext[len(self.labeltext) - 1] + str(held.getruestung().getrs()),
                                 bg=bg_color, fg=text_color, width=6, pady=2, font=('Comic Sans MS', 13)))
 
+        # initialize inventory
+        self.invimg = []
+        self.inv = []
+        for i in range(9):
+            self.invimg.append(PhotoImage(file="gfxitems/spare.gif"))
+            # self.invimg[i] = self.invimg[i].zoom()
+            self.inv.append(Label(master=self.invframe, image=self.invimg[i]))
+
         functionsname = "Dungeonebene0" + str(levelnr) + "(levelnr, held)"  # Level Aufrufen
         global d
         d = eval(functionsname)
@@ -474,6 +524,7 @@ class Spielfeldanzeigen:
         self.canvas_zeichnen()
         self.lightmap_aktualisieren()
         self.heldenstats_zeichnen()
+        self.update_inventory()
 
         # binding keys to game events
         self.spielfeld_fenster.bind('<Escape>', lambda event: self.spielfeld_fenster.destroy())
@@ -485,6 +536,7 @@ class Spielfeldanzeigen:
         self.spielfeld_fenster.bind('<KeyPress-d>', lambda event, a=2: self.bewegung(a))
         self.spielfeld_fenster.bind('<KeyPress-w>', lambda event, a=1: self.bewegung(a))
         self.spielfeld_fenster.bind('<KeyPress-s>', lambda event, a=4: self.bewegung(a))
+        self.spielfeld_fenster.bind('<KeyPress-Escape>', lambda event: self.escape())
         self.spielfeld_fenster.focus_set()
         self.spielfeld_fenster.mainloop()
 
@@ -549,8 +601,24 @@ class Spielfeldanzeigen:
                     d.getitem(i[0], i[1]).entdecken(held)
                     self.itembild[i[0]][i[1]].config(file=d.getitembild(i[0], i[1]))
 
+    def update_inventory(self):
+        i = 0
+        for item in held.getitemliste():
+            self.invimg[i] = PhotoImage(file="gfxitems/" + item.getname() + ".gif")
+            self.inv[i] = Label(master=self.invframe, image=self.invimg[i])
+            i += 1
+        for i in range(len(self.inv)):
+            if i < 3:
+                self.inv[i].grid(row=0, column=i)
+            elif 2 < i < 6:
+                self.inv[i].grid(row=1, column=i - 3)
+            else:
+                self.inv[i].grid(row=2, column=i - 6)
+
     def heldenstats_zeichnen(self):
-        self.statsframe.pack(anchor=NW, pady=10, padx=2)
+        self.infoframe.pack(anchor=NW, pady=10, padx=2)
+        self.invframe.grid(row=0, column=1, padx=30)
+        self.statsframe.grid(row=0)
         self.statsframe1.pack(anchor=NW, pady=2)
         self.statsframe2.pack(anchor=NW, pady=2)
         self.labelheldenname.pack(anchor=NW, side=LEFT)
@@ -575,6 +643,9 @@ class Spielfeldanzeigen:
             text=self.labeltext[len(self.labeltext) - 2] + str(held.getkampfwerte()[2]) + '/' + str(held.getmaxle()))
         self.label[len(self.label) - 1].config(
             text=self.labeltext[len(self.labeltext) - 1] + str(held.getruestung().getrs()))
+
+        # updating inventory
+        self.update_inventory()
 
     @staticmethod
     def bildrichtung_aktualisieren(direction):
@@ -641,6 +712,10 @@ class Spielfeldanzeigen:
             self.spielfeld_fenster.destroy()
             # opening the end screen
             EndScreen()
+
+    def escape(self):
+        self.spielfeld_fenster.destroy()
+        music.stop()
 
 
 class DeathScreen:
@@ -718,10 +793,9 @@ class LoadingScreen:
         balken.start()
 
         tippslist = []
-        tippstxt = open("tipps/tipps.txt", "r", encoding="iso-8859-15")
-        for line in tippstxt:
-            tippslist.append(line)
-        tippstxt.close()
+        with open("tipps/tipps.txt", "r", encoding="iso-8859-15") as tippstxt:
+            for line in tippstxt:
+                tippslist.append(line)
         tipps = Label(master=self.loading_fenster, text=tippslist[randint(0, len(tippslist) - 1)],
                       padx=30, pady=10,
                       font=('Comic Sans MS', 14),

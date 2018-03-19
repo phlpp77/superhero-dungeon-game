@@ -8,6 +8,25 @@ Ein Dungeoncrawler mit Superhelden!
 __Dokumentation-Mapcreation__
 
 
+--Helden:
+
+-Eigenschaften:
+MU - Mut
+KL - Klugheit
+CH - Charisma (Ausstrahlung)
+IN - Intuition (zB etwas Vorhersagen)
+FF - Fingerfertigkeit (zB Schlšsser knacken)
+GE - Gewandtheit (zB Tanzen)
+KO - ??
+KK - Kšrperkraft
+
+-Kampfwerte:
+AT - Attacke, Angriff
+PA - Parade, Verteidigung
+LeP - Lebenspunkte
+(RS - RŸstungsschutz)
+
+
 --Layoutdaten:
 
 0 - Wand

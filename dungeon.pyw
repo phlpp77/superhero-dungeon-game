@@ -6,7 +6,7 @@ from tkinter import *
 from tkinter.colorchooser import *
 import tkinter.ttk
 # noinspection PyUnresolvedReferences
-from helden import *
+from helden import held as hero_lib
 # noinspection PyUnresolvedReferences
 from level import *
 import os
@@ -325,7 +325,7 @@ class Heldenwahl:
 
     # function to get the selected hero
     def get_hero(self):
-        return held.Hero.factory(self.auswahl.get())
+        return hero_lib.Hero.factory(self.auswahl.get())
 
     # function to set the selected hero and terminate the hero selection
     def heldenwahl_beenden(self):

@@ -33,25 +33,25 @@ class Feld:
             self._overlaybild = 'gfxoverlay/61skelett.gif'
 
         if itemtyp == 0:
-            self._item = Noitem()
+            self._item = Noitem(0)
         elif itemtyp == 101:  # Dolch
-            self._item = Dolch()
+            self._item = Dolch(0)
         elif itemtyp == 104:  # Langschwert
-            self._item = Langschwert()
+            self._item = Langschwert(0)
         elif itemtyp == 203:  # Rüsstung
-            self._item = Kettenhemd()
+            self._item = Kettenhemd(0)
         elif itemtyp == 902:  # Teleport aus anderem Level -> zu Klasse wandeln
             self._item = Teleport2(self.level)
         elif itemtyp == 911:  # Treppe nach unten ins naechste Level
             self._item = Treppe1(self.level)
         elif itemtyp == 10101:  # Ork1
-            self._item = Ork1()
+            self._item = Ork1(0)
         elif itemtyp == 10102:  # Joker
-            self._item = Joker()
+            self._item = Joker(0)
         elif itemtyp == 20101:  # Falle
-            self._item = Steinschlagfalle()
+            self._item = Steinschlagfalle(0)
         elif itemtyp == 30101:
-            self._item = Todesfalle()
+            self._item = Todesfalle(0)
 
         if schaltertyp[0] == 0:
             self._schalter = Noschalter(schaltertyp[1])

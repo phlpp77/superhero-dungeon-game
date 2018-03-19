@@ -18,7 +18,7 @@ class Hero:
         self._anzeigeBild = 'gfxhelden/Batman0.gif'
         self._x, self._y, self._ap = 0, 0, 0
         self._lichtradius, self.timeout = 1.0, 0.1
-        self._itemliste = [Schwert(), Wattierterwaffenrock()]  # leere Liste, in der alle Items gespeichert sind
+        self._itemliste = [Schwert(0), Wattierterwaffenrock()]  # leere Liste, in der alle Items gespeichert sind
         self._ruestung = self._waffe = self._maxle = 0
         self.var_init()
 
@@ -178,7 +178,7 @@ class Flash(Hero):
         self._bild, self._anzeigeBild = 'gfxhelden/Flash.gif', 'gfxhelden/Flash0.gif'
         self._eigenschaften, self._kampfwerte = [9, 13, 10, 13, 12, 11, 13, 9], [14, 10, 150]
         self._unlocklevel = 5
-        self._itemliste = [Dolch(), Kleidung()]
+        self._itemliste = [Dolch(0), Kleidung(0)]
         self.var_init()
 
 
@@ -189,7 +189,7 @@ class GreenLantern(Hero):
         self._bild, self._anzeigeBild = 'gfxhelden/GreenLantern.gif', 'gfxhelden/GreenLantern0.gif'
         self._eigenschaften, self._kampfwerte = [9, 13, 10, 13, 12, 11, 13, 9], [14, 10, 90]
         self._unlocklevel = 3
-        self._itemliste = [Dolch(), Kleidung()]
+        self._itemliste = [Dolch(0), Kleidung(0)]
         self.var_init()
 
     def heilen(self, sp):
@@ -205,7 +205,7 @@ class Ironman(Hero):
         self._bild, self._anzeigeBild = 'gfxhelden/Ironman.gif', 'gfxhelden/Ironman0.gif'
         self._eigenschaften, self._kampfwerte = [12, 9, 8, 10, 11, 12, 13, 13], [13, 10, 180]
         self._unlocklevel = 4
-        self._itemliste = [Langschwert(), Kettenhemd()]
+        self._itemliste = [Langschwert(0), Kettenhemd(0)]
         self.var_init()
 
 
@@ -216,7 +216,7 @@ class Spiderman(Hero):
         self._bild, self._anzeigeBild = 'gfxhelden/Spiderman.gif', 'gfxhelden/Spiderman0.gif'
         self._eigenschaften, self._kampfwerte = [10, 11, 13, 12, 13, 13, 10, 10], [8, 12, 166]
         self._unlocklevel = 2
-        self._itemliste = [Kurzschwert(), Wattierterwaffenrock()]
+        self._itemliste = [Kurzschwert(0), Wattierterwaffenrock()]
         self.var_init()
 
 
@@ -227,7 +227,7 @@ class Superman(Hero):
         self._bild, self._anzeigeBild = 'gfxhelden/Superman.gif', 'gfxhelden/Superman0.gif'
         self._eigenschaften, self._kampfwerte = [12, 9, 8, 10, 11, 12, 13, 13], [19, 10, 98]
         self._unlocklevel = 0
-        self._itemliste = [Langschwert(), Kettenhemd()]
+        self._itemliste = [Langschwert(0), Kettenhemd(0)]
         self.var_init()
 
 
@@ -238,5 +238,5 @@ class Batman(Hero):
         self._bild, self._anzeigeBild = 'gfxhelden/Batman.gif', 'gfxhelden/Batman0.gif'
         self._eigenschaften, self._kampfwerte = [11, 11, 10, 11, 10, 11, 10, 10], [11, 11, 165]
         self._unlocklevel = 0
-        self._itemliste = [Schwert(), Wattierterwaffenrock()]
+        self._itemliste = [Schwert(0), Wattierterwaffenrock()]
         self.var_init()

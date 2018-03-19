@@ -2,6 +2,7 @@ import threading
 from random import randint
 import shelve
 from tkinter import *
+from tkinter.colorchooser import *
 import tkinter.ttk
 # noinspection PyUnresolvedReferences
 from helden import *
@@ -13,6 +14,7 @@ try:
 except ImportError:
     pygame = None
     exit("Please install pygame http://www.pygame.org/download.shtml or via - pip install pygame - in the terminal")
+
 
 # TODO fight animation
 # TODO checkpoints
@@ -79,6 +81,7 @@ class Musik:
     def stop():
         pygame.mixer.music.stop()
 
+
 # ###########################################GUI:Startbildschirm############################################
 
 
@@ -123,12 +126,12 @@ class Hauptprogramm:
         self.neuesspiel_button = Button(master=self.fenster, text='START',
                                         command=self.einspieler, fg=text_color, bg='RED')
         self.neuesspiel_button.place(anchor=E, y=496, x=835)
-        self.beenden_button = Button(master=self.fenster, text="ENDE",
-                                     command=self.fenster.destroy, fg="white", bg="grey")
+        self.beenden_button = Button(master=self.fenster, text="Settings",
+                                     command=Settings, fg="white", bg="grey")
         self.beenden_button.place(anchor=E, y=528, x=829)
-        self.reset_button = Button(master=self.fenster, text="RESET",
-                                   command=self.reset_score, fg="white", bg="grey")
-        self.reset_button.place(anchor=E, y=height - height * 0.027, x=width * 0.043)
+        # self.reset_button = Button(master=self.fenster, text="RESET",
+                                   # command=self.reset_score, fg="white", bg="grey")
+        # self.reset_button.place(anchor=E, y=height - height * 0.027, x=width * 0.043)
 
         # displaying the highscore on the starting screen
         self.score = 0
@@ -163,10 +166,65 @@ class Hauptprogramm:
             self.score = f["Score"]
         self.scorelabel.config(text=self.score)
 
-        # function to start the hero selection
+    # function to start the hero selection
     def einspieler(self):
         self.parallel.stop()
         Heldenwahl()
+
+
+class Settings:
+
+    def __init__(self):
+        # initializing window
+        w = h = 200
+        self.settings_window = Toplevel()
+        self.settings_window.title('Dungeon Game - Settings')
+        self.settings_window.minsize(w, h)
+        self.settings_window.maxsize(w, h)
+        # centering the window on screen
+        ws = self.settings_window.winfo_screenwidth()
+        hs = self.settings_window.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.settings_window.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        self.settings_window.config(bg=bg_color)
+        self.settings_window.focus()
+        # labels and buttons for settings
+        self.reset_highscore = Label(master=self.settings_window,
+                                     text="Reset your highscore and \n unlocked heros",
+                                     font=("Comic Sans MS", 14),
+                                     fg=text_color, bg=bg_color)
+        self.exit_game = Label(master=self.settings_window,
+                               text="Exit the game",
+                               font=("Comic Sans MS", 14),
+                               fg=text_color, bg=bg_color)
+        self.change_bg_color = Label(master=self.settings_window,
+                                     text="Change color of the background",
+                                     font=("Comic Sans MS", 14),
+                                     fg=text_color, bg=bg_color)
+        self.reset_highscore_b = Button(master=self.settings_window,
+                                        text="reset",
+                                        command=self.reset_score)
+        self.exit_game_b = Button(master=self.settings_window,
+                                  text="exit",
+                                  command=quit)
+        self.change_bg_color_b = Button(master=self.settings_window,
+                                        text="change",
+                                        command=self.change_bg_color)
+        self.reset_highscore.grid(row=0, padx=15)
+        self.reset_highscore_b.grid(row=1)
+        self.exit_game.grid(row=2)
+        self.exit_game_b.grid(row=3)
+        self.change_bg_color.grid(row=4)
+        self.change_bg_color_b.grid(row=5)
+
+    def reset_score(self):
+        with shelve.open("score.txt") as f:
+            f["Score"] = 0
+
+    def change_bg_color(self):
+        color = askcolor()
+        bg_color = color[1]
 
 
 class Heldenwahl:
@@ -554,9 +612,9 @@ class Spielfeldanzeigen:
             if i < 3:
                 self.inv[i].grid(row=0, column=i)
             elif 2 < i < 6:
-                self.inv[i].grid(row=1, column=i-3)
+                self.inv[i].grid(row=1, column=i - 3)
             else:
-                self.inv[i].grid(row=2, column=i-6)
+                self.inv[i].grid(row=2, column=i - 6)
 
     def heldenstats_zeichnen(self):
         self.infoframe.pack(anchor=NW, pady=10, padx=2)

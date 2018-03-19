@@ -7,8 +7,10 @@ from tkinter.colorchooser import *
 import tkinter.ttk
 # noinspection PyUnresolvedReferences
 from helden import *
+import helden.held
 # noinspection PyUnresolvedReferences
 from level import *
+import os
 
 try:
     import pygame
@@ -324,7 +326,7 @@ class Heldenwahl:
 
     # function to get the selected hero
     def get_hero(self):
-        return Hero.factory(self.auswahl.get())
+        return held.Hero.factory(self.auswahl.get())
 
     # function to set the selected hero and terminate the hero selection
     def heldenwahl_beenden(self):

@@ -20,7 +20,6 @@ except ImportError:
 # TODO powerups
 # TODO new enemies
 # TODO hidden timelevel
-# TODO unlocking new characters
 # TODO placeble torches (-> ausleuchten() in Held)
 
 # Threading

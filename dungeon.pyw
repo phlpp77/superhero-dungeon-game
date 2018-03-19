@@ -7,7 +7,6 @@ from tkinter.colorchooser import *
 import tkinter.ttk
 # noinspection PyUnresolvedReferences
 from helden import *
-import helden.held
 # noinspection PyUnresolvedReferences
 from level import *
 import os
@@ -438,9 +437,6 @@ class Spielfeldanzeigen:
         self.canvas = Canvas(master=self.spielfeld_fenster, width=1088,
                              height=576, bg=bg_color)
         self.canvas.pack(padx=0, pady=0)
-
-        global held
-        held = heldget
 
         # inventory and framesorting ingame
         self.infoframe = Frame(master=self.spielfeld_fenster, bg="darkgrey")

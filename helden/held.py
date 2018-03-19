@@ -18,7 +18,7 @@ class Hero:
         self._anzeigeBild = 'gfxhelden/Batman0.gif'
         self._x, self._y, self._ap = 0, 0, 0
         self._lichtradius, self.timeout = 1.0, 0.1
-        self._itemliste = [Schwert(0), Wattierterwaffenrock()]  # leere Liste, in der alle Items gespeichert sind
+        self._itemliste = [Schwert(0), Wattierterwaffenrock(0)]  # leere Liste, in der alle Items gespeichert sind
         self._ruestung = self._waffe = self._maxle = 0
         self.var_init()
 
@@ -216,7 +216,7 @@ class Spiderman(Hero):
         self._bild, self._anzeigeBild = 'gfxhelden/Spiderman.gif', 'gfxhelden/Spiderman0.gif'
         self._eigenschaften, self._kampfwerte = [10, 11, 13, 12, 13, 13, 10, 10], [8, 12, 166]
         self._unlocklevel = 2
-        self._itemliste = [Kurzschwert(0), Wattierterwaffenrock()]
+        self._itemliste = [Kurzschwert(0), Wattierterwaffenrock(0)]
         self.var_init()
 
 
@@ -238,5 +238,5 @@ class Batman(Hero):
         self._bild, self._anzeigeBild = 'gfxhelden/Batman.gif', 'gfxhelden/Batman0.gif'
         self._eigenschaften, self._kampfwerte = [11, 11, 10, 11, 10, 11, 10, 10], [11, 11, 165]
         self._unlocklevel = 0
-        self._itemliste = [Schwert(0), Wattierterwaffenrock()]
+        self._itemliste = [Schwert(0), Wattierterwaffenrock(0)]
         self.var_init()

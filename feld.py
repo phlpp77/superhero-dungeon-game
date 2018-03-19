@@ -115,7 +115,7 @@ class Feld:
     def betreten(self, held):
         if self._item.getaufnehmbar():
             held.itemnehmen(self._item)
-            self._item = Noitem()
+            self._item = Noitem(self.level)
         else:
 
             self._item.benutzen(held)

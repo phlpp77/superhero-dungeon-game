@@ -62,11 +62,11 @@ class LoadingBalken(threading.Thread):
         # showing the progressbar with 90 steps
         for i in range(0, 90):
             self.progressbar.step()
-            sleep(0.005)
+            sleep(0.0005)
 
         for i in range(0, 9):
             self.progressbar.step()
-            sleep(0.05)
+            sleep(0.005)
 
         # after the progressbar has finished
         # binding the button and keys to termminate the loading screen

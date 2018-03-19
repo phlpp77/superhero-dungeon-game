@@ -46,7 +46,7 @@ class Kleidung(Ruestung):
 
 
 class Wattierterwaffenrock(Ruestung):
-    def __init__(self):
+    def __init__(self, lvl_number):
         Ruestung.__init__(self, 202, 'Watwaffenrock', True, True, 'gfxitems/watwaffenrock.gif', (30, 2))
 
 

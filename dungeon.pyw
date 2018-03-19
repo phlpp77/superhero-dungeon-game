@@ -8,16 +8,11 @@ from helden import *
 # noinspection PyUnresolvedReferences
 from level import *
 
-
-try:
-    import winsound
-except ImportError:
-    winsound = None
 try:
     import pygame
 except ImportError:
     pygame = None
-    exit("Please install pygame http://www.pygame.org/download.shtml")
+    exit("Please install pygame http://www.pygame.org/download.shtml or via - pip install pygame - in the terminal")
 
 # TODO fight animation
 # TODO checkpoints
@@ -55,18 +50,6 @@ class Flackern(GUIThread):
             self.fenster.wm_attributes('-alpha', 1)
 
 
-class Musik:
-    def __init__(_):
-        pygame.mixer.init()
-
-    def start(_):
-        pygame.mixer.music.load("./music/sound.wav")
-        pygame.mixer.music.play(-1)
-
-    def stop(_):
-        pygame.mixer.music.stop()
-
-
 class LoadingBalken(threading.Thread):
     def __init__(self, progressbar, button):
         self.progressbar = progressbar
@@ -81,11 +64,24 @@ class LoadingBalken(threading.Thread):
         for i in range(0, 9):
             self.progressbar.step()
             time.sleep(0.005)
-
         self.button.pack(side=BOTTOM, anchor=E, padx=30, pady=30)
 
 
+class Musik:
+    def __init__(self):
+        pygame.mixer.init()
+
+    @staticmethod
+    def start():
+        pygame.mixer.music.load("./music/sound.wav")
+        pygame.mixer.music.play(-1)
+
+    @staticmethod
+    def stop():
+        pygame.mixer.music.stop()
+
 # ###########################################GUI:Startbildschirm############################################
+
 
 class Hauptprogramm:
 
@@ -360,11 +356,7 @@ class HeldBenennen:
             held.setheldenname(self.eingabefeld.get())
         held.setgeschlecht(self.auswahlgeschlecht.get())
         self.heldbenennen_fenster.destroy()
-        try:
-            music.start()
-        except RuntimeError:
-            music.stop()
-            print("stopp, weil error")
+        music.start()
         Spielfeldanzeigen(1, held)
 
 
@@ -678,7 +670,7 @@ class Spielfeldanzeigen:
 
     def escape(self):
         self.spielfeld_fenster.destroy()
-        music.stop()  # TODO music thread is not stopping - fix
+        music.stop()
 
 
 class DeathScreen:

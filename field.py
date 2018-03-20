@@ -26,7 +26,7 @@ class MapConstructor:
         # splitting the
         self._lvl_switches = [[0 for x in range(self._lvl_width)] for y in range(self._lvl_height)]
         self._lvl_targets = [[0 for x in range(self._lvl_width)] for y in range(self._lvl_height)]
-        for x in range(self._lvl_height):
+        for x in range(self._lvl_height):  # TODO change x for hight and y for width here?
             for y in range(self._lvl_width):
                 switch = all_level[0].dungeonswitches[x][y]
                 self._lvl_switches[x][y] = switch[0]
@@ -34,13 +34,14 @@ class MapConstructor:
 
         # creating a map with same dimensions as the level to store the objects in
         self.map = [[0 for x in range(self._lvl_width)] for y in range(self._lvl_height)]
+        print(self.map)
         self._all_images = []
         # creating a fieldconstructor
         self._field_factory = FieldConstructor()
 
         # defining the translation dictionary for the level maps
         self._layout_dict = {0: "Wall", 1: "Floor", 254: "Entrance", 255: "Exit"}
-        self._item_dict = {0: "NoItem", 101: "Dagger", 104: "Landgschwert", 203: "Kettenhemd", 902: "NoItem",
+        self._item_dict = {0: "NoItem", 101: "Dagger", 104: "Langschwert", 203: "Kettenhemd", 902: "NoItem",
                            911: "NoItem", 10101: "Ork", 10102: "Joker", 20101: "Rockfall", 30101: "Deathtrap"}
         self._switch_dict = {0: "NoSwitch", 1: "LvlEnd", 2: "GameEnd", 11: "LightSwitch", 21: "WallSwitch"}
 
@@ -108,7 +109,7 @@ class FieldConstructor:
         self._objects = []
         self._all_objects = {"Wall": Wall, "Floor": Floor,
                              "Entrance": Entrance, "Exit": Exit, "NoItem": Noitem,
-                             "Dagger": Dolch, "Landgschwert": Langschwert, "Kettenhemd": Kettenhemd,
+                             "Dagger": Dolch, "Langschwert": Langschwert, "Kettenhemd": Kettenhemd,
                              "Ork": Ork1, "Joker": Joker, "Rockfall": Steinschlagfalle, "Deathtrap": Todesfalle}
         self._all_switches = {"NoSwitch": NoSwitch, "LvlEnd": LvlEnd, "GameEnd": GameEnd, "LightSwitch": LightSwitch,
                               "WallSwitch": WallSwitch}

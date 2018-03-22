@@ -1,10 +1,12 @@
 from monsters import *
 from fallen import *
 from switches import *
-from time import sleep
-
-# noinspection PyUnresolvedReferences
 from level.dungeonlevels import *
+
+# Purpose: MapConstructor gives an interface for the game to:
+#   1) display all fields easily / get all images needed to display the playingfield
+#   2) TODO interact with the items of a field easily
+
 
 all_level = [DungeonLevel01, DungeonLevel02(), DungeonLevel03(), DungeonLevel04(), DungeonLevel05(), DungeonLevel06()]
 
@@ -18,26 +20,21 @@ all_level = [DungeonLevel01, DungeonLevel02(), DungeonLevel03(), DungeonLevel04(
 #                                                  in format: [[[Layout, Item], [Layout, Item]], [[Layout, Item]]]
 
 class MapConstructor:
-    # noinspection PyUnusedLocal
     def __init__(self):
+        # creating a fieldconstructor
+        self._field_factory = FieldConstructor()
+
         self._lvl_number, self._max_lvl = 1, len(all_level)
         self._lvl_layout, self._lvl_items = all_level[0].dungeonlayout, all_level[0].dungeonitems
         self._lvl_height, self._lvl_width = len(self._lvl_layout), len(self._lvl_layout[0])
-        # splitting the
-        self._lvl_switches = [[0 for x in range(self._lvl_width)] for y in range(self._lvl_height)]
-        self._lvl_targets = [[0 for x in range(self._lvl_width)] for y in range(self._lvl_height)]
-        for x in range(self._lvl_height):  # TODO change x for hight and y for width here?
-            for y in range(self._lvl_width):
-                switch = all_level[0].dungeonswitches[x][y]
-                self._lvl_switches[x][y] = switch[0]
-                self._lvl_targets[x][y] = switch[1]
 
-        # creating a map with same dimensions as the level to store the objects in
-        self.map = [[0 for x in range(self._lvl_width)] for y in range(self._lvl_height)]
-        print(self.map)
+        # initializing empty lists with same dimensions as _lvl_layout
+        # the switch at self._lvl_switches[m][n] has its target saved coordinates in self._lvl_targets[m][n]
+        self._lvl_switches = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
+        self._lvl_targets = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
+        # creating a map to store the objects in
+        self.map = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
         self._all_images = []
-        # creating a fieldconstructor
-        self._field_factory = FieldConstructor()
 
         # defining the translation dictionary for the level maps
         self._layout_dict = {0: "Wall", 1: "Floor", 254: "Entrance", 255: "Exit"}
@@ -50,7 +47,7 @@ class MapConstructor:
         # setting up the image list
         self.__refresh_all_images()
 
-    # initial setup of the level map
+    # function creating each field of the map using FieldConstructor,
     def __generate_map(self):
         for x in range(self._lvl_height):
             for y in range(self._lvl_width):
@@ -62,13 +59,20 @@ class MapConstructor:
                 # creating switch-target tuple
                 obj_list.append((self._switch_dict.get(switch), switch_target))
 
-                # setting the objects in the map
+                # setting map[x][y] to the objects in the field[x][y], using FieldConstructor
                 self.map[x][y] = self._field_factory.generate_new(obj_list)
 
     # function updating each field to the next level
     def next_lvl(self):
         # setting the new level layouts
         if self._lvl_number < self._max_lvl:
+            # copying the switches and targets
+            for x in range(self._lvl_height):
+                for y in range(self._lvl_width):
+                    switch = all_level[self._lvl_number].dungeonswitches[x][y]
+                    self._lvl_switches[x][y] = switch[0]
+                    self._lvl_targets[x][y] = switch[1]
+            # copying the new layout and items, incrementing the lvl_number by 1
             self._lvl_number, self._lvl_layout, self._lvl_items = self._lvl_number + 1, all_level[
                 self._lvl_number].dungeonlayout, all_level[self._lvl_number].dungeonitems
 
@@ -80,6 +84,7 @@ class MapConstructor:
         self.__refresh_all_images()
 
     # given x and y coords, returns a list of all images needed to display the single field, in order: Wall/Floor, Items
+    # Int, Int -> [String]
     def get_all_images_field(self, x, y):
         all_images = []
         for obj in self.map[x][y]:
@@ -95,8 +100,7 @@ class MapConstructor:
             for y in range(self._lvl_width):
                 self._all_images[x][y] = self.get_all_images_field(x, y)
 
-        # returns all images needed to display the level
-
+    # returns all images needed to display the level
     def get_all_images(self):
         return self._all_images
 
@@ -116,6 +120,7 @@ class FieldConstructor:
 
     # given a list of object names, the list should be in order: Wall/Floor, Items, Switches
     # returns a list containing the wanted objects
+    # [String] -> [Field objects]
     def generate_new(self, objects):
         # resetting the old object list
         self._objects = []
@@ -127,9 +132,12 @@ class FieldConstructor:
     # using memorization pattern to minimize memory usage
     # given an object name, returns the wanted object
     # given a switch-target tuple, returns the wanted switch
+    # String -> Field object
     def __obj_memorization(self, obj):
         # if the wanted object is not in the memory it gets created
+        # differentiating between normal objects and switches
         if type(obj) is str and obj not in self._object_mem:
+            # object is saved in the memory dictionary
             self._object_mem[obj] = self.__factory(obj)
         elif type(obj) is tuple and obj[0] + str(obj[1]) not in self._object_mem:
             # storing the switch combined with the target for easy identification
@@ -142,6 +150,7 @@ class FieldConstructor:
 
     # using factory pattern to generate wanted objects
     # given an object name, generates and returns the wanted object
+    # String -> Object
     def __factory(self, obj):
         # if the wanted object is no switch it is simply returned
         if type(obj) is str:
@@ -150,70 +159,75 @@ class FieldConstructor:
         elif type(obj) is tuple:
             return self._all_switches.get(obj[0])(obj[1])
 
+    # given a new level number, sets the internal level number to the given one
     def set_lvl_number(self, lvl_number):
         self._lvl_number = lvl_number
 
+    # sets the internal level number to the next
     def next_lvl(self):
         # setting each object in memory to next level
         for key in self._object_mem:
             self._object_mem[key].next_lvl()
 
 
+# definitions for the field objects
 class Field:
-    def __init__(self, lvl_number):
-        self._lvl_number, self._image, self._image_name = lvl_number, "", ""
+    def __init__(self, lvl_number, image_name):
+        self._lvl_number, self._image, self._image_name = lvl_number, "", image_name
         self._walkable = True
-        self.set_image()
+        self.refresh_image()
 
     # function to manually set the level number
     def set_lvl_number(self, lvl_number):
         self._lvl_number = lvl_number
-        self.set_image()
+        # refreshing the image
+        self.refresh_image()
 
-    # function to automatically get the next level image
+    # function to automatically get the next level
     def next_lvl(self):
         self.set_lvl_number(self._lvl_number + 1)
 
-    def set_image(self):
+    # function to set the image path for the field
+    def refresh_image(self):
         self._image = "gfxlvl%d/%s" % (self._lvl_number, self._image_name)
 
+    # function returning it's image path
     def get_image(self):
         return self._image
 
+    # function returning whether the field is walkable
     def get_walkable(self):
         return self._walkable
 
 
 class Wall(Field):
     def __init__(self, lvl_number):
-        Field.__init__(self, lvl_number)
+        Field.__init__(self, lvl_number, "wand.gif")
         self._walkable = False
-        self._image_name = "wand.gif"
-        self.set_image()
 
 
 class Floor(Field):
     def __init__(self, lvl_number):
-        Field.__init__(self, lvl_number)
-        self._image_name = "boden.gif"
-        self.set_image()
+        Field.__init__(self, lvl_number, "boden.gif")
 
 
 class Entrance(Field):
     def __init__(self, lvl_number):
-        Field.__init__(self, lvl_number)
-        self._image_name = "teleportschatten.gif"
-        self.set_image()
+        Field.__init__(self, lvl_number, "teleportschatten.gif")
 
 
 class Exit(Field):
     def __init__(self, lvl_number):
-        Field.__init__(self, lvl_number)
-        self._image_name = "treppe.gif"
+        Field.__init__(self, lvl_number, "treppe.gif")
 
 
 # creating a map constructor starting with level one
 map_constructor = MapConstructor()
 print(map_constructor.get_all_images())
+# print(map_constructor._lvl_targets)
+# print(map_constructor._lvl_switches)
+print("next")
 map_constructor.next_lvl()
 print(map_constructor.get_all_images())
+# print(map_constructor._lvl_targets)
+# print(map_constructor._lvl_switches)

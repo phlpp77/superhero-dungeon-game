@@ -1,11 +1,12 @@
+from level.dungeonlevels import *
 from monsters import *
 from fallen import *
 from switches import *
-from level.dungeonlevels import *
 
 # Purpose: MapConstructor gives an interface for the game to:
 #   1) display all fields easily / get all images needed to display the playingfield
 #   2) TODO interact with the items of a field easily
+#   3) TODO managing the map logic (discovering switches, taking items etc.)
 
 
 all_level = [DungeonLevel01, DungeonLevel02(), DungeonLevel03(), DungeonLevel04(), DungeonLevel05(), DungeonLevel06()]
@@ -101,6 +102,13 @@ class MapConstructor:
     # returns all images needed to display the level
     def get_all_images(self):
         return self._all_images
+
+    # given field coordinates, the type of the field (1=Item,2=Switch) (and the type of function to call on the field?)
+    # returns ?
+    def interact_with(self, x, y, field_type):
+        # calling the given function on the given field
+        # self.map[x][y][field_type].
+        pass
 
 
 # Class to generate new fields efficiently, using generate_new()

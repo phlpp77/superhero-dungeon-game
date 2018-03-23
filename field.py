@@ -6,7 +6,6 @@ from level.dungeonlevels import *
 # Purpose: MapConstructor gives an interface for the game to:
 #   1) display all fields easily / get all images needed to display the playingfield
 #   2) TODO interact with the items of a field easily
-#   3) TODO implements the lightmap of the player
 
 
 all_level = [DungeonLevel01, DungeonLevel02(), DungeonLevel03(), DungeonLevel04(), DungeonLevel05(), DungeonLevel06()]

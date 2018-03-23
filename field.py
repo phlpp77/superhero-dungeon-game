@@ -24,7 +24,7 @@ class MapConstructor:
         # creating a fieldconstructor
         self._field_factory = FieldConstructor()
 
-        self._lvl_number, self._max_lvl = 1, len(all_level)
+        self._lvl_number, self._max_lvl = 0, len(all_level)
         self._lvl_layout, self._lvl_items = all_level[0].dungeonlayout, all_level[0].dungeonitems
         self._lvl_height, self._lvl_width = len(self._lvl_layout), len(self._lvl_layout[0])
 
@@ -42,10 +42,8 @@ class MapConstructor:
                            911: "NoItem", 10101: "Ork", 10102: "Joker", 20101: "Rockfall", 30101: "Deathtrap"}
         self._switch_dict = {0: "NoSwitch", 1: "LvlEnd", 2: "GameEnd", 11: "LightSwitch", 21: "WallSwitch"}
 
-        # setting up the first level
-        self.__generate_map()
-        # setting up the image list
-        self.__refresh_all_images()
+        # setting up the initial level
+        self.next_lvl()
 
     # function creating each field of the map using FieldConstructor,
     def __generate_map(self):
@@ -61,6 +59,23 @@ class MapConstructor:
 
                 # setting map[x][y] to the objects in the field[x][y], using FieldConstructor
                 self.map[x][y] = self._field_factory.generate_new(obj_list)
+
+    # given x and y coords, returns a list of all images needed to display the single field, in order: Wall/Floor, Items
+    # Int, Int -> [String]
+    def get_all_images_field(self, x, y):
+        all_images = []
+        for obj in self.map[x][y]:
+            all_images.append(obj.get_image())
+        # removing "None" elements returned by objects that are non-visible
+        all_images = [x for x in all_images if x is not None]
+        return all_images
+
+    # sets a list of lists containing all images needed to display the level, in order: Wall/Floor, Items
+    def __refresh_all_images(self):
+        self._all_images = self.map
+        for x in range(self._lvl_height):
+            for y in range(self._lvl_width):
+                self._all_images[x][y] = self.get_all_images_field(x, y)
 
     # function updating each field to the next level
     def next_lvl(self):
@@ -82,23 +97,6 @@ class MapConstructor:
         self._field_factory.next_lvl()
         # refreshing the image list
         self.__refresh_all_images()
-
-    # given x and y coords, returns a list of all images needed to display the single field, in order: Wall/Floor, Items
-    # Int, Int -> [String]
-    def get_all_images_field(self, x, y):
-        all_images = []
-        for obj in self.map[x][y]:
-            all_images.append(obj.get_image())
-        # removing "None" elements returned by objects that are non-visible
-        all_images = [x for x in all_images if x is not None]
-        return all_images
-
-    # sets a list of lists containing all images needed to display the level, in order: Wall/Floor, Items
-    def __refresh_all_images(self):
-        self._all_images = self.map
-        for x in range(self._lvl_height):
-            for y in range(self._lvl_width):
-                self._all_images[x][y] = self.get_all_images_field(x, y)
 
     # returns all images needed to display the level
     def get_all_images(self):

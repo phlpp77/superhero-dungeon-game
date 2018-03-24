@@ -16,7 +16,10 @@ class Falle(Item):
         self._ap = werte[6]
 
     def get_image(self):
-        return self._realbild
+        if self._schongespaeht:
+            return self._realbild
+        else:
+            return self._bild
 
     def entdecken(self, held):
         if not self._schongespaeht:         # nur beim ersten Aufruf wird geprueft, ob die Falle entdeckt wird,

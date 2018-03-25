@@ -33,11 +33,12 @@ class MapConstructor:
         self._lvl_number, self._max_lvl = start_lvl, len(all_level)
         self._lvl_layout, self._lvl_items = all_level[0].dungeonlayout, all_level[0].dungeonitems
         self._lvl_height, self._lvl_width = len(self._lvl_layout), len(self._lvl_layout[0])
+        self._hero_pos = [0, 0]
 
         # variables for the illumination
         self._illum_rad = illum_rad
         # creating a map to store the different levels of illumination (0=black, 1023=normal)
-        self._illuminated = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
+        self._illum_map = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
 
         # variables for the dynamic framing
         self._viewer_size = 20
@@ -48,9 +49,8 @@ class MapConstructor:
         self._lvl_targets = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
         # creating a map to store the objects in
         self.map = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
-        self._all_images = []
-        # creating a lightmap that is completly foggy (dark), 0 = dark, 999 = bright
-        self.lightmap = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
+
+        self._all_images = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
 
         # defining the translation dictionary for the level maps
         self._layout_dict = {0: "Wall", 1: "Floor", 254: "Entrance", 255: "Exit"}
@@ -59,10 +59,10 @@ class MapConstructor:
         self._switch_dict = {0: "NoSwitch", 1: "LvlEnd", 2: "GameEnd", 11: "LightSwitch", 21: "WallSwitch"}
 
         # setting up the initial level
-        self.next_lvl(self.lightmap)
+        self.next_lvl()
 
     # function creating each field of the map using FieldConstructor,
-    def __generate_map(self, lightmap):
+    def __generate_map(self):
         for x in range(self._lvl_height):
             for y in range(self._lvl_width):
                 obj_list = []
@@ -75,49 +75,74 @@ class MapConstructor:
 
                 # setting map[x][y] to the objects in the field[x][y], using FieldConstructor
                 self.map[x][y] = self._field_factory.generate_new(obj_list)
-        print(self.map)
 
     # given x and y coords, returns a list of all images needed to display the single field, in order: Wall/Floor, Items
     # Int, Int -> [String]
     def get_all_images_field(self, x, y):
-        all_images = []
-        for obj in self.map[x][y]:
-            all_images.append(obj.get_image())
-        # removing "None" elements returned by objects that are non-visible
-        all_images = [x for x in all_images if x is not None]
-        return all_images
+        # returning the list of paths, with None elements removed
+        return [obj.get_image() for obj in self.map[x][y] if obj.get_image() is not None]
 
     # sets a list of lists containing all images needed to display the level, in order: Wall/Floor, Items
     def __refresh_all_images(self):
-        self._all_images = self.map
         for x in range(self._lvl_height):
             for y in range(self._lvl_width):
                 self._all_images[x][y] = self.get_all_images_field(x, y)
 
     # function updating each field to the next level
-    def next_lvl(self, lightmap):
+    def next_lvl(self):
         # setting the new level layouts
         if self._lvl_number < self._max_lvl:
-            # copying the switches and targets
-            for x in range(self._lvl_height):
-                for y in range(self._lvl_width):
-                    switch = all_level[self._lvl_number].dungeonswitches[x][y]
-                    self._lvl_switches[x][y] = switch[0]
-                    self._lvl_targets[x][y] = switch[1]
-            # copying the new layout and items, incrementing the lvl_number by 1
-            self._lvl_number, self._lvl_layout, self._lvl_items = self._lvl_number + 1, all_level[
-                self._lvl_number].dungeonlayout, all_level[self._lvl_number].dungeonitems
+            self.update_variables()
 
         # updating the map to the new level layout
-        self.__generate_map(lightmap)
+        self.__generate_map()
         # setting the next level for all objects
         self._field_factory.next_lvl()
         # refreshing the image list
         self.__refresh_all_images()
 
-    # returns all images needed to display the level
+    def update_variables(self):
+        self._lvl_layout = all_level[self._lvl_number].dungeonlayout
+        self._lvl_items = all_level[self._lvl_number].dungeonitems
+        self._lvl_height, self._lvl_width = len(self._lvl_layout), len(self._lvl_layout[0])
+        self._lvl_number += 1
+
+        # updating the lists to the new level size
+        self.map = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
+        self._illum_map = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
+        self._all_images = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
+        self._lvl_switches = [[all_level[self._lvl_number].dungeonswitches[x][y][0] for y in range(self._lvl_width)] for
+                              x in range(self._lvl_height)]
+        self._lvl_targets = [[all_level[self._lvl_number].dungeonswitches[x][y][1] for y in range(self._lvl_width)] for
+                             x in range(self._lvl_height)]
+
+    # returns a 2d list of tuples with the images needed to display the field and their illumination values
+    # -> [[([String], Int)]]
     def get_all_images(self):
-        return self._all_images
+        # zipping the imagelist and illuminationlist
+        return [list(zip(self._all_images[x], self._illum_map[x])) for x in range(self._lvl_height)]
+
+    # given two coordinates
+    # updates the hero's position, the hero overlay, and the lightmap
+    def update_hero(self, x, y):
+        current = self._all_images[self._hero_pos[0]][self._hero_pos[1]]
+        # moving the hero image to the new field from the old one
+        self._all_images[x][y] = current[-1:]
+        # removing the hero overlay from the imagelist
+        self._all_images[self._hero_pos[0]][self._hero_pos[1]] = current[:-1]
+        # updating the
+        self._hero_pos = [x, y]
+        self.update_illum_map()
+
+    # function returning the hero's current position
+    def get_hero_pos(self):
+        return self._hero_pos
+
+    # function updating the lightmap to the hero's current position
+    # TODO illumination algorithm
+    def update_illum_map(self):
+        # hero_pos & illum_rad -> illum_map
+        pass
 
     # given field coordinates, the type of the field (1=Item,2=Switch) (and the type of function to call on the field?)
     # returns ?
@@ -125,13 +150,6 @@ class MapConstructor:
         # calling the given function on the given field
         # self.map[x][y][field_type].
         pass
-
-    #
-    def getlightmap(self, x, y):
-        return self.map[x][y].getlightmap()
-
-    def setlightmap(self, x, y, wert):
-        self.map[x][y].setlightmap(wert)
 
 
 # Class to generate new fields efficiently, using generate_new()
@@ -201,9 +219,9 @@ class FieldConstructor:
 
 # definitions for the field objects
 class Field:
-    def __init__(self, lvl_number, image_name, lightvalue):
+    def __init__(self, lvl_number, image_name):
         self._lvl_number, self._image, self._image_name = lvl_number, "", image_name
-        self._walkable, self._lightvalue, self._fog = True, lightvalue, False
+        self._walkable = True
         self.refresh_image()
 
     # function to manually set the level number
@@ -227,27 +245,6 @@ class Field:
     # function returning whether the field is walkable
     def get_walkable(self):
         return self._walkable
-
-    # function setting lightlevel 0 to fog
-    def refresh_light(self):
-        if self._lightvalue == 0:
-            self._set_fog()
-
-    # function setting lightlevel of the field
-    def set_lightvalue(self, value):
-        self._lightvalue = value
-
-    # function returning lightlevel of the field
-    def get_lightvalue(self):
-        return self._lightvalue
-
-    # function returning if field is foggy (dark)
-    def get_fog(self):
-        return self._fog
-
-    # function setting a field foggy (dark)
-    def _set_fog(self, fog=True):
-        self._fog = fog
 
 
 class Wall(Field):

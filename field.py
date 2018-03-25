@@ -49,6 +49,8 @@ class MapConstructor:
         # creating a map to store the objects in
         self.map = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
         self._all_images = []
+        # creating a lightmap that is completly foggy (dark), 0 = dark, 999 = bright
+        self.lightmap = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
 
         # defining the translation dictionary for the level maps
         self._layout_dict = {0: "Wall", 1: "Floor", 254: "Entrance", 255: "Exit"}
@@ -57,10 +59,10 @@ class MapConstructor:
         self._switch_dict = {0: "NoSwitch", 1: "LvlEnd", 2: "GameEnd", 11: "LightSwitch", 21: "WallSwitch"}
 
         # setting up the initial level
-        self.next_lvl()
+        self.next_lvl(self.lightmap)
 
     # function creating each field of the map using FieldConstructor,
-    def __generate_map(self):
+    def __generate_map(self, lightmap):
         for x in range(self._lvl_height):
             for y in range(self._lvl_width):
                 obj_list = []
@@ -73,6 +75,7 @@ class MapConstructor:
 
                 # setting map[x][y] to the objects in the field[x][y], using FieldConstructor
                 self.map[x][y] = self._field_factory.generate_new(obj_list)
+        print(self.map)
 
     # given x and y coords, returns a list of all images needed to display the single field, in order: Wall/Floor, Items
     # Int, Int -> [String]
@@ -92,7 +95,7 @@ class MapConstructor:
                 self._all_images[x][y] = self.get_all_images_field(x, y)
 
     # function updating each field to the next level
-    def next_lvl(self):
+    def next_lvl(self, lightmap):
         # setting the new level layouts
         if self._lvl_number < self._max_lvl:
             # copying the switches and targets
@@ -106,7 +109,7 @@ class MapConstructor:
                 self._lvl_number].dungeonlayout, all_level[self._lvl_number].dungeonitems
 
         # updating the map to the new level layout
-        self.__generate_map()
+        self.__generate_map(lightmap)
         # setting the next level for all objects
         self._field_factory.next_lvl()
         # refreshing the image list
@@ -122,6 +125,13 @@ class MapConstructor:
         # calling the given function on the given field
         # self.map[x][y][field_type].
         pass
+
+    #
+    def getlightmap(self, x, y):
+        return self.map[x][y].getlightmap()
+
+    def setlightmap(self, x, y, wert):
+        self.map[x][y].setlightmap(wert)
 
 
 # Class to generate new fields efficiently, using generate_new()
@@ -191,9 +201,9 @@ class FieldConstructor:
 
 # definitions for the field objects
 class Field:
-    def __init__(self, lvl_number, image_name):
+    def __init__(self, lvl_number, image_name, lightvalue):
         self._lvl_number, self._image, self._image_name = lvl_number, "", image_name
-        self._walkable = True
+        self._walkable, self._lightvalue, self._fog = True, lightvalue, False
         self.refresh_image()
 
     # function to manually set the level number
@@ -217,6 +227,27 @@ class Field:
     # function returning whether the field is walkable
     def get_walkable(self):
         return self._walkable
+
+    # function setting lightlevel 0 to fog
+    def refresh_light(self):
+        if self._lightvalue == 0:
+            self._set_fog()
+
+    # function setting lightlevel of the field
+    def set_lightvalue(self, value):
+        self._lightvalue = value
+
+    # function returning lightlevel of the field
+    def get_lightvalue(self):
+        return self._lightvalue
+
+    # function returning if field is foggy (dark)
+    def get_fog(self):
+        return self._fog
+
+    # function setting a field foggy (dark)
+    def _set_fog(self, fog=True):
+        self._fog = fog
 
 
 class Wall(Field):

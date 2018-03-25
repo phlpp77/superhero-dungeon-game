@@ -5,7 +5,9 @@ from switches import *
 
 # Purpose: MapConstructor gives an interface for the game to:
 #   1) display all fields easily / get all images needed to display the playingfield
-#   2) TODO interact with the items of a field easily
+#       TODO dynamically change the frame based on the hero's position
+#       TODO use the lightmap to dynamically change the displayed images
+#       TODO interact with the items of a field easily
 #   3) TODO managing the map logic (discovering switches, taking items etc.)
 
 
@@ -19,15 +21,26 @@ all_level = [DungeonLevel01, DungeonLevel02(), DungeonLevel03(), DungeonLevel04(
 #           MapConstructor().next_lvl()         -> setting up the next level
 #           MapConstructor().get_all_images()   -> getting a list of all images needed to display the level
 #                                                  in format: [[[Layout, Item], [Layout, Item]], [[Layout, Item]]]
+# Possible parameters:
+#           illum_rad (default: 1)              -> illumination radius of the hero
+#           start_lvl (default: 0)              -> level to start with (counting from zero)
 
 class MapConstructor:
-    def __init__(self):
+    def __init__(self, illum_rad=1, start_lvl=0):
         # creating a fieldconstructor
         self._field_factory = FieldConstructor()
 
-        self._lvl_number, self._max_lvl = 0, len(all_level)
+        self._lvl_number, self._max_lvl = start_lvl, len(all_level)
         self._lvl_layout, self._lvl_items = all_level[0].dungeonlayout, all_level[0].dungeonitems
         self._lvl_height, self._lvl_width = len(self._lvl_layout), len(self._lvl_layout[0])
+
+        # variables for the illumination
+        self._illum_rad = illum_rad
+        # creating a map to store the different levels of illumination (0=black, 1023=normal)
+        self._illuminated = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
+
+        # variables for the dynamic framing
+        self._viewer_size = 20
 
         # initializing empty lists with same dimensions as _lvl_layout
         # the switch at self._lvl_switches[m][n] has its target saved coordinates in self._lvl_targets[m][n]
@@ -169,7 +182,7 @@ class FieldConstructor:
     def set_lvl_number(self, lvl_number):
         self._lvl_number = lvl_number
 
-    # sets the internal level number to the next
+    # sets the internal level number to the next for all elements in the object dictionary
     def next_lvl(self):
         # setting each object in memory to next level
         for key in self._object_mem:

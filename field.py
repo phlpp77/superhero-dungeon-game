@@ -30,27 +30,20 @@ class MapConstructor:
         # creating a fieldconstructor
         self._field_factory = FieldConstructor()
 
+        # declaring all variables, initialization gets done in update_variables
+        self._lvl_layout, self._lvl_items, self._lvl_switches, self._lvl_targets = [], [], [], []
         self._lvl_number, self._max_lvl = start_lvl, len(all_level)
-        self._lvl_layout, self._lvl_items = all_level[0].dungeonlayout, all_level[0].dungeonitems
-        self._lvl_height, self._lvl_width = len(self._lvl_layout), len(self._lvl_layout[0])
+        self._lvl_height, self._lvl_width = 0, 0
+        self.map, self._all_images = [], []
+
+        # declaring the hero position
         self._hero_pos = [0, 0]
 
         # variables for the illumination
-        self._illum_rad = illum_rad
-        # creating a map to store the different levels of illumination (0=black, 1023=normal)
-        self._illum_map = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
+        self._illum_rad, self._illum_map = illum_rad, []
 
         # variables for the dynamic framing
         self._viewer_size = 20
-
-        # initializing empty lists with same dimensions as _lvl_layout
-        # the switch at self._lvl_switches[m][n] has its target saved coordinates in self._lvl_targets[m][n]
-        self._lvl_switches = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
-        self._lvl_targets = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
-        # creating a map to store the objects in
-        self.map = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
-
-        self._all_images = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
 
         # defining the translation dictionary for the level maps
         self._layout_dict = {0: "Wall", 1: "Floor", 254: "Entrance", 255: "Exit"}
@@ -94,13 +87,14 @@ class MapConstructor:
         if self._lvl_number < self._max_lvl:
             self.update_variables()
 
-        # updating the map to the new level layout
-        self.__generate_map()
-        # setting the next level for all objects
-        self._field_factory.next_lvl()
-        # refreshing the image list
-        self.__refresh_all_images()
+            # updating the map to the new level layout
+            self.__generate_map()
+            # setting the next level for all objects
+            self._field_factory.next_lvl()
+            # refreshing the image list
+            self.__refresh_all_images()
 
+    # function initializing all variables for the next level
     def update_variables(self):
         self._lvl_layout = all_level[self._lvl_number].dungeonlayout
         self._lvl_items = all_level[self._lvl_number].dungeonitems
@@ -111,16 +105,22 @@ class MapConstructor:
         self.map = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
         self._illum_map = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
         self._all_images = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
+
+        # the switch at self._lvl_switches[m][n] has its target saved coordinates in self._lvl_targets[m][n]
         self._lvl_switches = [[all_level[self._lvl_number].dungeonswitches[x][y][0] for y in range(self._lvl_width)] for
                               x in range(self._lvl_height)]
         self._lvl_targets = [[all_level[self._lvl_number].dungeonswitches[x][y][1] for y in range(self._lvl_width)] for
                              x in range(self._lvl_height)]
+        self._all_images = [[["", ()] for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
 
     # returns a 2d list of tuples with the images needed to display the field and their illumination values
     # -> [[([String], Int)]]
     def get_all_images(self):
         # zipping the imagelist and illuminationlist
         return [list(zip(self._all_images[x], self._illum_map[x])) for x in range(self._lvl_height)]
+
+    def init_hero(self):
+        pass
 
     # given two coordinates
     # updates the hero's position, the hero overlay, and the lightmap

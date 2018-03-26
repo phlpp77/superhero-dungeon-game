@@ -13,7 +13,8 @@ class GameLogic:
         self.map = MapConstructor()
         self.hero = hero
 
-    def check_move(self, direction):
+    # given a direction (binded keys), checks if the move is valid, moves the hero, and checks the field
+    def move(self, direction):
         x, y = self.map.get_hero_pos()
         vec_x, vec_y = self.dir_vector.get(direction)
         # calculating the new coordinates of the hero
@@ -25,9 +26,13 @@ class GameLogic:
             # updating the gui
             self.update_gui()
             # checking the new field
-            self.check_items()
+            self.check_field()
 
-    def check_items(self):
+    # for the hero's position, checks if items are collectable and switches should be triggered
+    def check_field(self):
+        x, y = self.map.get_hero_pos()
+        field = self.map.get_field(x, y)
+
         pass
 
     def update_gui(self):

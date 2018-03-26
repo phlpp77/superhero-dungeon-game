@@ -121,6 +121,7 @@ class Hero:
             for r in range(int(maxr)):
                 light = light + [(self._x + int(round((r + 1) * cos(2 * pi * (i + 1) / (8 * maxr)), 0)),
                                   self._y + int(round((r + 1) * sin(2 * pi * (i + 1) / (8 * maxr)), 0)))]
+                print(light)
         return light
 
     def itemnehmen(self, it):  # nimmt das Item it in die Itemliste auf
@@ -130,7 +131,7 @@ class Hero:
         if n < len(self._itemliste):
             it = self._itemliste[n]
         else:
-            it = Noitem()
+            it = Noitem(0)
         return it
 
     def getitemliste(self):

@@ -2,6 +2,7 @@ from level.dungeonlevels import *
 from monsters import *
 from fallen import *
 from switches import *
+from math import sin, cos, tau
 
 # Purpose: MapConstructor gives an interface for the game to:
 #   1) display all fields easily / get all images needed to display the playingfield
@@ -41,7 +42,7 @@ class MapConstructor:
         self._hero_image = "_______PATH_TO_HERO_IMAGE_______"
 
         # variables for the illumination
-        self._illum_rad, self._illum_map = illum_rad, []
+        self._illum_rad, self._illum_map, self._max_brightness = illum_rad, [], 1023
 
         # variables for the dynamic framing
         self._viewer_size = 20
@@ -61,12 +62,9 @@ class MapConstructor:
             for y in range(self._lvl_width):
                 obj_list = []
                 layout, item, switch = self._lvl_layout[x][y], self._lvl_items[x][y], self._lvl_switches[x][y]
-                switch_target = self._lvl_targets[x][y]
-                obj_list.append(self._layout_dict.get(layout))
-                obj_list.append(self._item_dict.get(item))
-                # creating switch-target tuple
-                obj_list.append((self._switch_dict.get(switch), switch_target))
-
+                # adding all elements of the field to the object list
+                obj_list.extend([self._layout_dict.get(layout), self._item_dict.get(item),
+                                 (self._switch_dict.get(switch), self._lvl_targets[x][y])])
                 # setting map[x][y] to the objects in the field[x][y], using FieldConstructor
                 self.map[x][y] = self._field_factory.generate_new(obj_list)
 
@@ -90,30 +88,34 @@ class MapConstructor:
     def next_lvl(self):
         # setting the new level layouts
         if self._lvl_number < self._max_lvl:
-
             # setting the next level for all objects
             self._field_factory.next_lvl()
-
             self.update_variables()
 
     # function initializing all variables for the next level
     def update_variables(self):
-        self._lvl_layout = all_level[self._lvl_number].dungeonlayout
         self._lvl_items = all_level[self._lvl_number].dungeonitems
+        self._lvl_layout = all_level[self._lvl_number].dungeonlayout
         self._lvl_height, self._lvl_width = len(self._lvl_layout), len(self._lvl_layout[0])
-        self._lvl_number += 1
+        self.map, self._illum_map, self._all_images, self._lvl_switches, self._lvl_targets = [], [], [], [], []
 
         # updating the lists to the new level size
-        self.map = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
-        self._illum_map = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
-        self._all_images = [[0 for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
+        for x in range(self._lvl_height):
+            tmp_map, tmp_illum, tmp_images, tmp_switches, tmp_targets = [], [], [], [], []
+            for y in range(self._lvl_width):
+                current_switch = all_level[self._lvl_number].dungeonswitches[x][y]
+                tmp_switches.append(current_switch[0])
+                tmp_targets.append(current_switch[1])
+                tmp_images.append(([""], 0))
+                tmp_illum.append(0)
+                tmp_map.append(0)
+            self._lvl_switches.append(tmp_switches)
+            self._lvl_targets.append(tmp_targets)
+            self._all_images.append(tmp_images)
+            self._illum_map.append(tmp_illum)
+            self.map.append(tmp_map)
 
-        # the switch at self._lvl_switches[m][n] has its target saved coordinates in self._lvl_targets[m][n]
-        self._lvl_switches = [[all_level[self._lvl_number].dungeonswitches[x][y][0] for y in range(self._lvl_width)] for
-                              x in range(self._lvl_height)]
-        self._lvl_targets = [[all_level[self._lvl_number].dungeonswitches[x][y][1] for y in range(self._lvl_width)] for
-                             x in range(self._lvl_height)]
-        self._all_images = [[["", ()] for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
+        self._lvl_number += 1
 
         # setting the map to the new level layout
         self.__generate_map()
@@ -139,6 +141,7 @@ class MapConstructor:
                     break
         x, y = self._hero_pos
         self._all_images[x][y] = self._all_images[x][y] + [self._hero_image]
+        self.update_hero(x, y)
 
     # given two coordinates
     # updates the hero's position, the hero overlay, and the lightmap
@@ -157,10 +160,14 @@ class MapConstructor:
         return self._hero_pos
 
     # function updating the lightmap to the hero's current position
-    # TODO illumination algorithm
+    # TODO grey out the non-illuminated fields
     def update_illum_map(self):
-        # hero_pos & illum_rad -> illum_map
-        pass
+        x, y = self._hero_pos
+        for i in range(int(8 * self._illum_rad)):
+            for r in range(int(self._illum_rad)):
+                illum_x = x + int(round((r + 1) * cos(tau * (i + 1) / (8 * self._illum_rad)), 0))
+                illum_y = y + int(round((r + 1) * sin(tau * (i + 1) / (8 * self._illum_rad)), 0))
+                self._illum_map[illum_x][illum_y] = self._max_brightness
 
     # given field coordinates, the type of the field (1=Item,2=Switch) (and the type of function to call on the field?)
     # returns ?
@@ -288,7 +295,7 @@ class Exit(Field):
     def __init__(self, lvl_number):
         Field.__init__(self, lvl_number, "treppe.gif")
 
-"""
+
 # creating a map constructor starting with level one
 map_constructor = MapConstructor()
 print(map_constructor.get_all_images())
@@ -299,4 +306,4 @@ print("next")
 map_constructor.next_lvl()
 print(map_constructor.get_all_images())
 # print(map_constructor._lvl_targets)
-# print(map_constructor._lvl_switches)"""
+# print(map_constructor._lvl_switches)

@@ -20,7 +20,7 @@ all_level = [DungeonLevel01, DungeonLevel02(), DungeonLevel03(), DungeonLevel04(
 # Usage:    MapConstructor()                    -> initial setup of first level
 #           MapConstructor().next_lvl()         -> setting up the next level
 #           MapConstructor().get_all_images()   -> getting a list of all images needed to display the level
-#                                                  in format: [[[Layout, Item], [Layout, Item]], [[Layout, Item]]]
+#                                                  in format: [[([Layout, Item], Illumination_value)]]
 # Possible parameters:
 #           illum_rad (default: 1)              -> illumination radius of the hero
 #           start_lvl (default: 0)              -> level to start with (counting from zero)
@@ -69,6 +69,10 @@ class MapConstructor:
 
                 # setting map[x][y] to the objects in the field[x][y], using FieldConstructor
                 self.map[x][y] = self._field_factory.generate_new(obj_list)
+
+    # function returning the current level number (first level=1, not 0)
+    def get_lvl(self):
+        return self._lvl_number
 
     # given x and y coords, returns a list of all images needed to display the single field, in order: Wall/Floor, Items
     # Int, Int -> [String]
@@ -164,6 +168,9 @@ class MapConstructor:
         # calling the given function on the given field
         # self.map[x][y][field_type].
         pass
+
+    def get_field(self, x, y):
+        return self.map[x][y]
 
 
 # Class to generate new fields efficiently, using generate_new()
@@ -281,16 +288,15 @@ class Exit(Field):
     def __init__(self, lvl_number):
         Field.__init__(self, lvl_number, "treppe.gif")
 
-
+"""
 # creating a map constructor starting with level one
 map_constructor = MapConstructor()
 print(map_constructor.get_all_images())
-map_constructor.update_hero(0,1)
-print(map_constructor.get_all_images())
-# print(map_constructor.map)
+# map_constructor.update_hero(0, 1)
+print(map_constructor.map)
 # print(map_constructor._lvl_switches)
 print("next")
 map_constructor.next_lvl()
 print(map_constructor.get_all_images())
 # print(map_constructor._lvl_targets)
-# print(map_constructor._lvl_switches)
+# print(map_constructor._lvl_switches)"""

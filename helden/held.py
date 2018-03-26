@@ -1,6 +1,5 @@
 from math import *
 from items import *
-import time
 
 
 # Class hero

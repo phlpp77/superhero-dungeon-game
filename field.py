@@ -7,7 +7,6 @@ from math import sin, cos, tau
 # Purpose: MapConstructor gives an interface for the game to:
 #   1) display all fields easily / get all images needed to display the playingfield
 #       TODO dynamically change the frame based on the hero's position
-#       TODO use the lightmap to dynamically change the displayed images
 #       TODO interact with the items of a field easily
 #   3) TODO managing the map logic (discovering switches, taking items etc.)
 
@@ -160,14 +159,18 @@ class MapConstructor:
         return self._hero_pos
 
     # function updating the lightmap to the hero's current position
-    # TODO grey out the non-illuminated fields
     def update_illum_map(self):
+        # greying out old fields
+        self._illum_map = [[511 if y == self._max_brightness else y for y in x] for x in self._illum_map]
         x, y = self._hero_pos
+        # illuminating at the hero's position
+        self._illum_map[x][y] = self._max_brightness
         for i in range(int(8 * self._illum_rad)):
             for r in range(int(self._illum_rad)):
                 illum_x = x + int(round((r + 1) * cos(tau * (i + 1) / (8 * self._illum_rad)), 0))
                 illum_y = y + int(round((r + 1) * sin(tau * (i + 1) / (8 * self._illum_rad)), 0))
-                self._illum_map[illum_x][illum_y] = self._max_brightness
+                if 0 <= illum_x < self._lvl_height and 0 <= illum_y < self._lvl_width:
+                    self._illum_map[illum_x][illum_y] = self._max_brightness
 
     # given field coordinates, the type of the field (1=Item,2=Switch) (and the type of function to call on the field?)
     # returns ?
@@ -178,6 +181,9 @@ class MapConstructor:
 
     def get_field(self, x, y):
         return self.map[x][y]
+
+    def get_illum(self):
+        return self._illum_map
 
 
 # Class to generate new fields efficiently, using generate_new()
@@ -297,13 +303,15 @@ class Exit(Field):
 
 
 # creating a map constructor starting with level one
-map_constructor = MapConstructor()
-print(map_constructor.get_all_images())
-# map_constructor.update_hero(0, 1)
+map_constructor = MapConstructor(illum_rad=2)
+# print(map_constructor.get_all_images())
+print(map_constructor.get_illum())
+map_constructor.update_hero(3, 2)
+print(map_constructor.get_illum())
 print(map_constructor.map)
 # print(map_constructor._lvl_switches)
-print("next")
-map_constructor.next_lvl()
-print(map_constructor.get_all_images())
+# print("next")
+# map_constructor.next_lvl()
+# print(map_constructor.get_all_images())
 # print(map_constructor._lvl_targets)
 # print(map_constructor._lvl_switches)

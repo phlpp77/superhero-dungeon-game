@@ -38,6 +38,7 @@ class MapConstructor:
 
         # declaring the hero position
         self._hero_pos = [0, 0]
+        self._hero_image = "_______PATH_TO_HERO_IMAGE_______"
 
         # variables for the illumination
         self._illum_rad, self._illum_map = illum_rad, []
@@ -47,7 +48,7 @@ class MapConstructor:
 
         # defining the translation dictionary for the level maps
         self._layout_dict = {0: "Wall", 1: "Floor", 254: "Entrance", 255: "Exit"}
-        self._item_dict = {0: "NoItem", 101: "Dagger", 104: "Langschwert", 203: "Kettenhemd", 902: "NoItem",
+        self._item_dict = {0: "NoItem", 101: "Dagger", 104: "Langschwert", 203: "Kettenhemd", 902: "Exit",
                            911: "NoItem", 10101: "Ork", 10102: "Joker", 20101: "Rockfall", 30101: "Deathtrap"}
         self._switch_dict = {0: "NoSwitch", 1: "LvlEnd", 2: "GameEnd", 11: "LightSwitch", 21: "WallSwitch"}
 
@@ -85,14 +86,11 @@ class MapConstructor:
     def next_lvl(self):
         # setting the new level layouts
         if self._lvl_number < self._max_lvl:
-            self.update_variables()
 
-            # updating the map to the new level layout
-            self.__generate_map()
             # setting the next level for all objects
             self._field_factory.next_lvl()
-            # refreshing the image list
-            self.__refresh_all_images()
+
+            self.update_variables()
 
     # function initializing all variables for the next level
     def update_variables(self):
@@ -113,24 +111,40 @@ class MapConstructor:
                              x in range(self._lvl_height)]
         self._all_images = [[["", ()] for _ in range(self._lvl_width)] for _ in range(self._lvl_height)]
 
+        # setting the map to the new level layout
+        self.__generate_map()
+
+        # setting the image list to the new level layout
+        self.__refresh_all_images()
+
+        # initializing the hero's position
+        self.init_hero()
+
     # returns a 2d list of tuples with the images needed to display the field and their illumination values
     # -> [[([String], Int)]]
     def get_all_images(self):
         # zipping the imagelist and illuminationlist
         return [list(zip(self._all_images[x], self._illum_map[x])) for x in range(self._lvl_height)]
 
+    # function setting the hero's position and image to the Exit in the map
     def init_hero(self):
-        pass
+        for x in range(self._lvl_height):
+            for y in range(self._lvl_width):
+                if isinstance(self.map[x][y][1], Exit):
+                    self._hero_pos = [x, y]
+                    break
+        x, y = self._hero_pos
+        self._all_images[x][y] = self._all_images[x][y] + [self._hero_image]
 
     # given two coordinates
     # updates the hero's position, the hero overlay, and the lightmap
     def update_hero(self, x, y):
         current = self._all_images[self._hero_pos[0]][self._hero_pos[1]]
         # moving the hero image to the new field from the old one
-        self._all_images[x][y] = current[-1:]
+        self._all_images[x][y] = self._all_images[x][y] + current[-1:]
         # removing the hero overlay from the imagelist
         self._all_images[self._hero_pos[0]][self._hero_pos[1]] = current[:-1]
-        # updating the
+        # updating the saved hero position
         self._hero_pos = [x, y]
         self.update_illum_map()
 
@@ -271,7 +285,9 @@ class Exit(Field):
 # creating a map constructor starting with level one
 map_constructor = MapConstructor()
 print(map_constructor.get_all_images())
-# print(map_constructor._lvl_targets)
+map_constructor.update_hero(0,1)
+print(map_constructor.get_all_images())
+# print(map_constructor.map)
 # print(map_constructor._lvl_switches)
 print("next")
 map_constructor.next_lvl()

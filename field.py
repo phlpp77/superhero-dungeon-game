@@ -304,7 +304,7 @@ class Exit(Field):
 
 # creating a map constructor starting with level one
 map_constructor = MapConstructor(illum_rad=2)
-# print(map_constructor.get_all_images())
+print(map_constructor.get_all_images())
 print(map_constructor.get_illum())
 map_constructor.update_hero(3, 2)
 print(map_constructor.get_illum())

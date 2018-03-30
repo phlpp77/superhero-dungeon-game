@@ -19,6 +19,7 @@ class Hero:
         self._lichtradius, self.timeout = 1.0, 0.1
         self._itemliste = [Schwert(0), Wattierterwaffenrock(0)]  # leere Liste, in der alle Items gespeichert sind
         self._ruestung = self._waffe = self._maxle = 0
+        self._itemtodrop = Noitem(0)
         self.var_init()
 
     @staticmethod
@@ -91,6 +92,9 @@ class Hero:
     def setruestung(self, ruestung):
         self._ruestung = ruestung
 
+    def getrs(self):
+        return self.getruestung().getrs()
+
     def getbild(self):
         return self._bild
 
@@ -160,6 +164,9 @@ class Hero:
 
     def setle(self, le):
         self._kampfwerte[2] = le
+
+    def getitemdrop(self):
+        return self._itemtodrop
 
     def heilen(self, sp):
         self._kampfwerte[2] = self._kampfwerte[2] + int(sp * (self._eigenschaften[4] + self._eigenschaften[6]) / 40)

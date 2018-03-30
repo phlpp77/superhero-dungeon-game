@@ -10,6 +10,7 @@ class Nomonster(Monster):  # Werte, Geldwert, Angriff, Verteidigung, Leben, wür
     def get_image(self):
         pass
 
+
 class Ork1(Monster):  # Handlanger
     def __init__(self, lvl_number):
         Monster.__init__(self, 10101, 'Ork', False, False, 'gfxmnstr/ork1.gif',

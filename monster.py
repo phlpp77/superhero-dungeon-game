@@ -6,15 +6,32 @@ class Monster(Item):
 
     def __init__(self, typ, name, begehbar, aufnehmbar, bild, werte):
         Item.__init__(self, typ, name, begehbar, aufnehmbar, bild, werte)  # Wert der Waffe in Silbertalern
+        self._characteristics = []  # empty list, because a monster doesn't have characteristics
         self._kampfwerte = [werte[1], werte[2], werte[3]]  # AT PA LeP wie bei einem Held
         self._tp = (werte[4], werte[5])  # Wuerfel, Additiver Schaden
         self._mod = (werte[6], werte[7])  # AT-Modifkator, PA-Modifikator
         self._rs = werte[8]  # RüstungsSchutz
         self._ap = werte[9]  # Abenteuerpunkte
         self._itemtodrop = werte[10]  # item (Objekt), welches man bekommt, wenn man das Monster besiegt
+        self._itemliste = []
 
     def getkampfwerte(self):
         return self._kampfwerte
+
+    def geteigenschaften(self):
+        return self._characteristics
+
+    def getrs(self):
+        return self._rs
+
+    def getap(self):
+        return self._ap
+
+    def getitemdrop(self):
+        return self._itemtodrop
+
+    def getitemliste(self):
+        return self._itemliste
 
     def gettp(self):
         return self._tp

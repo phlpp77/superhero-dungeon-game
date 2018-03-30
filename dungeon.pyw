@@ -38,7 +38,7 @@ class GUIThread(threading.Thread):
 
     def stop(self):
         self._stop = True
-        print("STOPPING THREAD")
+        # print("STOPPING THREAD")
 
 
 class Flackern(GUIThread):

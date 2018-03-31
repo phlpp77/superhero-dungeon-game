@@ -7,7 +7,7 @@ class Hero:
 
     def __init__(self, name):
         self._heldenname = name
-        self._heldentyp = 0  # 0 Batman, 1 Superman, 2 Spiderman, 3 Ironman, Green Lantern, 4 Flash
+        self._heldentyp = 0  # 0 Batman, 1 Superman, 2 Spiderman, 3 Ironman, 4 Green Lantern, 5 Flash
         self._geschlecht = 0  # 0 maennlich; 1 weiblich
         self._typname = 'Batman'  # Typ des Heroen
         self._eigenschaften = [11, 11, 10, 11, 10, 11, 10, 10]  # MU KL CH IN FF GE KO KK
@@ -19,7 +19,7 @@ class Hero:
         self._lichtradius, self.timeout = 1.0, 0.1
         self._itemliste = [Schwert(0), Wattierterwaffenrock(0)]  # leere Liste, in der alle Items gespeichert sind
         self._ruestung = self._waffe = self._maxle = 0
-        self._itemtodrop = Noitem(0)
+        self.itemtodrop = Noitem(0)
         self.var_init()
 
     @staticmethod
@@ -166,7 +166,7 @@ class Hero:
         self._kampfwerte[2] = le
 
     def getitemdrop(self):
-        return self._itemtodrop
+        return self.itemtodrop
 
     def heilen(self, sp):
         self._kampfwerte[2] = self._kampfwerte[2] + int(sp * (self._eigenschaften[4] + self._eigenschaften[6]) / 40)

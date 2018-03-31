@@ -4,8 +4,11 @@
 
 from helden import held as hero_lib
 from monsters import *
+from items import *
+from random import randint as rnd
 
 
+# class fight for the logic
 class Fight:
     def __init__(self, attacker, defender):
         self._attacker, self._defender = attacker, defender
@@ -19,12 +22,65 @@ class Fight:
         self._defender_characteristics, self._defender_combat = defender.geteigenschaften(), defender.getkampfwerte()
         # getting experience points (ap) from objects
         self._attacker_exp, self._defender_exp = attacker.getap(), defender.getap()
-        
-    def attack(self):
-        pass
 
-    def defend(self):
-        pass
+        # quicklaunch
+        self._attacker_livepoints, self._defender_livepoints = self._attacker_combat[2], self._defender_combat[2]
+
+        # dic for all attacks based an items, 0-99 basic, 100-199 medium, 200-299 strong, 300-399 extreme
+        self._attacks_dict = {"Dolch": 0}
+
+        # counter for blocked damge, after 3 blocks one attack goes through with 100%
+        self._blocked_counter = 0
+
+        # the real damage dealt is safed in a var
+        self._realdamage = 0
+
+    # attacking - calculating the truedamage dealt to the object
+    def attack(self, item):
+        attack = self._attacks_dict[item.getname()]
+        add_damage = item.gettp()[0]
+        # checking if attack goes throuh
+        if self._attacker_combat[0] + attack > rnd(0, 20) < self._defender_combat[1] + self._defender_armor or self._blocked_counter == 3:
+            # reset counter for blocked damage
+            self._blocked_counter = 0
+            print("attack")
+            # damage dependent on the KK of the object
+            damage = round((self._attacker_combat[0] + self._attacker_characteristics[7] * rnd(0, 3) + add_damage) * 0.2)
+            return damage
+        else:
+            self._blocked_counter += 1
+            print("no attack")
+            return 0
+
+    # defending - calculating the realdamage dealt to the object
+    def defend(self, item, damage):
+        add_armor = item.getrs()
+        # deduct the armor shielding
+        damage -= self._defender_armor + add_armor
+        if damage <= 0:
+            self._realdamage = 0
+            return 0
+        else:
+            self._realdamage = damage
+            return damage
+
+    def update_health(self):
+        self._defender.setle(self._defender_livepoints - self._realdamage)
+        if self._defender_livepoints <= 0:
+            print("defender dead")
+            self._defender._typ = 0
+            self._defender._name = ''
+            self._defender._begehbar = True
+            self._defender._aufnehmbar = False
+            self._defender._bild = 'gfx/blank.gif'
+            self._defender._werte = ()
+            if self._defender.getitemtodrop() != 0:
+                self._attacker.itemnehmen(self._defender.itemtodrop)
+
+
+# class fightscreen for gui
+class FightScreen:
+    pass
 
 
 B = hero_lib.Hero.factory("Batman")
@@ -33,4 +89,9 @@ print(S.getrs())
 o = Ork1(1)
 print(o.geteigenschaften())
 f = Fight(S, o)
-print(f._attacker_characteristics)
+# print(f._attacker_characteristics)
+d = Dolch(0)
+h = Kleidung(0)
+for i in range(660):
+    print(f.defend(h, f.attack(d)))
+f.update_health()

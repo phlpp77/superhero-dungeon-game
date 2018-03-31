@@ -12,7 +12,7 @@ class Monster(Item):
         self._mod = (werte[6], werte[7])  # AT-Modifkator, PA-Modifikator
         self._rs = werte[8]  # RüstungsSchutz
         self._ap = werte[9]  # Abenteuerpunkte
-        self._itemtodrop = werte[10]  # item (Objekt), welches man bekommt, wenn man das Monster besiegt
+        self.itemtodrop = werte[10]  # item (Objekt), welches man bekommt, wenn man das Monster besiegt
         self._itemliste = []
 
     def getkampfwerte(self):
@@ -28,7 +28,7 @@ class Monster(Item):
         return self._ap
 
     def getitemdrop(self):
-        return self._itemtodrop
+        return self.itemtodrop
 
     def getitemliste(self):
         return self._itemliste
@@ -38,6 +38,9 @@ class Monster(Item):
 
     def getmod(self):
         return self._mod
+
+    def setle(self, leben):
+        self._kampfwerte[2] = leben
 
     def benutzen(self, held):
         heldaltle = held.getle()
@@ -82,8 +85,8 @@ class Monster(Item):
                 held.heilen(heldaltle - held.getle())
                 # Abenteurpunkt hinzufügen
                 held.addap(self._ap)
-                if self._itemtodrop.gettyp() != 0:
-                    held.itemnehmen(self._itemtodrop)
+                if self.itemtodrop.gettyp() != 0:
+                    held.itemnehmen(self.itemtodrop)
                 break
 
             print("Zwischenstand - Monstereben:", self._kampfwerte[2], "Heldleben: ", held.getle())  # Testausgabe

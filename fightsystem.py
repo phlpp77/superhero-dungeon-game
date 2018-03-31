@@ -27,7 +27,7 @@ class Fight:
         self._attacker_livepoints, self._defender_livepoints = self._attacker_combat[2], self._defender_combat[2]
 
         # dic for all attacks based an items, 0-99 basic, 100-199 medium, 200-299 strong, 300-399 extreme
-        self._attacks_dict = {"Dolch": 0}
+        self._attacks_dict = {"Dolch": 0, "Schwert": 0}
 
         # counter for blocked damge, after 3 blocks one attack goes through with 100%
         self._blocked_counter = 0
@@ -66,6 +66,9 @@ class Fight:
 
     def update_health(self):
         self._defender.setle(self._defender_livepoints - self._realdamage)
+        # refresh of defender live
+        self._defender_livepoints = self._defender.getle()
+        print("refresh")
         if self._defender_livepoints <= 0:
             print("defender dead")
             self._defender._typ = 0
@@ -74,8 +77,8 @@ class Fight:
             self._defender._aufnehmbar = False
             self._defender._bild = 'gfx/blank.gif'
             self._defender._werte = ()
-            if self._defender.getitemtodrop() != 0:
-                self._attacker.itemnehmen(self._defender.itemtodrop)
+            # if self._defender.getitemdrop() != 0:
+            # self._attacker.itemnehmen(self._defender.itemtodrop)
 
 
 # class fightscreen for gui
@@ -83,6 +86,7 @@ class FightScreen:
     pass
 
 
+'''
 B = hero_lib.Hero.factory("Batman")
 S = hero_lib.Hero.factory("Superman")
 print(S.getrs())
@@ -95,3 +99,4 @@ h = Kleidung(0)
 for i in range(660):
     print(f.defend(h, f.attack(d)))
 f.update_health()
+'''

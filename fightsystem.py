@@ -6,6 +6,9 @@ from helden import held as hero_lib
 from monsters import *
 from items import *
 from random import randint as rnd
+import kivy
+from kivy.app import App
+from kivy.uix.label import Label
 
 
 # class fight for the logic
@@ -82,8 +85,9 @@ class Fight:
 
 
 # class fightscreen for gui
-class FightScreen:
-    pass
+class FightScreen(App):
+    def build(self):
+        return Label(text="Test text")
 
 
 '''
@@ -100,3 +104,5 @@ for i in range(660):
     print(f.defend(h, f.attack(d)))
 f.update_health()
 '''
+f = FightScreen()
+f.run()

@@ -1,4 +1,4 @@
-# Purpose:
+""""# Purpose:
 #   - easily display all images supplied from MapConstructor
 #   - binding keys for navigation
 
@@ -38,3 +38,4 @@ class Interface:
         for image in images:
             # display over each other, with rgba = 1,1,1,alpha
             print(coords_in_window, image)
+"""

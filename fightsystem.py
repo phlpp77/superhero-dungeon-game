@@ -6,9 +6,9 @@ from helden import held as hero_lib
 from monsters import *
 from items import *
 from random import randint as rnd
-import kivy
-from kivy.app import App
-from kivy.uix.label import Label
+# import kivy
+# from kivy.app import App
+# from kivy.uix.label import Label
 
 
 # class fight for the logic
@@ -43,12 +43,14 @@ class Fight:
         attack = self._attacks_dict[item.getname()]
         add_damage = item.gettp()[0]
         # checking if attack goes throuh
-        if self._attacker_combat[0] + attack > rnd(0, 20) < self._defender_combat[1] + self._defender_armor or self._blocked_counter == 3:
+        if self._attacker_combat[0] + attack > rnd(0, 20) < self._defender_combat[
+                1] + self._defender_armor or self._blocked_counter == 3:
             # reset counter for blocked damage
             self._blocked_counter = 0
             print("attack")
             # damage dependent on the KK of the object
-            damage = round((self._attacker_combat[0] + self._attacker_characteristics[7] * rnd(0, 3) + add_damage) * 0.2)
+            damage = round(
+                (self._attacker_combat[0] + self._attacker_characteristics[7] * rnd(0, 3) + add_damage) * 0.2)
             return damage
         else:
             self._blocked_counter += 1
@@ -83,14 +85,13 @@ class Fight:
             # if self._defender.getitemdrop() != 0:
             # self._attacker.itemnehmen(self._defender.itemtodrop)
 
-
+"""
 # class fightscreen for gui
 class FightScreen(App):
     def build(self):
         return Label(text="Test text")
 
 
-'''
 B = hero_lib.Hero.factory("Batman")
 S = hero_lib.Hero.factory("Superman")
 print(S.getrs())
@@ -103,6 +104,7 @@ h = Kleidung(0)
 for i in range(660):
     print(f.defend(h, f.attack(d)))
 f.update_health()
-'''
+
 f = FightScreen()
 f.run()
+"""

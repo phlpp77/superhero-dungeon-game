@@ -191,7 +191,6 @@ class FieldConstructor:
     def __init__(self):
         self._lvl_number = 1
         self._object_mem = {}
-        self._objects = []
         self._all_objects = {"Wall": Wall, "Floor": Floor,
                              "Entrance": Entrance, "Exit": Exit, "NoItem": Noitem,
                              "Dagger": Dolch, "Langschwert": Langschwert, "Kettenhemd": Kettenhemd,
@@ -204,11 +203,11 @@ class FieldConstructor:
     # [String] -> [Field objects]
     def generate_new(self, objects):
         # resetting the old object list
-        self._objects = []
+        out_objects = []
         # each wanted object gets appended to the object list
         for obj in objects:
-            self._objects.append(self.__obj_memorization(obj))
-        return self._objects
+            out_objects.append(self.__obj_memorization(obj))
+        return out_objects
 
     # using memorization pattern to minimize memory usage
     # given an object name, returns the wanted object
@@ -264,6 +263,10 @@ class Field:
         # refreshing the image
         self.refresh_image()
 
+    # function returning the current lvl_value
+    def get_lvl(self):
+        return self._lvl_number
+
     # function to automatically get the next level
     def next_lvl(self):
         self.set_lvl_number(self._lvl_number + 1)
@@ -302,16 +305,17 @@ class Exit(Field):
         Field.__init__(self, lvl_number, "treppe.gif")
 
 
-# creating a map constructor starting with level one
-map_constructor = MapConstructor(illum_rad=2)
-print(map_constructor.get_all_images())
-print(map_constructor.get_illum())
-map_constructor.update_hero(3, 2)
-print(map_constructor.get_illum())
-print(map_constructor.map)
-# print(map_constructor._lvl_switches)
-# print("next")
-# map_constructor.next_lvl()
-# print(map_constructor.get_all_images())
-# print(map_constructor._lvl_targets)
-# print(map_constructor._lvl_switches)
+if __name__ == "__main__":
+    # creating a map constructor starting with level one
+    map_constructor = MapConstructor(illum_rad=2)
+    print(map_constructor.get_all_images())
+    print(map_constructor.get_illum())
+    map_constructor.update_hero(3, 2)
+    print(map_constructor.get_illum())
+    print(map_constructor.map)
+    # print(map_constructor._lvl_switches)
+    # print("next")
+    # map_constructor.next_lvl()
+    # print(map_constructor.get_all_images())
+    # print(map_constructor._lvl_targets)
+    # print(map_constructor._lvl_switches)

@@ -1,6 +1,6 @@
 class Item:
 
-    def __init__(self, typ, name, begehbar, aufnehmbar, bild, werte):
+    def __init__(self, typ: int, name: str, begehbar: bool, aufnehmbar: bool, bild: str, werte: [int]):
         self._typ = typ
         self._name = name
         self._begehbar = begehbar
@@ -12,34 +12,34 @@ class Item:
         self._eigenschaften = werte[1:]
         self._wirdgetragen = False
 
-    def gettyp(self):
+    def gettyp(self) -> int:
         return self._typ
 
-    def getname(self):
+    def getname(self) -> str:
         return self._name
 
-    def getbegehbar(self):
+    def getbegehbar(self) -> bool:
         return self._begehbar
 
-    def getaufnehmbar(self):
+    def getaufnehmbar(self) -> bool:
         return self._aufnehmbar
 
-    def getaktiv(self):
+    def getaktiv(self) -> int:
         return self._aktiv
 
-    def setaktiv(self, aktiv):
+    def setaktiv(self, aktiv: int):
         self._aktiv = aktiv
 
-    def getbild(self):
+    def getbild(self) -> str:
         return self._bild
 
-    def setbild(self, bild):
+    def setbild(self, bild: str):
         self._bild = bild
 
-    def getwert(self):
+    def getwert(self) -> int:
         return self._wert
 
-    def geteigenschaften(self):
+    def geteigenschaften(self) -> [int]:
         return self._eigenschaften
 
     def benutzen(self, held):
@@ -53,11 +53,11 @@ class Item:
         self._wirdgetragen = False
         return held
 
-    def wirdgetragen(self):
+    def wirdgetragen(self) -> bool:
         return self._wirdgetragen
 
     def next_lvl(self):
         pass
 
-    def get_image(self):
+    def get_image(self) -> str:
         return self._bild

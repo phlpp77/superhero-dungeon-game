@@ -6,14 +6,15 @@ from helden import held as hero_lib
 from monsters import *
 from items import *
 from random import randint as rnd
-# import kivy
-# from kivy.app import App
-# from kivy.uix.label import Label
+
+"""import kivy
+from kivy.app import App
+from kivy.uix.label import Label"""
 
 
 # class fight for the logic
 class Fight:
-    def __init__(self, attacker, defender):
+    def __init__(self, attacker: hero_lib.Hero, defender: hero_lib.Hero):
         self._attacker, self._defender = attacker, defender
         # getting itemlists from objects
         self._attacker_items, self._defender_items = attacker.getitemliste(), defender.getitemliste()
@@ -27,9 +28,9 @@ class Fight:
         self._attacker_exp, self._defender_exp = attacker.getap(), defender.getap()
 
         # quicklaunch
-        self._attacker_livepoints, self._defender_livepoints = self._attacker_combat[2], self._defender_combat[2]
+        self._attacker_lifepoints, self._defender_lifepoints = self._attacker_combat[2], self._defender_combat[2]
 
-        # dic for all attacks based an items, 0-99 basic, 100-199 medium, 200-299 strong, 300-399 extreme
+        # dict for all attacks based an items, 0-99 basic, 100-199 medium, 200-299 strong, 300-399 extreme
         self._attacks_dict = {"Dolch": 0, "Schwert": 0}
 
         # counter for blocked damge, after 3 blocks one attack goes through with 100%
@@ -44,7 +45,7 @@ class Fight:
         add_damage = item.gettp()[0]
         # checking if attack goes throuh
         if self._attacker_combat[0] + attack > rnd(0, 20) < self._defender_combat[
-                1] + self._defender_armor or self._blocked_counter == 3:
+            1] + self._defender_armor or self._blocked_counter == 3:
             # reset counter for blocked damage
             self._blocked_counter = 0
             print("attack")
@@ -58,7 +59,7 @@ class Fight:
             return 0
 
     # defending - calculating the realdamage dealt to the object
-    def defend(self, item, damage):
+    def defend(self, item: Item, damage: int) -> int:
         add_armor = item.getrs()
         # deduct the armor shielding
         damage -= self._defender_armor + add_armor
@@ -70,11 +71,11 @@ class Fight:
             return damage
 
     def update_health(self):
-        self._defender.setle(self._defender_livepoints - self._realdamage)
+        self._defender.setle(self._defender_lifepoints - self._realdamage)
         # refresh of defender live
-        self._defender_livepoints = self._defender.getle()
+        self._defender_lifepoints = self._defender.getle()
         print("refresh")
-        if self._defender_livepoints <= 0:
+        if self._defender_lifepoints <= 0:
             print("defender dead")
             self._defender._typ = 0
             self._defender._name = ''
@@ -85,26 +86,27 @@ class Fight:
             # if self._defender.getitemdrop() != 0:
             # self._attacker.itemnehmen(self._defender.itemtodrop)
 
+
 """
 # class fightscreen for gui
 class FightScreen(App):
     def build(self):
         return Label(text="Test text")
-
-
-B = hero_lib.Hero.factory("Batman")
-S = hero_lib.Hero.factory("Superman")
-print(S.getrs())
-o = Ork1(1)
-print(o.geteigenschaften())
-f = Fight(S, o)
-# print(f._attacker_characteristics)
-d = Dolch(0)
-h = Kleidung(0)
-for i in range(660):
-    print(f.defend(h, f.attack(d)))
-f.update_health()
-
-f = FightScreen()
-f.run()
 """
+
+if __name__ == "__main__":
+    B = hero_lib.Hero.factory("Batman")
+    S = hero_lib.Hero.factory("Superman")
+    print(S.getrs())
+    o = Ork1(1)
+    print(o.geteigenschaften())
+    f = Fight(S, o)
+    # print(f._attacker_characteristics)
+    d = Dolch(0)
+    h = Kleidung(0)
+    for i in range(660):
+        print(f.defend(h, f.attack(d)))
+    f.update_health()
+
+    f = FightScreen()
+    f.run()

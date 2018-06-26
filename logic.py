@@ -14,7 +14,7 @@ class GameLogic:
         self.hero = hero
 
     # given a direction (binded keys), checks if the move is valid, moves the hero, and checks the field
-    def move(self, direction):
+    def move(self, direction: int):
         x, y = self.map.get_hero_pos()
         vec_x, vec_y = self.dir_vector.get(direction)
         # calculating the new coordinates of the hero

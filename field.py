@@ -26,9 +26,9 @@ all_level = [DungeonLevel01, DungeonLevel02(), DungeonLevel03(), DungeonLevel04(
 #           start_lvl (default: 0)              -> level to start with (counting from zero)
 
 class MapConstructor:
-    def __init__(self, illum_rad=1, start_lvl=0):
+    def __init__(self, illum_rad: int = 1, start_lvl: int = 0):
         # creating a fieldconstructor
-        self._field_factory = FieldConstructor()
+        self._field_factory = FieldConstructor(start_lvl)
 
         # declaring all variables, initialization gets done in update_variables
         self._lvl_layout, self._lvl_items, self._lvl_switches, self._lvl_targets = [], [], [], []
@@ -68,12 +68,12 @@ class MapConstructor:
                 self.map[x][y] = self._field_factory.generate_new(obj_list)
 
     # function returning the current level number (first level=1, not 0)
-    def get_lvl(self):
+    def get_lvl(self) -> int:
         return self._lvl_number
 
     # given x and y coords, returns a list of all images needed to display the single field, in order: Wall/Floor, Items
     # Int, Int -> [String]
-    def get_all_images_field(self, x, y):
+    def get_all_images_field(self, x: int, y: int) -> [str]:
         # returning the list of paths, with None elements removed
         return [obj.get_image() for obj in self.map[x][y] if obj.get_image() is not None]
 
@@ -127,7 +127,7 @@ class MapConstructor:
 
     # returns a 2d list of tuples with the images needed to display the field and their illumination values
     # -> [[([String], Int)]]
-    def get_all_images(self):
+    def get_all_images(self) -> [[(str, int)]]:
         # zipping the imagelist and illuminationlist
         return [list(zip(self._all_images[x], self._illum_map[x])) for x in range(self._lvl_height)]
 
@@ -144,7 +144,7 @@ class MapConstructor:
 
     # given two coordinates
     # updates the hero's position, the hero overlay, and the lightmap
-    def update_hero(self, x, y):
+    def update_hero(self, x: int, y: int):
         current = self._all_images[self._hero_pos[0]][self._hero_pos[1]]
         # moving the hero image to the new field from the old one
         self._all_images[x][y] = self._all_images[x][y] + current[-1:]
@@ -155,7 +155,7 @@ class MapConstructor:
         self.update_illum_map()
 
     # function returning the hero's current position
-    def get_hero_pos(self):
+    def get_hero_pos(self) -> [int]:
         return self._hero_pos
 
     # function updating the lightmap to the hero's current position
@@ -179,7 +179,7 @@ class MapConstructor:
         # self.map[x][y][field_type].
         pass
 
-    def get_field(self, x, y):
+    def get_field(self, x: int, y: int) -> [object]:
         return self.map[x][y]
 
     def get_illum(self):
@@ -188,8 +188,8 @@ class MapConstructor:
 
 # Class to generate new fields efficiently, using generate_new()
 class FieldConstructor:
-    def __init__(self):
-        self._lvl_number = 1
+    def __init__(self, lvl_number: int = 1):
+        self._lvl_number = lvl_number
         self._object_mem = {}
         self._all_objects = {"Wall": Wall, "Floor": Floor,
                              "Entrance": Entrance, "Exit": Exit, "NoItem": Noitem,
@@ -201,7 +201,7 @@ class FieldConstructor:
     # given a list of object names, the list should be in order: Wall/Floor, Items, Switches
     # returns a list containing the wanted objects
     # [String] -> [Field objects]
-    def generate_new(self, objects):
+    def generate_new(self, objects: [str]) -> [object]:
         # resetting the old object list
         out_objects = []
         # each wanted object gets appended to the object list
@@ -213,7 +213,7 @@ class FieldConstructor:
     # given an object name, returns the wanted object
     # given a switch-target tuple, returns the wanted switch
     # String -> Field object
-    def __obj_memorization(self, obj):
+    def __obj_memorization(self, obj: str) -> object:
         # if the wanted object is not in the memory it gets created
         # differentiating between normal objects and switches
         if type(obj) is str and obj not in self._object_mem:
@@ -231,7 +231,7 @@ class FieldConstructor:
     # using factory pattern to generate wanted objects
     # given an object name, generates and returns the wanted object
     # String -> Object
-    def __factory(self, obj):
+    def __factory(self, obj: str) -> object:
         # if the wanted object is no switch it is simply returned
         if type(obj) is str:
             return self._all_objects.get(obj)(self._lvl_number)
@@ -240,7 +240,7 @@ class FieldConstructor:
             return self._all_switches.get(obj[0])(obj[1])
 
     # given a new level number, sets the internal level number to the given one
-    def set_lvl_number(self, lvl_number):
+    def set_lvl_number(self, lvl_number: int):
         self._lvl_number = lvl_number
 
     # sets the internal level number to the next for all elements in the object dictionary
@@ -258,13 +258,13 @@ class Field:
         self.refresh_image()
 
     # function to manually set the level number
-    def set_lvl_number(self, lvl_number):
+    def set_lvl_number(self, lvl_number: int):
         self._lvl_number = lvl_number
         # refreshing the image
         self.refresh_image()
 
     # function returning the current lvl_value
-    def get_lvl(self):
+    def get_lvl(self) -> int:
         return self._lvl_number
 
     # function to automatically get the next level
@@ -276,11 +276,11 @@ class Field:
         self._image = "gfxlvl%d/%s" % (self._lvl_number, self._image_name)
 
     # function returning it's image path
-    def get_image(self):
+    def get_image(self) -> str:
         return self._image
 
     # function returning whether the field is walkable
-    def get_walkable(self):
+    def get_walkable(self) -> bool:
         return self._walkable
 
 

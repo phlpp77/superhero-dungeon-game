@@ -18,12 +18,14 @@ class Hero:
         self._x, self._y, self._ap = 0, 0, 0
         self._lichtradius, self.timeout = 1.0, 0.1
         self._itemliste = [Schwert(0), Wattierterwaffenrock(0)]  # leere Liste, in der alle Items gespeichert sind
-        self._ruestung = self._waffe = self._maxle = 0
+        self._ruestung, self._waffe, self._maxle = self._itemliste[1], self._itemliste[0], self._kampfwerte[2]
         self.itemtodrop = Noitem(0)
-        self.var_init()
+
+    def var_init(self):
+        self._ruestung, self._waffe, self._maxle = self._itemliste[1], self._itemliste[0], self._kampfwerte[2]
 
     @staticmethod
-    def factory(wanted_obj):
+    def factory(wanted_obj: str):
         text = "Bitten Name eingeben"
         subclasses = {
             "Batman": Batman(text),
@@ -35,89 +37,86 @@ class Hero:
         }
         return subclasses.get(wanted_obj)
 
-    def var_init(self):
-        self._maxle, self._waffe, self._ruestung = self._kampfwerte[2], self._itemliste[0], self._itemliste[1]
-
-    def getheldenname(self):
+    def getheldenname(self) -> str:
         return self._heldenname
 
-    def setheldenname(self, name):
+    def setheldenname(self, name: str):
         self._heldenname = str(name)
 
-    def getgeschlecht(self):
+    def getgeschlecht(self) -> int:
         return self._geschlecht
 
-    def setgeschlecht(self, geschlecht):
+    def setgeschlecht(self, geschlecht: int):
         self._geschlecht = int(geschlecht)
 
-    def getheldentyp(self):
+    def getheldentyp(self) -> int:
         return self._heldentyp
 
-    def gettypname(self):
+    def gettypname(self) -> str:
         return self._typname
 
-    def geteigenschaften(self):
+    def geteigenschaften(self) -> [int]:
         return self._eigenschaften
 
-    def seteigenschaften(self, liste):
+    def seteigenschaften(self, liste: [int]):
         self._eigenschaften = liste
 
-    def geteigenschaft(self, pos):
+    def geteigenschaft(self, pos: int) -> int:
         return self._eigenschaften[pos]
 
-    def seteigenschaft(self, pos, wert):
+    def seteigenschaft(self, pos: int, wert: int):
         self._eigenschaften[pos] = wert
 
-    def getkampfwerte(self):
+    def getkampfwerte(self) -> [int]:
         return self._kampfwerte
 
-    def setkampfwerte(self, liste):
+    def setkampfwerte(self, liste: [int]):
         self._kampfwerte = liste
 
-    def getkampfwert(self, pos):
+    def getkampfwert(self, pos: int) -> int:
         return self._kampfwerte[pos]
 
-    def setkampfwert(self, pos, wert):
+    def setkampfwert(self, pos: int, wert: int):
         self._kampfwerte[pos] = wert
 
-    def getwaffe(self):
+    def getwaffe(self) -> Waffe:
         return self._waffe
 
-    def setwaffe(self, waffe):
+    def setwaffe(self, waffe: int):
         self._waffe = waffe
 
-    def getruestung(self):
+    def getruestung(self) -> Ruestung:
         return self._ruestung
 
-    def setruestung(self, ruestung):
+    def setruestung(self, ruestung: int):
         self._ruestung = ruestung
 
-    def getrs(self):
+    def getrs(self) -> int:
         return self.getruestung().getrs()
 
-    def getbild(self):
+    def getbild(self) -> str:
         return self._bild
 
-    def setbild(self, bild):
+    def setbild(self, bild: str):
         self._bild = bild
 
-    def get_anzeige_bild(self):
+    def get_anzeige_bild(self) -> str:
         return self._anzeigeBild
 
-    def getx(self):
+    def getx(self) -> int:
         return self._x
 
-    def setx(self, x):
+    def setx(self, x: int):
         self._x = x
 
-    def gety(self):
+    def gety(self) -> int:
         return self._y
 
-    def sety(self, y):
+    def sety(self, y: int):
         self._y = y
 
     # noinspection PyAttributeOutsideInit
-    def ausleuchten(self):
+    def ausleuchten(self) -> [(int, int)]:
         light = [(self._x, self._y)]
         self.fackelradius = 1.0  # spaeter an anderer Stelle einfuegen, etwa beim Entzueden oder Besitzen einer Fackel
         maxr = self._lichtradius + self.fackelradius
@@ -128,20 +127,20 @@ class Hero:
                 print(light)
         return light
 
-    def itemnehmen(self, it):  # nimmt das Item it in die Itemliste auf
-        self._itemliste = self._itemliste + [it]
+    def itemnehmen(self, item: Item):  # nimmt das Item it in die Itemliste auf
+        self._itemliste = self._itemliste + [item]
 
-    def itemablegen(self, n):  # gibt das n-te Item aus der Itemliste zurueck
+    def itemablegen(self, n: int) -> Item:  # gibt das n-te Item aus der Itemliste zurueck
         if n < len(self._itemliste):
             it = self._itemliste[n]
         else:
             it = Noitem(0)
         return it
 
-    def getitemliste(self):
+    def getitemliste(self) -> [Item]:
         return self._itemliste
 
-    def getap(self):
+    def getap(self) -> int:
         return self._ap
 
     def addap(self, ap):
@@ -162,24 +161,24 @@ class Hero:
     def getle(self):
         return self._kampfwerte[2]
 
-    def setle(self, le):
+    def setle(self, le: int):
         self._kampfwerte[2] = le
 
-    def getitemdrop(self):
+    def getitemdrop(self) -> Item:
         return self.itemtodrop
 
-    def heilen(self, sp):
+    def heilen(self, sp: int):
         self._kampfwerte[2] = self._kampfwerte[2] + int(sp * (self._eigenschaften[4] + self._eigenschaften[6]) / 40)
         if self._kampfwerte[2] > self._maxle:
             self._kampfwerte[2] = self._maxle
 
-    def get_timeout(self):
+    def get_timeout(self) -> float:
         return self.timeout
 
 
 # Subclasses for all heros, new ones are added on top of the old ones
 class Flash(Hero):
-    def __init__(self, name):
+    def __init__(self, name: str):
         Hero.__init__(self, name)
         self._heldentyp, self.timeout, self._typname = 5, 0, 'Flash'
         self._bild, self._anzeigeBild = 'gfxhelden/Flash.gif', 'gfxhelden/Flash0.gif'
@@ -190,7 +189,7 @@ class Flash(Hero):
 
 
 class GreenLantern(Hero):
-    def __init__(self, name):
+    def __init__(self, name: str):
         Hero.__init__(self, name)
         self._heldentyp, self._typname, self._lichtradius = 4, 'GreenLantern', 2.0
         self._bild, self._anzeigeBild = 'gfxhelden/GreenLantern.gif', 'gfxhelden/GreenLantern0.gif'
@@ -199,14 +198,14 @@ class GreenLantern(Hero):
         self._itemliste = [Dolch(0), Kleidung(0)]
         self.var_init()
 
-    def heilen(self, sp):
+    def heilen(self, sp: int):
         self._kampfwerte[2] += int(sp * (self._eigenschaften[4] + self._eigenschaften[6] + 6) / 40)  # 15% heilen Bonus
         if self._kampfwerte[2] > self._maxle:
             self._kampfwerte[2] = self._maxle
 
 
 class Ironman(Hero):
-    def __init__(self, name):
+    def __init__(self, name: str):
         Hero.__init__(self, name)
         self._heldentyp, self._typname, self._lichtradius = 2, 'Ironman', 2.0
         self._bild, self._anzeigeBild = 'gfxhelden/Ironman.gif', 'gfxhelden/Ironman0.gif'
@@ -217,7 +216,7 @@ class Ironman(Hero):
 
 
 class Spiderman(Hero):
-    def __init__(self, name):
+    def __init__(self, name: str):
         Hero.__init__(self, name)
         self._heldentyp, self._typname, self._lichtradius = 2, 'Spiderman', 2.0
         self._bild, self._anzeigeBild = 'gfxhelden/Spiderman.gif', 'gfxhelden/Spiderman0.gif'
@@ -228,7 +227,7 @@ class Spiderman(Hero):
 
 
 class Superman(Hero):
-    def __init__(self, name):
+    def __init__(self, name: str):
         Hero.__init__(self, name)
         self._heldentyp, self._typname = 1, 'Superman'
         self._bild, self._anzeigeBild = 'gfxhelden/Superman.gif', 'gfxhelden/Superman0.gif'
@@ -239,7 +238,7 @@ class Superman(Hero):
 
 
 class Batman(Hero):
-    def __init__(self, name):
+    def __init__(self, name: str):
         Hero.__init__(self, name)
         self._heldentyp, self._typname = 0, 'Batman'
         self._bild, self._anzeigeBild = 'gfxhelden/Batman.gif', 'gfxhelden/Batman0.gif'

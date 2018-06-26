@@ -7,5 +7,5 @@ class Ruestung(Item):
         Item.__init__(self, typ, name, begehbar, aufnehmbar, bild, werte)  # Wert der Ruestung
         self._rs = werte[1]  # Ruestungsschutz
 
-    def getrs(self):
+    def getrs(self) -> int:
         return self._rs
